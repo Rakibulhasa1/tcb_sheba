@@ -58,7 +58,7 @@ class DivisionWiseQty {
   int? receiverTotalQty;
 
   factory DivisionWiseQty.fromJson(Map<String, dynamic> json) => DivisionWiseQty(
-    divisionName: nameConverter(json["division_name"]),
+    divisionName: nullConverter(json["division_name"]),
     divisionNameFull: nullConverter(json["division_name"]),
     beneficiaryTotalQty: json["beneficiary_total_qty"],
     receiverTotalQty: json["receiver_total_qty"],

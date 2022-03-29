@@ -111,7 +111,9 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
       bottomNavigationBar: BottomAppBar(
+        clipBehavior: Clip.antiAlias,
         color: primaryColorGreenLite,
         shape: const CircularNotchedRectangle(),
         notchMargin: 10,

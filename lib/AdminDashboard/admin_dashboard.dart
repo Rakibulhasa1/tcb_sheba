@@ -399,7 +399,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-            height: 260,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               color: Colors.grey[200],
@@ -467,51 +466,54 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: SizedBox(
-                    height: 200,
-                    width: MediaQuery.of(context).size.width,
-                    child: charts.BarChart(
-                      seriesData,
-                      animate: true,
-                      barGroupingType: charts.BarGroupingType.grouped,
-                      animationDuration: Duration(microseconds: 1000),
-                          selectionModels: [
-                            charts.SelectionModelConfig(
-                              type: charts.SelectionModelType.info,
-                              changedListener: (charts.SelectionModel model){
-                                notifyData.notifyAreaDistrictData.isWorking = true;
-                                notifyData.notifyUpazilaData.isWorking = true;
-                                switch(model.selectedDatum[0].datum.divisionNameFull){
-                                  case 'বরিশাল':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '10',title: model.selectedDatum[0].datum.divisionNameFull,)));
-                                    break;
-                                  case 'চট্টগ্রাম':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '20',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'ঢাকা':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '30',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'খুলনা':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '40',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'রাজশাহী':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '50',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'রংপুর':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '55',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'সিলেট':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '60',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  case 'ময়মনসিংহ':
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '80',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                    break;
-                                  default :
-                                    break;
-                                }
-                              },
-                            )
-                          ],
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      height: 260,
+                      width: notifyData.divisionListAndQty!.isNotEmpty?notifyData.divisionListAndQty!.length*75:600,
+                      child: charts.BarChart(
+                        seriesData,
+                        animate: true,
+                        barGroupingType: charts.BarGroupingType.grouped,
+                        animationDuration: Duration(microseconds: 1000),
+                            selectionModels: [
+                              charts.SelectionModelConfig(
+                                type: charts.SelectionModelType.info,
+                                changedListener: (charts.SelectionModel model){
+                                  notifyData.notifyAreaDistrictData.isWorking = true;
+                                  notifyData.notifyUpazilaData.isWorking = true;
+                                  switch(model.selectedDatum[0].datum.divisionNameFull){
+                                    case 'বরিশাল':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '10',title: model.selectedDatum[0].datum.divisionNameFull,)));
+                                      break;
+                                    case 'চট্টগ্রাম':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '20',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'ঢাকা':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '30',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'খুলনা':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '40',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'রাজশাহী':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '50',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'রংপুর':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '55',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'সিলেট':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '60',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    case 'ময়মনসিংহ':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '80',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                      break;
+                                    default :
+                                      break;
+                                  }
+                                },
+                              )
+                            ],
+                      ),
                     ),
                   ),
                 );
