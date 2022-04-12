@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Widget/custom_button_with_selectable.dart';
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/AdminDashboard/admin_user_navigation.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
@@ -9,6 +10,9 @@ import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/Model/UserProfileModel.dart';
+import 'package:tcb/BeneficeryDashboard/View/benefi_login_otp_send.dart';
+import 'package:tcb/BeneficeryDashboard/View/beneficery_dashboard.dart';
+import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   bool seePassword = false;
   bool isWorking = false;
 
+  int selectableUser = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +50,34 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text('Login',style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 20),),
                 ),
                 const SizedBox(height: 10,),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32,vertical: 12),
+                  child: Row(
+                    children: [
+                      CustomButtonWithSelectable(
+                        title: "এডমিন",
+                        isSelectable: selectableUser==0?true:false,
+                        onTab: (){
+                          setState(() {
+                            selectableUser = 0;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 12,),
+                      CustomButtonWithSelectable(
+                        title: "উপকারভোগী",
+                        isSelectable: selectableUser==1?true:false,
+                        onTab: (){
+                          setState(() {
+                            selectableUser = 1;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Column(
@@ -83,13 +117,13 @@ class _LoginPageState extends State<LoginPage> {
                                   textInputAction: TextInputAction.done,
                                   style: const TextStyle(
                                       height: 1.1, fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
-                                  decoration: const InputDecoration(
-                                      hintStyle: TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
-                                      hintText: 'User Name',
-                                      border: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                      hintStyle:const TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
+                                      hintText: selectableUser==0?'User Name':'NID number',
+                                      border:const OutlineInputBorder(
                                           borderSide: BorderSide.none
                                       ),
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 12)
+                                      contentPadding:const EdgeInsets.symmetric(horizontal: 12)
                                   ),
                                   controller: userNameController,
                                 ),
@@ -159,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                                         icon: const Icon(Icons.visibility_off_sharp),
                                       ),
                                       hintStyle: const TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
-                                      hintText: 'Password',
+                                      hintText: selectableUser==1?'Mobile number':'Password',
                                       border: const OutlineInputBorder(
                                           borderSide: BorderSide.none
                                       ),
@@ -188,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ):Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 32,vertical: 24),
                   child: Material(
                     borderRadius: BorderRadius.circular(5),
                     color: Colors.green,
@@ -205,6 +239,46 @@ class _LoginPageState extends State<LoginPage> {
                           'password' : passwordController.text,
                         };
 
+
+                        if(selectableUser==1){
+                          ApiController().loginResponse(endPoint: ApiEndPoints().login,body: body).then((value){
+                            print(value.responseCode);
+                            if(value.responseCode==200){
+                              try{
+                                UserProfileModel userData = userProfileModelFromJson(value.response.toString());
+                                Provider.of<LoginDataController>(context,listen: false).getUserData(userData);
+                                GetStorage().write('email', userNameController.text);
+                                GetStorage().write('password', passwordController.text);
+                                GetStorage().write('userType', userData.data!.userAreaType);
+                                GetStorage().write('userId', userData.data!.usersId);
+                                if(userData.data!.userAreaType=='B'){
+                                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BenefiLoginOtpSend(
+                                    userName: userNameController.text,
+                                    password: passwordController.text,
+                                    userId: userData.data!.usersId,
+                                  )), (Route<dynamic> route) => false);
+                                }
+                                setState(() {
+                                  isWorking = false;
+                                });
+                              }
+                              catch(e){
+                                ShowToast.myToast('Something is wrong', Colors.black, 2);
+                                setState(() {
+                                  isWorking = false;
+                                });
+                              }
+
+                            }else{
+                              ShowToast.myToast('Something is wrong', Colors.black, 2);
+                              setState(() {
+                                isWorking = false;
+                              });
+                            }
+                          });
+
+                        }else{
+
                         ApiController().loginResponse(endPoint: ApiEndPoints().login,body: body).then((value){
                           print(value.responseCode);
                           if(value.responseCode==200){
@@ -220,7 +294,8 @@ class _LoginPageState extends State<LoginPage> {
                               if(userData.token!=null){
                                 if(userData.data!.userAreaType=='DD'||userData.data!.userAreaType=='DE'){
                                   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
-                                }else{
+                                }
+                                else{
                                   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
                                 }
 
@@ -245,6 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           }
                         });
+                        }
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -282,7 +358,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Positioned(
-            bottom: 0.0,
+            bottom: 12.0,
             left: 0.0,
             right: 0.0,
             child: GestureDetector(

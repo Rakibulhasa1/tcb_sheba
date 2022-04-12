@@ -30,13 +30,13 @@ class DashboardData {
     this.totalReceiver,
   });
 
-  List<DivisionWiseQty>? divisionWiseQty;
+  List<AreaWiseData>? divisionWiseQty;
   List<PieChartInfo>? pieChartInfo;
   var totalBeneficiary;
   var totalReceiver;
 
   factory DashboardData.fromJson(Map<String, dynamic> json) => DashboardData(
-    divisionWiseQty: List<DivisionWiseQty>.from(json["division_wise_qty"].map((x) => DivisionWiseQty.fromJson(x))),
+    divisionWiseQty: List<AreaWiseData>.from(json["area_wise_pie_area"].map((x) => AreaWiseData.fromJson(x))),
     pieChartInfo: List<PieChartInfo>.from(json["pie_chart_info"].map((x) => PieChartInfo.fromJson(x))),
     totalBeneficiary: nullConverter(json["total_beneficiary"]),
     totalReceiver: nullConverter(json["total_receiver"]),
@@ -44,22 +44,26 @@ class DashboardData {
 
 }
 
-class DivisionWiseQty {
-  DivisionWiseQty({
-    this.divisionNameFull,
-    this.divisionName,
+class AreaWiseData {
+  AreaWiseData({
+    this.areaType,
+    this.areaId,
+    this.areaName,
     this.beneficiaryTotalQty,
     this.receiverTotalQty,
   });
 
+  var areaType;
+  var areaId;
   var divisionNameFull;
-  var divisionName;
+  var areaName;
   int? beneficiaryTotalQty;
   int? receiverTotalQty;
 
-  factory DivisionWiseQty.fromJson(Map<String, dynamic> json) => DivisionWiseQty(
-    divisionName: nullConverter(json["division_name"]),
-    divisionNameFull: nullConverter(json["division_name"]),
+  factory AreaWiseData.fromJson(Map<String, dynamic> json) => AreaWiseData(
+    areaType: nullConverter(json["area_type"]),
+    areaId: nullConverter(json["area_id"]),
+    areaName: nullConverter(json["area_name"]),
     beneficiaryTotalQty: json["beneficiary_total_qty"],
     receiverTotalQty: json["receiver_total_qty"],
   );

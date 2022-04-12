@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Model/area_data_query_model.dart';
 import 'package:tcb/AdminDashboard/Model/district_list_model.dart';
 import 'package:tcb/AdminDashboard/Model/union_list_model.dart';
 import 'package:tcb/AdminDashboard/Model/upazila_list_model.dart';
@@ -35,7 +36,8 @@ class UpazilaFilter extends StatefulWidget {
 
 class _UpazilaFilterState extends State<UpazilaFilter> {
 
-  List<UpazilaModel> myUpazila = [];
+  List<AreaModel> upazilaAreaList = [];
+  List<AreaModel> cityAreaList = [];
   int areaNumber = 0;
   int  generateRandomNumber() {
     return Random().nextInt(7);
@@ -43,10 +45,13 @@ class _UpazilaFilterState extends State<UpazilaFilter> {
 
   String keyAddress = 'উপজেলা';
 
+  String key = 'সিটি কর্পোরেশন';
+
   @override
   void initState() {
-    DataResponse().getUpazila(context : context,districtId: widget.districtId,addressType: 'U');
-    DataResponse().getUpazilaArea(context: context,districtId: widget.districtId,addressType: 'U');
+    DataResponse().getUpazilaArea(context: context,districtId: widget.districtId);
+    upazilaAreaList.clear();
+    cityAreaList.clear();
     super.initState();
   }
 
@@ -57,65 +62,90 @@ class _UpazilaFilterState extends State<UpazilaFilter> {
       appBar: AppBar(
         title: Text('${widget.name} জেলা'),
       ),
-      body: ListView(
-        children: [
+      body: Consumer<DashboardController>(
+        builder: (context,notifyChartData,child) {
+          if(notifyChartData.notifyAreaUpazilaData.isWorking!){
+            return const LoadingWidget();
+          }
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
-            child: Wrap(
-              direction: Axis.horizontal,
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                CustomButtonWithSelectable(
-                  title: 'উপজেলা',
-                  isSelectable: areaNumber==0?true:false,
-                  onTab: (){
-                    setState(() {
-                      areaNumber = 0;
-                      keyAddress  = 'উপজেলা';
-                    });
-                    DataResponse().getUpazila(context : context,districtId: widget.districtId,addressType: 'U');
-                    DataResponse().getUpazilaArea(context: context,districtId: widget.districtId,addressType: 'U');
-                  },
-                ),
-                CustomButtonWithSelectable(
-                  title: 'সিটি কর্পোরেশন',
-                  isSelectable: areaNumber==1?true:false,
-                  onTab: (){
+          if(notifyChartData.notifyAreaUpazilaData.responseError!){
+            return const ShowError(errorMessage: 'ডাটা খুঁজে পাওয়া যায়নি');
+          }
 
-                    setState(() {
-                      areaNumber = 1;
-                      keyAddress  = 'সিটি কর্পোরেশন';
-                    });
-                    DataResponse().getUpazila(context : context,districtId: widget.districtId,addressType: 'C');
-                    DataResponse().getCityCorpArea(context: context,districtId: widget.districtId,addressType: 'C');
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
-            child: Text('${widget.name } ${keyAddress}',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey[600]),),
-          ),
-          areaNumber==0?Consumer<DashboardController>(
-            builder: (context,notifyChartData,child) {
-              if(notifyChartData.notifyAreaUpazilaData.isWorking!||notifyChartData.notifyUpazilaData.isWorking!){
-                return const LoadingWidget();
+          if(!notifyChartData.notifyAreaUpazilaData.responseError!&&!notifyChartData.notifyAreaUpazilaData.isWorking!){
+            upazilaAreaList.clear();
+            cityAreaList.clear();
+            for(int i=0;i<notifyChartData.upazilaAreaList.length;i++){
+              if(notifyChartData.upazilaAreaList[i].areaName.contains(key)){
+                cityAreaList.add(notifyChartData.upazilaAreaList[i]);
+              }else{
+                upazilaAreaList.add(notifyChartData.upazilaAreaList[i]);
               }
+            }
+          }
 
-              if(notifyChartData.notifyAreaUpazilaData.responseError!||notifyChartData.notifyUpazilaData.responseError!){
-                return const ShowError(errorMessage: 'ডাটা খুঁজে পাওয়া যায়নি');
-              }
+          return ListView(
+            children: [
 
-              return Padding(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    CustomButtonWithSelectable(
+                      title: 'উপজেলা',
+                      isSelectable: areaNumber==0?true:false,
+                      onTab: (){
+                        setState(() {
+                          areaNumber = 0;
+                          keyAddress  = 'উপজেলা';
+                          upazilaAreaList.clear();
+                          cityAreaList.clear();
+                          for(int i=0;i<notifyChartData.upazilaAreaList.length;i++){
+                            if(notifyChartData.upazilaAreaList[i].areaName.contains(key)){
+                              cityAreaList.add(notifyChartData.upazilaAreaList[i]);
+                            }else{
+                              upazilaAreaList.add(notifyChartData.upazilaAreaList[i]);
+                            }
+                          }
+                        });
+                      },
+                    ),
+                    CustomButtonWithSelectable(
+                      title: 'সিটি কর্পোরেশন',
+                      isSelectable: areaNumber==1?true:false,
+                      onTab: (){
+                        setState(() {
+                          areaNumber = 1;
+                          keyAddress  = 'সিটি কর্পোরেশন';
+                          upazilaAreaList.clear();
+                          cityAreaList.clear();
+                          for(int i=0;i<notifyChartData.upazilaAreaList.length;i++){
+                            if(notifyChartData.upazilaAreaList[i].areaName.contains(key)){
+                              cityAreaList.add(notifyChartData.upazilaAreaList[i]);
+                            }else{
+                              upazilaAreaList.add(notifyChartData.upazilaAreaList[i]);
+                            }
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                child: Text('${widget.name } ${keyAddress}',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey[600]),),
+              ),
+              areaNumber==0?Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
                 child: GridView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: notifyChartData.upazilaAreaList.length,
+                  itemCount: upazilaAreaList.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 12,
@@ -130,13 +160,11 @@ class _UpazilaFilterState extends State<UpazilaFilter> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
                         onTap: (){
-                          if(notifyChartData.upazilaAreaList[position].areaName==notifyChartData.upaName[position].upazilaNameBangla){
-                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(
-                              upazilaId : notifyChartData.upaName[position].upazilaId,
-                              title: notifyChartData.upaName[position].upazilaNameBangla,
-                              name: 'ইউনিয়ন',
-                            )));
-                          }
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(
+                            upazilaId : upazilaAreaList[position].areaId,
+                            title: upazilaAreaList[position].areaName,
+                            name: 'ইউনিয়ন',
+                          )));
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -148,9 +176,9 @@ class _UpazilaFilterState extends State<UpazilaFilter> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(notifyChartData.upazilaAreaList[position].areaName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 12),textAlign: TextAlign.center,),
+                              Text(upazilaAreaList[position].areaName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 12),textAlign: TextAlign.center,),
                               const SizedBox(height: 12,),
-                              Text('${notifyChartData.upazilaAreaList[position].beneficiaryTotalQty}/${notifyChartData.upazilaAreaList[position].receiverTotalQty}',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 14),),
+                              Text('${upazilaAreaList[position].beneficiaryTotalQty}/${upazilaAreaList[position].receiverTotalQty}',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 14),),
                               const SizedBox(height: 12,),
                               Container(
                                 height: 5,
@@ -167,81 +195,68 @@ class _UpazilaFilterState extends State<UpazilaFilter> {
                     );
                   },
                 ),
-              );
-            }
-          ):Consumer<DashboardController>(
-              builder: (context,notifyChartData,child) {
-                if(notifyChartData.notifyAreaCityCorp.isWorking!||notifyChartData.notifyUpazilaData.isWorking!){
-                  return const LoadingWidget();
-                }
-
-                if(notifyChartData.notifyAreaCityCorp.responseError!||notifyChartData.notifyUpazilaData.responseError!){
-                  return const ShowError(errorMessage: 'দুঃখিত এই জেলায় কোন \nসিটি কর্পোরেশন খুঁজে পাওয়া যায়নি');
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
-                  child: GridView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: notifyChartData.cityCorpAreaList.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 2/2,
-                    ),
-                    itemBuilder: (context,position){
-                      Color randomSelected = HelperClass().randomColor[generateRandomNumber()];
-                      return Material(
-                        elevation: 5.0,
+              ):Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                child: GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: cityAreaList.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 2/2,
+                  ),
+                  itemBuilder: (context,position){
+                    Color randomSelected = HelperClass().randomColor[generateRandomNumber()];
+                    return Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          onTap: (){
-                            notifyChartData.notifyAreaUpazilaData.isWorking = true;
-                            notifyChartData.notifyUnionData.isWorking = true;
-                            if(notifyChartData.cityCorpAreaList[position].areaName==notifyChartData.upaName[position].upazilaNameBangla){
-                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>CityCorporationWord(
-                                upazilaId : notifyChartData.upaName[position].upazilaId,
-                                title: notifyChartData.upaName[position].upazilaNameBangla,
-                                name: 'ওয়ার্ড',
-                              )));
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: randomSelected.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(notifyChartData.cityCorpAreaList[position].areaName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 12),textAlign: TextAlign.center,),
-                                const SizedBox(height: 12,),
-                                Text('${notifyChartData.cityCorpAreaList[position].beneficiaryTotalQty}/${notifyChartData.cityCorpAreaList[position].receiverTotalQty}',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 14),),
-                                const SizedBox(height: 12,),
-                                Container(
-                                  height: 5,
-                                  width: 55,
-                                  decoration: BoxDecoration(
-                                    color: randomSelected,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
+                        onTap: (){
+                          String cityCorp = '${cityAreaList[position].areaName}';
+                          String machCityData = 'কর্পোরেশন';
+                          print('${cityCorp.contains(machCityData)} ${cityCorp}');
+                          if(cityCorp.contains(machCityData)){
+                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>CityCorporationWord(name: 'ওয়ার্ড', upazilaId: cityAreaList[position].areaId, title: cityAreaList[position].areaName,)));
+                          }else{
+                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(title: cityAreaList[position].areaName, upazilaId: cityAreaList[position].areaId,name: 'উপজেলা',)));
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: randomSelected.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(cityAreaList[position].areaName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 12),textAlign: TextAlign.center,),
+                              const SizedBox(height: 12,),
+                              Text('${cityAreaList[position].beneficiaryTotalQty}/${cityAreaList[position].receiverTotalQty}',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 14),),
+                              const SizedBox(height: 12,),
+                              Container(
+                                height: 5,
+                                width: 55,
+                                decoration: BoxDecoration(
+                                  color: randomSelected,
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-                );
-              }
-          ),
-        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }

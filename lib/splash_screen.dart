@@ -7,6 +7,10 @@ import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/BeneficeryDashboard/View/beneficery_dashboard.dart';
+import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
+import 'package:tcb/BeneficeryDashboard/View/create_beneficery_card.dart';
+import 'package:tcb/BeneficeryDashboard/View/receive_product.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 
@@ -23,37 +27,46 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 0)).then((value) {
       if(GetStorage().read('token')==null||GetStorage().read('token')==''){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+        Future.delayed(const Duration(seconds: 2)).then((value){
+          if(GetStorage().read('b_token')!=null){
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BeneficerySideNavigation()), (Route<dynamic> route) => false);
+          }else{
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+          }
+        });
       }else{
-        ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().dashboard).then((value){
-          if(value.responseCode==200){
-            var myData = json.decode(value.response.toString());
-            if(myData['status']=='success'){
-              if(GetStorage().read('userType')!=null){
-                if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'){
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
+        Future.delayed(const Duration(seconds: 2)).then((value){
+          ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().dashboard).then((value){
+            if(value.responseCode==200){
+              var myData = json.decode(value.response.toString());
+              if(myData['status']=='success'){
+                if(GetStorage().read('userType')!=null){
+                  if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'){
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
+                  }else if(GetStorage().read('userType')=='B'){
+
+                  }else{
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
+                  }
                 }else{
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
                 }
-              }else{
+              }else if(myData['status']=='Token is Expired'){
+                GetStorage().remove('token');
+                GetStorage().remove('userType');
                 Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
               }
-            }else if(myData['status']=='Token is Expired'){
+            }else{
               GetStorage().remove('token');
               GetStorage().remove('userType');
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+              ShowToast.myToast('Something is wrong', Colors.black, 2);
             }
-          }else{
-            GetStorage().remove('token');
-            GetStorage().remove('userType');
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-            ShowToast.myToast('Something is wrong', Colors.black, 2);
-          }
+          });
         });
       }
-    });
+
     super.initState();
   }
 

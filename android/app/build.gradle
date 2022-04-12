@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+    flutterVersionCode = '8'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0.0'
+    flutterVersionName = '3.3.4'
 }
 
 apply plugin: 'com.android.application'
@@ -51,12 +51,14 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.spectrum.tcbapp"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 31
-        versionCode 1
-        versionName '1.0.0'
+        versionCode 8
+        versionName '3.3.4'
+        multiDexEnabled true
     }
 
+    ///For debuging app
 //    buildTypes {
 //        release {
 //            // TODO: Add your own signing config for the release build.
@@ -64,6 +66,8 @@ android {
 //            signingConfig signingConfigs.debug
 //        }
 //    }
+
+    ///For release app
 
     signingConfigs {
         release {
@@ -73,6 +77,9 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
+
+
     buildTypes {
         release {
             signingConfig signingConfigs.release

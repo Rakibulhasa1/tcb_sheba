@@ -9,11 +9,9 @@ class ApiEndPoints{
   //final String baseUrl = 'http://185.209.228.191/api/';
   //final String imageBaseUrl = 'http://185.209.228.191/images/';
 
-
   final String baseUrl = 'http://upokari.com/api/';
   final String imageBaseUrl = 'http://upokari.com/images/';
 
-  //
   // final String baseUrl = 'https://tcbone.spectrum.com.bd/api/';
   // final String imageBaseUrl = 'https://tcbone.spectrum.com.bd/images/';
 
@@ -27,13 +25,17 @@ class ApiEndPoints{
 
   ///Admin Dashboard
 
-  final String pieChart = 'area-wise-pie-chart-data';
+  final String getAreaData = 'area-wise-pie-chart-data';
   final String divisionList = 'division-list';
   final String districtList = 'district-list';
   final String upazilaList = 'upazila-list';
   final String unionList = 'union-list';
   final String wordList = 'word-list';
   final String stepList = 'step-list';
+
+
+
+  final String saveNid = 'save_nid';
 
 }
 

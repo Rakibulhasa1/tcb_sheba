@@ -1,9 +1,15 @@
 
 // ignore_for_file: file_names
 
+import 'dart:convert';
+import 'dart:io';
+import 'package:get_storage/get_storage.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
+import 'package:tcb/BeneficeryDashboard/Model/user_update_data_model.dart';
 
 
 class ApiController{
@@ -12,6 +18,7 @@ class ApiController{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
     print(url);
+    print(body);
     try{
       return await http.post(Uri.parse(url),body: body).then((value){
         try{
@@ -123,38 +130,57 @@ class ApiController{
 
 
 
-//   static Future<ApiResponse<String>> updateUserData({required File image,required UserUpdateDataModel dataModel,required String endPoint}) async {
-// final String url = ApiEndPoints().baseUrl+endPoint;
-//     print(url);
-//     var stream = http.ByteStream(DelegatingStream.typed(image.openRead()));
-//     var length = await image.length();
-//     var uri = Uri.parse(url);
-//     var request = http.MultipartRequest("POST", uri);
-//
-//     var multipartFile = http.MultipartFile(
-//       'reciver_image', stream, length, filename: basename(image.path),
-//     );
-//     request.files.add(multipartFile);
-//
-//     request.fields.addAll({
-//       'application_id' : dataModel.appId!,
-//       'latitude' : dataModel.latitude!,
-//       'longitude' : dataModel.longitude!,
-//     });
-//
-//     var response = await request.send();
-//     print(response.statusCode);
-//
-//     response.stream.transform(utf8.decoder).listen((value) {
-//       print(value);
-//     });
-//
-//     if(response.statusCode==200){
-//       return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
-//     }else{
-//       return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
-//     }
-//   }
+  Future<ApiResponse<String>> updateUserNid({required UserUpdateDataModel dataModel,required String endPoint}) async {
+
+
+    final String url = ApiEndPoints().baseUrl+endPoint;
+    var uri = Uri.parse(url);
+    var request = http.MultipartRequest("POST", uri);
+    print(url);
+
+
+    var streamFontImage = http.ByteStream(DelegatingStream.typed(dataModel.fontNid.openRead()));
+    var lengthFont = await dataModel.fontNid.length();
+
+    var streamBackImage = http.ByteStream(DelegatingStream.typed(dataModel.backNid.openRead()));
+    var lengthBack = await dataModel.backNid.length();
+
+
+
+    var multipartFile1 = http.MultipartFile(
+      'font_image', streamFontImage, lengthFont, filename: basename(dataModel.fontNid.path),
+    );
+
+    var multipartFile2 = http.MultipartFile(
+      'back_image', streamBackImage, lengthBack, filename: basename(dataModel.backNid.path),
+    );
+
+
+    request.files.add(multipartFile1);
+    request.files.add(multipartFile2);
+
+    request.headers.addAll({
+      'Accept': 'application/json',
+      'Authorization': GetStorage().read('b_token'),
+    });
+
+    request.fields.addAll({
+      'user_id': GetStorage().read('user_id'),
+    });
+
+    var response = await request.send();
+    print(response.statusCode);
+
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+
+    if(response.statusCode==200){
+      return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
+    }else{
+      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
+    }
+  }
 
 
   dynamic responseDataPrepare({required http.Response value}){

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Controller/location_data_controller.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
+import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/splash_screen.dart';
 
 void main()async {
@@ -20,6 +22,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context)=>LoginDataController()),
         ChangeNotifierProvider(create: (context)=>DashboardController()),
+        ChangeNotifierProvider(create: (context)=>LocationDataController()),
+        ChangeNotifierProvider(create: (context)=>GetBeneficeryController()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

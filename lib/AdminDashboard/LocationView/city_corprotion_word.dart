@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
-import 'package:tcb/AdminDashboard/Widget/custom_button_with_selectable.dart';
-import 'package:tcb/AdminDashboard/LocationView/word_filter.dart';
 import 'package:tcb/AdminDashboard/view_beneficary_list_tab.dart';
 import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/HelperClass.dart';
@@ -32,8 +30,7 @@ class _CityCorporationWordState extends State<CityCorporationWord> {
 
   @override
   void initState() {
-    DataResponse().getUnion(context : context,upazilaId:  widget.upazilaId,addressType: 'C');
-    DataResponse().getUnionArea(context: context,upazilaId: widget.upazilaId,addressType: 'C');
+    DataResponse().getUnionArea(context: context,upazilaId: widget.upazilaId);
     super.initState();
   }
 
@@ -50,11 +47,11 @@ class _CityCorporationWordState extends State<CityCorporationWord> {
           Consumer<DashboardController>(
             builder: (context,notifyChartData,child) {
 
-              if(notifyChartData.notifyAreaUnionData.isWorking!||notifyChartData.notifyUnionData.isWorking!){
+              if(notifyChartData.notifyAreaUnionData.isWorking!){
                 return const LoadingWidget();
               }
 
-              if(notifyChartData.notifyAreaUnionData.responseError!||notifyChartData.notifyUnionData.responseError!){
+              if(notifyChartData.notifyAreaUnionData.responseError!){
                 return const ShowError(errorMessage: 'ডাটা খুঁজে পাওয়া যায়নি');
               }
 
@@ -79,11 +76,10 @@ class _CityCorporationWordState extends State<CityCorporationWord> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
                         onTap: (){
-                          if(notifyChartData.unionAreaList[position].areaName==notifyChartData.unionName[position].unionNameBangla){
-                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(
-                              wordId: notifyChartData.unionName[position].unionId,
-                            )));
-                          }
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(
+                            wordId: notifyChartData.unionAreaList[position].areaId,
+                            isCity: true,
+                          )));
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 12),

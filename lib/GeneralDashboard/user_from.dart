@@ -150,53 +150,60 @@ class _UserFromState extends State<UserFrom> {
                               children: [
                                 Expanded(
                                   flex: 30,
-                                  child: FadeInImage(
-                                    image: NetworkImage(ApiEndPoints().imageBaseUrl+userInformationModel!.member!.benificiaryInfo!.beneficiaryImageFile!,),
-                                    height: 120,
+                                  child: SizedBox(
+                                    height: 100,
                                     width: 100,
-                                    placeholder: const AssetImage("asstes/emptyProfile.jpg"),
-                                    imageErrorBuilder: (context, error, stackTrace) {
-                                      return Image.asset('asstes/emptyProfile.jpg', fit: BoxFit.cover);
-                                      },
-                                    fit: BoxFit.cover,
+                                    child: FadeInImage(
+                                      image: NetworkImage(ApiEndPoints().imageBaseUrl+userInformationModel!.member!.benificiaryInfo!.beneficiaryImageFile!,),
+                                      height: 100,
+                                      width: 100,
+                                      placeholder: const AssetImage("asstes/emptyProfile.jpg"),
+                                      imageErrorBuilder: (context, error, stackTrace) {
+                                        return Image.asset('asstes/emptyProfile.jpg', fit: BoxFit.cover);
+                                        },
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 12,),
                                 Expanded(
                                   flex: 70,
-                                  child: Column(
+                                  child: Table(
+                                    columnWidths: const {
+                                      0: FractionColumnWidth(.30),
+                                      1: FractionColumnWidth(.1),
+                                      2: FractionColumnWidth(.69)
+                                    },
                                     children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          const Text('নাম             :  ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                          Text(userInformationModel!.member!.benificiaryInfo!.beneficiaryNameBangla!,style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                        ],
+                                      TableRow(
+                                          children: [
+                                            const Text('নাম',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                                            const Text(':',style: TextStyle(fontSize: 14),),
+                                            Text(userInformationModel!.member!.benificiaryInfo!.beneficiaryNameBangla!,style: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                                          ]
                                       ),
-                                      const SizedBox(height: 7,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          const Text('মোবাইল      :  ',style: TextStyle(fontSize: 16),),
-                                          Text(userInformationModel!.member!.benificiaryInfo!.beneficiaryMobile!,style: const TextStyle(fontSize: 16),),
-                                        ],
+                                      TableRow(
+                                          children: [
+                                            const Text('মোবাইল',style: TextStyle(fontSize: 14),),
+                                            const Text(':',style: TextStyle(fontSize: 14),),
+                                            Text(userInformationModel!.member!.benificiaryInfo!.beneficiaryMobile!,style: const TextStyle(fontSize: 14),),
+                                          ]
                                       ),
-                                      const SizedBox(height: 7,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          const Text('পরিচয়পত্র   :  ',style: TextStyle(fontSize: 16),),
-                                          Text(userInformationModel!.member!.benificiaryInfo!.nidNumber.toString(),style: const TextStyle(fontSize: 16),),
-                                        ],
+                                      TableRow(
+                                          children: [
+                                            const Text('পরিচয়পত্র',style: TextStyle(fontSize: 14),),
+                                            const Text(':',style: TextStyle(fontSize: 14),),
+                                            Text(userInformationModel!.member!.benificiaryInfo!.nidNumber!,style: const TextStyle(fontSize: 14),),
+                                          ]
                                       ),
-                                      const SizedBox(height: 7,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          const Text('কার্ড নম্বর     :  ',style: TextStyle(fontSize: 16),),
-                                          Text(userInformationModel!.member!.benificiaryInfo!.familyCardNumber.toString(),style: const TextStyle(fontSize: 16),),
-                                        ],
+                                      TableRow(
+                                          children: [
+                                            const Text('কার্ড নম্বর',style: TextStyle(fontSize: 14),),
+                                            const Text(':',style: TextStyle(fontSize: 14),),
+                                            Text(userInformationModel!.member!.benificiaryInfo!.familyCardNumber!,style: const TextStyle(fontSize: 14),),
+                                          ]
                                       ),
+
                                     ],
                                   ),
                                 ),

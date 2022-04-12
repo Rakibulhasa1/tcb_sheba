@@ -4,8 +4,9 @@ import 'package:tcb/AdminDashboard/list_of_beneficiry_query.dart';
 import 'package:tcb/AdminDashboard/list_of_receive_beneficiry_query.dart';
 
 class ViewBeneficaryListTab extends StatefulWidget {
+  final bool isCity;
   final String wordId;
-  const ViewBeneficaryListTab({Key? key,required this.wordId}) : super(key: key);
+  const ViewBeneficaryListTab({Key? key,required this.wordId,required this.isCity}) : super(key: key);
 
   @override
   _ViewBeneficaryListTabState createState() => _ViewBeneficaryListTabState();
@@ -31,8 +32,8 @@ class _ViewBeneficaryListTabState extends State<ViewBeneficaryListTab> {
         ),
         body: TabBarView(
           children: [
-            ListOfBeneficiryQuery(wordId: widget.wordId),
-            ListOfReceiveBeneficiryQuery(wordId: widget.wordId),
+            ListOfBeneficiryQuery(wordId: widget.wordId,isCity: widget.isCity),
+            ListOfReceiveBeneficiryQuery(wordId: widget.wordId,isCity: widget.isCity),
           ],
         ),
       ),

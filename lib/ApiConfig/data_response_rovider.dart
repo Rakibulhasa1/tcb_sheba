@@ -10,32 +10,6 @@ class DataResponse{
     });
   }
 
-
-
-  void getDistrict({required BuildContext context,required String divId,String? uploadType}){
-    Future.delayed(Duration.zero).then((value){
-      Provider.of<DashboardController>(context,listen: false).getDistrict(divId,uploadType);
-    });
-  }
-
-  void getUpazila({required BuildContext context,required String districtId,required String addressType}){
-    Future.delayed(Duration.zero).then((value){
-      Provider.of<DashboardController>(context,listen: false).getUapzila(districtId: districtId, addressType: addressType);
-    });
-  }
-
-  void getUnion({required BuildContext context,required String upazilaId,String? addressType}){
-    Future.delayed(Duration.zero).then((value){
-      Provider.of<DashboardController>(context,listen: false).getUnion(upazilaId: upazilaId,addressType : addressType);
-    });
-  }
-
-  void getWord({required BuildContext context,required String unionId,String? addressType}){
-    Future.delayed(Duration.zero).then((value){
-      Provider.of<DashboardController>(context,listen: false).getWord(unionId: unionId,addressType: addressType);
-    });
-  }
-
   void getStepData({required BuildContext context}){
     Future.delayed(Duration.zero).then((value){
       Provider.of<DashboardController>(context,listen: false).getStepData();

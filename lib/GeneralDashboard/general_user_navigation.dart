@@ -109,18 +109,18 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
         backgroundColor: Colors.green,
         currentIndex: bottomNavigatonIndex,
         type: BottomNavigationBarType.fixed ,
-        items: [
+        items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              title: new Text('হোম'),
+              label: 'হোম',
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.segment),
-              title: new Text('রিপোর্টস'),
+              label: 'রিপোর্টস',
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              title: new Text('প্রোফাইল')
+              label: 'প্রোফাইল'
           )
         ],
         onTap: (index){

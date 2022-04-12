@@ -2,10 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
-import 'package:tcb/AdminDashboard/Model/division_data_query_model.dart';
+import 'package:tcb/AdminDashboard/LocationView/city_corprotion_word.dart';
+import 'package:tcb/AdminDashboard/LocationView/union_filter.dart';
+import 'package:tcb/AdminDashboard/LocationView/upazila_filter.dart';
+import 'package:tcb/AdminDashboard/LocationView/word_filter.dart';
 import 'package:tcb/AdminDashboard/Model/step_list_model.dart';
 import 'package:tcb/AdminDashboard/beneficary_list_view.dart';
 import 'package:tcb/AdminDashboard/LocationView/district_grid.dart';
+import 'package:tcb/AdminDashboard/view_beneficary_list_tab.dart';
 import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
 
@@ -27,11 +31,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
   TextEditingController searchController = TextEditingController();
   bool isReceivePieChart = true;
 
-  List<DivisionWiseQty> testDivisionData = [
+  List<AreaWiseData> testDivisionData = [
 
-    DivisionWiseQty(divisionName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
-    DivisionWiseQty(divisionName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
-    DivisionWiseQty(divisionName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
   ];
 
 
@@ -406,28 +410,28 @@ class _AdminDashboardState extends State<AdminDashboard> {
             child: Consumer<DashboardController>(
               builder: (context,notifyData,child) {
 
-                List<charts.Series<DivisionWiseQty, String>> seriesData = [];
+                List<charts.Series<AreaWiseData, String>> seriesData = [];
 
                 seriesData.add(
                   charts.Series(
-                    domainFn: (DivisionWiseQty pollution, _) => pollution.divisionName,
-                    measureFn: (DivisionWiseQty pollution, _) => pollution.beneficiaryTotalQty,
+                    domainFn: (AreaWiseData pollution, _) => pollution.areaName,
+                    measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                     id: 'beneficiaryList',
                     data: testDivisionData,
                     fillPatternFn: (_, __) => charts.FillPatternType.solid,
-                    fillColorFn: (DivisionWiseQty pollution, _) =>
+                    fillColorFn: (AreaWiseData pollution, _) =>
                         charts.ColorUtil.fromDartColor(primaryPerpleColor),
                   ),
                 );
 
                 seriesData.add(
                   charts.Series(
-                    domainFn: (DivisionWiseQty pollution, _) => pollution.divisionName,
-                    measureFn: (DivisionWiseQty pollution, _) => pollution.beneficiaryTotalQty,
+                    domainFn: (AreaWiseData pollution, _) => pollution.areaName,
+                    measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                     id: 'beneficiaryReceiveList',
                     data: testDivisionData,
                     fillPatternFn: (_, __) => charts.FillPatternType.solid,
-                    fillColorFn: (DivisionWiseQty pollution, _) =>
+                    fillColorFn: (AreaWiseData pollution, _) =>
                         charts.ColorUtil.fromDartColor(primaryColorGreenLite),
                   ),
                 );
@@ -441,24 +445,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                   seriesData.add(
                     charts.Series(
-                      domainFn: (DivisionWiseQty pollution, _) => pollution.divisionName,
-                      measureFn: (DivisionWiseQty pollution, _) => pollution.beneficiaryTotalQty,
+                      domainFn: (AreaWiseData pollution, _) => pollution.areaName,
+                      measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                       id: 'beneficiaryList',
                       data: beneficiaryList!,
                       fillPatternFn: (_, __) => charts.FillPatternType.solid,
-                      fillColorFn: (DivisionWiseQty pollution, _) =>
+                      fillColorFn: (AreaWiseData pollution, _) =>
                           charts.ColorUtil.fromDartColor(primaryPerpleColor),
                     ),
                   );
 
                   seriesData.add(
                     charts.Series(
-                      domainFn: (DivisionWiseQty pollution, _) => pollution.divisionName,
-                      measureFn: (DivisionWiseQty pollution, _) => pollution.receiverTotalQty,
+                      domainFn: (AreaWiseData pollution, _) => pollution.areaName,
+                      measureFn: (AreaWiseData pollution, _) => pollution.receiverTotalQty,
                       id: 'beneficiaryReceiveList',
                       data: beneficiaryReceiveList!,
                       fillPatternFn: (_, __) => charts.FillPatternType.solid,
-                      fillColorFn: (DivisionWiseQty pollution, _) =>
+                      fillColorFn: (AreaWiseData pollution, _) =>
                           charts.ColorUtil.fromDartColor(primaryColorGreenLite),
                     ),
                   );
@@ -475,43 +479,42 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         seriesData,
                         animate: true,
                         barGroupingType: charts.BarGroupingType.grouped,
-                        animationDuration: Duration(microseconds: 1000),
+                        animationDuration: const Duration(microseconds: 1000),
                             selectionModels: [
                               charts.SelectionModelConfig(
                                 type: charts.SelectionModelType.info,
                                 changedListener: (charts.SelectionModel model){
-                                  notifyData.notifyAreaDistrictData.isWorking = true;
-                                  notifyData.notifyUpazilaData.isWorking = true;
-                                  switch(model.selectedDatum[0].datum.divisionNameFull){
-                                    case 'বরিশাল':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '10',title: model.selectedDatum[0].datum.divisionNameFull,)));
+                                  switch(model.selectedDatum[0].datum.areaType){
+                                    case 'D':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(title: model.selectedDatum[0].datum.areaName, divisionId: model.selectedDatum[0].datum.areaId)));
                                       break;
-                                    case 'চট্টগ্রাম':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '20',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                    case 'DI':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UpazilaFilter(name: model.selectedDatum[0].datum.areaName, districtId: model.selectedDatum[0].datum.areaId)));
                                       break;
-                                    case 'ঢাকা':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '30',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                    case 'U':
+                                      String cityCorp = '${model.selectedDatum[0].datum.areaName}';
+                                      String machCityData = 'সিটি কর্পোরেশন';
+                                      if(cityCorp.contains(machCityData)){
+                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>CityCorporationWord(name: 'ওয়ার্ড', upazilaId: model.selectedDatum[0].datum.areaId, title: model.selectedDatum[0].datum.areaName,)));
+                                      }else{
+                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(title: model.selectedDatum[0].datum.areaName, upazilaId: model.selectedDatum[0].datum.areaId,name: model.selectedDatum[0].datum.areaName,)));
+                                      }
                                       break;
-                                    case 'খুলনা':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '40',title: model.selectedDatum[0].datum.divisionNameFull)));
+                                    case 'UI':
+                                      String cityCorp = '${model.selectedDatum[0].datum.areaName}';
+                                      String machWordData = 'ওয়ার্ড';
+                                      if(cityCorp.contains(machWordData)){
+                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: true,)));
+                                      }else{
+                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>WordFilter(unionId: model.selectedDatum[0].datum.areaId,title: model.selectedDatum[0].datum.areaName,)));
+                                      }
                                       break;
-                                    case 'রাজশাহী':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '50',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                      break;
-                                    case 'রংপুর':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '55',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                      break;
-                                    case 'সিলেট':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '60',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                      break;
-                                    case 'ময়মনসিংহ':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(divisionId: '80',title: model.selectedDatum[0].datum.divisionNameFull)));
-                                      break;
-                                    default :
+                                    case 'W':
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: false,)));
                                       break;
                                   }
                                 },
-                              )
+                              ),
                             ],
                       ),
                     ),

@@ -36,7 +36,6 @@ class _DistrictGridState extends State<DistrictGrid> {
 
     @override
   void initState() {
-    DataResponse().getDistrict(context: context,divId: widget.divisionId);
     DataResponse().getDistrictArea(context: context,divisionId: widget.divisionId);
     super.initState();
   }
@@ -54,11 +53,11 @@ class _DistrictGridState extends State<DistrictGrid> {
           Consumer<DashboardController>(
               builder: (context,notifyChartData,child) {
 
-                if(notifyChartData.notifyAreaDistrictData.isWorking!||notifyChartData.notifyDistrictData.isWorking!){
+                if(notifyChartData.notifyAreaDistrictData.isWorking!){
                   return const LoadingWidget();
                 }
 
-                if(notifyChartData.notifyAreaDistrictData.responseError!||notifyChartData.notifyDistrictData.responseError!){
+                if(notifyChartData.notifyAreaDistrictData.responseError!){
                   return const ShowError(errorMessage: 'ডাটা খুঁজে পাওয়া যায়নি');
                 }
 
@@ -84,9 +83,7 @@ class _DistrictGridState extends State<DistrictGrid> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(10),
                           onTap: (){
-                            if(notifyChartData.districtAreaList[position].areaName==notifyChartData.disName[position].districtNameBangla){
-                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>UpazilaFilter(districtId: notifyChartData.disName[position].districtId, name: notifyChartData.disName[position].districtNameBangla)));
-                            }
+                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UpazilaFilter(districtId: notifyChartData.districtAreaList[position].areaId, name: notifyChartData.districtAreaList[position].areaName)));
                           },
                           child: Container(
                             alignment: Alignment.center,

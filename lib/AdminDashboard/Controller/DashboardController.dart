@@ -30,22 +30,10 @@ class DashboardController extends ChangeNotifier{
 
 
 
-  List<DistrictName> disName=[];
-  List<UpazilaModel> upaName = [];
-  List<UnionModel> unionName = [];
-  List<WordModel> wordName = [];
-
-
-  List<DivisionWiseQty>? divisionListAndQty = [];
+  List<AreaWiseData>? divisionListAndQty = [];
   List<PieChartInfo> pieChartDataList = [];
-
-
   ApiResponse notifyDashboardData = ApiResponse(isWorking: true,);
 
-  ApiResponse notifyDistrictData = ApiResponse(isWorking: true,);
-  ApiResponse notifyUpazilaData = ApiResponse(isWorking: true,);
-  ApiResponse notifyUnionData = ApiResponse(isWorking: true,);
-  ApiResponse notifyWordData = ApiResponse(isWorking: true,);
 
 
   ApiResponse notifyAreaDistrictData = ApiResponse(isWorking: true,);
@@ -128,7 +116,7 @@ class DashboardController extends ChangeNotifier{
         "division_id" : divisionId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -163,10 +151,9 @@ class DashboardController extends ChangeNotifier{
 
     var body = {
       "district_id" : districtId,
-      "address_type" : addressType,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -199,10 +186,9 @@ class DashboardController extends ChangeNotifier{
   void getUpazilaArea({String? addressType,String? districtId}){
     var body = {
       "district_id" : districtId,
-      "address_type" : addressType,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -235,10 +221,9 @@ class DashboardController extends ChangeNotifier{
   void getPowrosobaArea({String? addressType,String? upazilaId}){
     var body = {
       "upazila_id" : upazilaId,
-      "address_type" : addressType,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -268,16 +253,12 @@ class DashboardController extends ChangeNotifier{
     });
   }
 
-
   void getUnionArea({String? addressType,String? upazilaId}){
     var body = {
       "upazila_id" : upazilaId,
-      "address_type" : addressType,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
-
-      print(value.response);
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       if(value.responseCode==200){
         try{
@@ -287,6 +268,7 @@ class DashboardController extends ChangeNotifier{
             isWorking: false,
             responseError: false,
           );
+          print(unionAreaList.length);
         }
         catch(e){
           notifyAreaUnionData = ApiResponse(
@@ -308,9 +290,8 @@ class DashboardController extends ChangeNotifier{
   void getWordArea({String? addressType,String? unionId}){
     var body = {
       "union_id" : unionId,
-      "address_type" : addressType,
     };
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().pieChart,body: body).then((value) {
+    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -341,146 +322,5 @@ class DashboardController extends ChangeNotifier{
 
   }
 
-
-  /// ....................................
-
-  void getDistrict(String divId,String? uploadType){
-    var body = {
-      "division_id" : divId,
-      if(uploadType!=null)
-        "address_type" : uploadType,
-    };
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().districtList,body: body).then((value) {
-
-      if(value.responseCode==200){
-        DistrictListModel districtListModel = districtListModelFromJson(value.response.toString());
-        disName = districtListModel.data!;
-        notifyDistrictData = ApiResponse(
-          isWorking: false,
-          responseError: false,
-        );
-        try{
-          DistrictListModel districtListModel = districtListModelFromJson(value.response.toString());
-          disName = districtListModel.data!;
-          notifyDistrictData = ApiResponse(
-            isWorking: false,
-            responseError: false,
-          );
-        }
-        catch(e){
-          notifyDistrictData = ApiResponse(
-            isWorking: false,
-            responseError: true,
-          );
-        }
-        notifyListeners();
-      }else{
-        notifyDistrictData = ApiResponse(
-          isWorking: false,
-          responseError: true,
-        );
-        notifyListeners();
-      }
-    });
-  }
-
-  void getUapzila({required String districtId,required String addressType}){
-    var body = {
-      'district_id' : districtId,
-      'address_type' :  addressType,
-    };
-    ApiController().postRequest(body: body,token: GetStorage().read('token'), endPoint: ApiEndPoints().upazilaList,).then((value) {
-      if(value.responseCode==200){
-        try{
-          UpazilaListModel upazila = upazilaListModelFromJson(value.response.toString());
-          upaName = upazila.data!;
-          notifyUpazilaData = ApiResponse(
-            isWorking: false,
-            responseError: false,
-          );
-        }
-        catch(e){
-          notifyUpazilaData = ApiResponse(
-            isWorking: false,
-            responseError: true,
-          );
-        }
-        notifyListeners();
-      }else{
-        notifyUpazilaData = ApiResponse(
-          isWorking: false,
-          responseError: true,
-        );
-        notifyListeners();
-      }
-    });
-  }
-
-  void getUnion({required String upazilaId,String? addressType}){
-
-    var body = {
-      'upazila_id' : upazilaId,
-      if(addressType!=null)
-        'address_type' : addressType,
-    };
-    ApiController().postRequest(body: body,token: GetStorage().read('token'), endPoint: ApiEndPoints().unionList,).then((value) {
-      if(value.responseCode==200){
-        try{
-          UnionListModel myUnion = unionListModelFromJson(value.response.toString());
-          unionName = myUnion.union!;
-          notifyUnionData = ApiResponse(
-            isWorking: false,
-            responseError: false,
-          );
-        }
-        catch(e){
-          notifyUnionData = ApiResponse(
-            isWorking: false,
-            responseError: true,
-          );
-        }
-        notifyListeners();
-      }else{
-        notifyUnionData = ApiResponse(
-          isWorking: false,
-          responseError: true,
-        );
-        notifyListeners();
-      }
-    });
-  }
-
-  void getWord({required String unionId,String? addressType}){
-    var body = {
-      'union_id' : unionId,
-      if(addressType!=null)
-        'address_type' : addressType,
-    };
-    ApiController().postRequest(body: body,token: GetStorage().read('token'), endPoint: ApiEndPoints().wordList,).then((value) {
-      if(value.responseCode==200){
-        try{
-          WordListModel myWord = wordListModelFromJson(value.response.toString());
-          wordName = myWord.data!;
-          notifyWordData = ApiResponse(
-            isWorking: false,
-            responseError: false,
-          );
-        }
-        catch(e){
-          notifyWordData = ApiResponse(
-            isWorking: false,
-            responseError: true,
-          );
-        }
-        notifyListeners();
-      }else{
-        notifyWordData = ApiResponse(
-          isWorking: false,
-          responseError: true,
-        );
-        notifyListeners();
-      }
-    });
-  }
 
 }

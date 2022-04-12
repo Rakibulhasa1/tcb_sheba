@@ -58,6 +58,7 @@ class BenificiaryInfo {
     this.upazilaNameBangla,
     this.districtNameBangla,
     this.divisionName,
+    this.beneficiaryOccupationName,
   });
 
   var beneficiaryId;
@@ -76,6 +77,7 @@ class BenificiaryInfo {
   var upazilaNameBangla;
   var districtNameBangla;
   var divisionName;
+  var beneficiaryOccupationName;
 
   factory BenificiaryInfo.fromJson(Map<String, dynamic> json) => BenificiaryInfo(
     beneficiaryId: nullConverter(json["beneficiary_id"]),
@@ -94,5 +96,6 @@ class BenificiaryInfo {
     upazilaNameBangla: nullConverter(json["upazila_name_bangla"]),
     districtNameBangla: nullConverter(json["district_name_bangla"]),
     divisionName: nullConverter(json["division_name"]),
+    beneficiaryOccupationName: nullConverter(json["beneficiary_occupation_name"]),
   );
 }

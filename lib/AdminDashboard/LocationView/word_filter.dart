@@ -30,7 +30,6 @@ class _WordFilterState extends State<WordFilter> {
   int areaNumber = 0;
 @override
   void initState() {
-  DataResponse().getWord(context : context,unionId:  widget.unionId,addressType: 'U');
   DataResponse().getWordArea(context: context,unionId: widget.unionId,addressType: 'U');
   super.initState();
   }
@@ -48,11 +47,11 @@ class _WordFilterState extends State<WordFilter> {
           Consumer<DashboardController>(
               builder: (context,notifyChartData,child) {
 
-                if(notifyChartData.notifyAreaWordData.isWorking!||notifyChartData.notifyWordData.isWorking!){
+                if(notifyChartData.notifyAreaWordData.isWorking!){
                   return const LoadingWidget();
                 }
 
-                if(notifyChartData.notifyAreaWordData.responseError!||notifyChartData.notifyWordData.responseError!){
+                if(notifyChartData.notifyAreaWordData.responseError!){
                   return const ShowError(errorMessage: 'ডাটা খুঁজে পাওয়া যায়নি');
                 }
 
@@ -73,7 +72,7 @@ class _WordFilterState extends State<WordFilter> {
 
                       return InkWell(
                         onTap: (){
-                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: notifyChartData.wordName[position].wordId,)));
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: notifyChartData.wordAreaList[position].areaId,isCity: false,)));
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12),

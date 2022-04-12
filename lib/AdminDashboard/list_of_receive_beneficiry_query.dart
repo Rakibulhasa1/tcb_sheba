@@ -10,7 +10,8 @@ import 'package:tcb/show_error.dart';
 
 class ListOfReceiveBeneficiryQuery extends StatefulWidget {
   final String wordId;
-  const ListOfReceiveBeneficiryQuery({Key? key,required this.wordId}) : super(key: key);
+  final bool isCity;
+  const ListOfReceiveBeneficiryQuery({Key? key,required this.wordId,required this.isCity}) : super(key: key);
 
   @override
   _ListOfReceiveBeneficiryQueryState createState() => _ListOfReceiveBeneficiryQueryState();
@@ -48,7 +49,10 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
 
   void getData(){
     var body = {
-      'word_id' : widget.wordId,
+      if(!widget.isCity)
+        'word_id' : widget.wordId,
+      if(widget.isCity)
+        'union_id' : widget.wordId,
     };
     ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo',body: body,token: GetStorage().read('token')).then((value){
 
