@@ -25,6 +25,10 @@ class _BeneficeryDashboardState extends State<BeneficeryDashboard> {
     ViewNidCard(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+  }
 
 
   @override

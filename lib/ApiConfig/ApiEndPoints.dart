@@ -36,6 +36,7 @@ class ApiEndPoints{
 
 
   final String saveNid = 'save_nid';
+  final String profileUpdate = 'profile-update';
 
 }
 

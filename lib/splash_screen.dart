@@ -3,14 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
-import 'package:tcb/BeneficeryDashboard/View/beneficery_dashboard.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
-import 'package:tcb/BeneficeryDashboard/View/create_beneficery_card.dart';
-import 'package:tcb/BeneficeryDashboard/View/receive_product.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 
@@ -31,6 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
         Future.delayed(const Duration(seconds: 2)).then((value){
           if(GetStorage().read('b_token')!=null){
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BeneficerySideNavigation()), (Route<dynamic> route) => false);
+            // if(GetStorage().read('isHasImage')!=null){
+            // }else{
+            //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+            // }
           }else{
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
           }

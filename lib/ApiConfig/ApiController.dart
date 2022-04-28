@@ -139,25 +139,15 @@ class ApiController{
     print(url);
 
 
-    var streamFontImage = http.ByteStream(DelegatingStream.typed(dataModel.fontNid.openRead()));
-    var lengthFont = await dataModel.fontNid.length();
-
-    var streamBackImage = http.ByteStream(DelegatingStream.typed(dataModel.backNid.openRead()));
-    var lengthBack = await dataModel.backNid.length();
+    var streamBackImage = http.ByteStream(DelegatingStream.typed(dataModel.fontNid.openRead()));
+    var lengthBack = await dataModel.fontNid.length();
 
 
-
-    var multipartFile1 = http.MultipartFile(
-      'font_image', streamFontImage, lengthFont, filename: basename(dataModel.fontNid.path),
+    var multipartFile = http.MultipartFile(
+      'beneficiary_image_file', streamBackImage, lengthBack, filename: basename(dataModel.fontNid.path),
     );
 
-    var multipartFile2 = http.MultipartFile(
-      'back_image', streamBackImage, lengthBack, filename: basename(dataModel.backNid.path),
-    );
-
-
-    request.files.add(multipartFile1);
-    request.files.add(multipartFile2);
+    request.files.add(multipartFile);
 
     request.headers.addAll({
       'Accept': 'application/json',
@@ -165,7 +155,7 @@ class ApiController{
     });
 
     request.fields.addAll({
-      'user_id': GetStorage().read('user_id'),
+      'beneficiary_id': dataModel.beneficeryId,
     });
 
     var response = await request.send();

@@ -14,7 +14,11 @@ import 'package:tcb/BeneficeryDashboard/View/user_inbox.dart';
 import 'package:tcb/BeneficeryDashboard/View/view_qr_and_profile.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/see_qr_data.dart';
 import 'package:tcb/app_theme.dart';
+import 'package:tcb/select_profile_image.dart';
 import 'package:tcb/show_toast.dart';
+
+
+import 'package:http/http.dart'as http;
 
 class BeneficerySideNavigation extends StatefulWidget {
   const BeneficerySideNavigation({Key? key}) : super(key: key);
@@ -28,6 +32,8 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
 
   int selectedId=0;
   int currentTab = 0;
+  bool isHasImage = false;
+
 
   List<Widget> myBottomNavigation = [
     BeneficeryDashboard(),
@@ -59,6 +65,23 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
           ShowToast.myToast('QR Code has No data', Colors.black, 2);
         }
       }
+    }
+  }
+
+  Future<int> validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(ApiEndPoints().imageBaseUrl+imageUrl));
+      print(res.statusCode);
+    } catch (e) {
+      print('500');
+      return 500;
+    }
+
+    if(res.statusCode==200){
+      return 200;
+    }else{
+      return res.statusCode;
     }
   }
 
@@ -106,7 +129,46 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
               ),
             ],
           ),
-          body: myBottomNavigation[currentTab],
+          body:Consumer<GetBeneficeryController>(
+            builder: (context,data,child) {
+              if(data.getUserDataResponse.isWorking!){
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if(data.getUserDataResponse.responseError!){
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 180),
+                      Text('Something is wrong',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold)),
+                      MaterialButton(
+                        color: Colors.deepOrangeAccent,
+                        onPressed: (){
+                          GetStorage().remove('b_token');
+                          GetStorage().remove('userType');
+                          GetStorage().remove('user_id');
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+                        },
+                        child: Text('Go Back'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if(!data.getUserDataResponse.isWorking!&&!data.getUserDataResponse.responseError!){
+                Future.delayed(Duration.zero).then((value){
+                  validateImage(data.myUserInfo!.beneficiaryImageFile).then((value){
+                    if(value==404){
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SelectProfileImage()), (Route<dynamic> route) => false);
+                    }
+                  });
+                });
+              }
+              return myBottomNavigation[currentTab];
+            },
+          ),
           drawer: Drawer(
             child: SafeArea(
               child: Column(

@@ -11,7 +11,10 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
+import 'package:tcb/HelperClass.dart';
+import 'package:tcb/select_profile_image.dart';
 import 'package:tcb/show_toast.dart';
+import 'package:http/http.dart'as http;
 
 import '../../AdminDashboard/Widget/custom_button_with_paid_unpaid.dart';
 
@@ -28,12 +31,47 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
   Uint8List? image;
   ScreenshotController screenshotController = ScreenshotController();
 
+  String sebarQuantity = '';
+
+  int qntIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('')),
+      appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: (){
+              Navigator.push(context, CupertinoPageRoute(builder: (context)=>SelectProfileImage()));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Text('আপনার ছবি পরিবর্তন করুন'),
+                  SizedBox(width: 12),
+                  Icon(Icons.camera_alt,size: 16),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
       body: Consumer<GetBeneficeryController>(
         builder: (context,data,child) {
+
+          if(data.usersData!.member!.receivingStatus=='Yes'){
+            try{
+
+              for(qntIndex;qntIndex < data.informationForReceiver!.member!.packageDetailsInfo!.length;qntIndex++){
+                sebarQuantity = sebarQuantity + data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productName! +" "+ data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productIsActive!.toString() +" "+ data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
+              }
+
+            }catch(e){
+              sebarQuantity = '';
+            }
+          }
+
           return ListView(
             children: [
 
@@ -90,6 +128,8 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                             width: 70,
                                             placeholder: const AssetImage("asstes/emptyProfile.jpg"),
                                             imageErrorBuilder: (context, error, stackTrace) {
+
+                                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SelectProfileImage()), (Route<dynamic> route) => false);
                                               return Image.asset('asstes/emptyProfile.jpg', fit: BoxFit.cover);
                                             },
                                             fit: BoxFit.cover,
@@ -221,7 +261,7 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                         });
                       },
                       child: Row(
-                        children: [
+                        children: const [
                           Text('Download Card',style: TextStyle(color: Colors.white,fontSize: 12),),
                           SizedBox(width: 8,),
                           Icon(Icons.download_rounded,size: 20,color: Colors.white,),
@@ -246,7 +286,7 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                         });
                       },
                       child: Row(
-                        children: [
+                        children: const [
                           Text('Share Card',style: TextStyle(color: Colors.white,fontSize: 12),),
                           SizedBox(width: 8,),
                           Icon(Icons.share,size: 20,color: Colors.white,),
@@ -256,60 +296,70 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                   ],
                 ),
               ),
-              SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 24),
-                child: Text('মোট ১ বার টিসিবি পণ্য গ্রহণ করেছেন'),
-              ),
-              Container(
-                height: 150,
-                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
+              Builder(
+                builder: (context) {
+
+                  if(data.usersData!.member!.receivingStatus=='No'){
+                    return Container();
+                  }
+
+                  if(data.usersData!.member!.receivingStatus=='Yes'){
+
+                    return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        SizedBox(height: 8),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24,vertical: 24),
+                          child: Text('টিসিবি পণ্য গ্রহণের বিবরণ'),
+                        ),
+                        Container(
+                          height: 150,
+                          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
+                          width: MediaQuery.of(context).size.width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text('ধাপ-১',style: TextStyle(fontSize: 16),),
-                              Text('টিসিবি প্যাকেজ-ক',style: TextStyle(fontSize: 16),),
-                              Text('২ কেজি চিনি, ২ কেজি সয়াবিন তেল, ২ কেজি মশুর ডাল',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                              Text('মেসার্স লাকি এন্টারপ্রাইস',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                              Text('সেবা প্রদানের তারিখ 2022-03-13',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(data.informationForReceiver!.member!.assignInfo!.packageName!,style: TextStyle(fontSize: 16),),
+                                        Text(sebarQuantity,style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                        Text(data.informationForReceiver!.member!.assignInfo!.dealerName!,style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                        Text('সেবা প্রদানের তারিখ ${HelperClass.convertAsMonthDayYear(data.informationForReceiver!.member!.beneficiaryReceiveInfo!.receivedDate.toString())}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 11,),
+                              Wrap(
+                                runSpacing: 12,
+                                spacing: 12,
+                                children: [
+                                  CustomButtonWithPaidUnPaid(
+                                    title: data.informationForReceiver!.member!.assignInfo!.stepName.toString(),
+                                    isSelectable: true,
+                                    onTab: (){
+
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(height: 11,),
-                    Wrap(
-                      runSpacing: 12,
-                      spacing: 12,
-                      children: [
-                        CustomButtonWithPaidUnPaid(
-                          title: 'ধাপ - 1',
-                          isSelectable: true,
-                          onTab: (){
-
-                          },
-                        ),
-                        CustomButtonWithPaidUnPaid(
-                          title: 'ধাপ - 2',
-                          isSelectable: false,
-                          onTab: (){
-
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                    );
+                  }
+                  return Container();
+                }
               ),
             ],
           );

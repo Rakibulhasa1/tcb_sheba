@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
@@ -11,8 +10,9 @@ import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart'
 import 'package:tcb/BeneficeryDashboard/View/view_full_card_and_deliver_list.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/google_map_view.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/view_map_in_full_screen.dart';
-import 'package:tcb/QrScan/UserInformationModel.dart';
-import 'package:tcb/show_error.dart';
+import 'package:tcb/select_profile_image.dart';
+
+import 'package:http/http.dart'as http;
 
 class TCBCardWithGoogleMap extends StatefulWidget {
   const TCBCardWithGoogleMap({Key? key}) : super(key: key);
@@ -24,13 +24,17 @@ class TCBCardWithGoogleMap extends StatefulWidget {
 class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
 
 
-
+  bool isError = false;
 
   @override
   void initState() {
+    if(isError){
 
+    }
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +66,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
             ),
           );
         }
+
         return Column(
           children: [
             Padding(

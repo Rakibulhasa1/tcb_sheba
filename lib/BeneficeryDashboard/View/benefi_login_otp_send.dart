@@ -8,6 +8,7 @@ import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
+import 'package:tcb/select_profile_image.dart';
 import 'package:tcb/show_toast.dart';
 
 class BenefiLoginOtpSend extends StatefulWidget {
@@ -92,10 +93,17 @@ class _BenefiLoginOtpSendState extends State<BenefiLoginOtpSend> {
                             isWorking: false,
                             responseError: false,
                           );
-                          //print('Bearer ${myResponse['token']}');
                           GetStorage().write('b_token', 'Bearer ${myResponse['token']}');
+                          GetStorage().write('beneficiaryId', '${myResponse['message']['beneficiary_id']}');
                           GetStorage().write('user_nid', widget.userName);
+
                           Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (context)=>BeneficerySideNavigation()),((Route<dynamic> route) => false));
+
+                          // if(myResponse['message']['user_image']!=null){
+                          // }else{
+                          //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>SelectProfileImage()));
+                          // }
+
                         });
                       }else{
                         setState(() {

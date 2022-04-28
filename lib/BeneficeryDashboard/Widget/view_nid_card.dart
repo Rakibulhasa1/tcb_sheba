@@ -190,14 +190,14 @@ class _ViewNidCardState extends State<ViewNidCard> {
           fontPartImage!=null&&backPartImage!=null ?MaterialButton(
             color: Colors.blue,
             onPressed: (){
-              UserUpdateDataModel userData = UserUpdateDataModel(fontNid: fontPartImage!, backNid: backPartImage!, userId: GetStorage().read('user_id'));
-              ApiController().updateUserNid(dataModel: userData, endPoint: ApiEndPoints().saveNid).then((value){
-                if(!value.responseError!){
-                  ShowToast.myToast('Upload Successfully', Colors.black, 2);
-                }else{
-                  ShowToast.myToast('Something is wrong', Colors.black, 2);
-                }
-              });
+              // UserUpdateDataModel userData = UserUpdateDataModel(fontNid: fontPartImage!, backNid: backPartImage!, userId: GetStorage().read('user_id'));
+              // ApiController().updateUserNid(dataModel: userData, endPoint: ApiEndPoints().saveNid).then((value){
+              //   if(!value.responseError!){
+              //     ShowToast.myToast('Upload Successfully', Colors.black, 2);
+              //   }else{
+              //     ShowToast.myToast('Something is wrong', Colors.black, 2);
+              //   }
+              // });
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
