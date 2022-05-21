@@ -16,8 +16,7 @@ class _BeneficaryUserTileState extends State<BeneficaryUserTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.isReceived?150:100,
-      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
       width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,27 +56,27 @@ class _BeneficaryUserTileState extends State<BeneficaryUserTile> {
               ),
             ],
           ),
-          SizedBox(height: 12,),
-          widget.isReceived?Wrap(
-            runSpacing: 12,
-            spacing: 12,
-            children: [
-              CustomButtonWithPaidUnPaid(
-                title: 'ধাপ - 1',
-                isSelectable: true,
-                onTab: (){
-
-                },
-              ),
-              CustomButtonWithPaidUnPaid(
-                title: 'ধাপ - 2',
-                isSelectable: false,
-                onTab: (){
-
-                },
-              ),
-            ],
-          ):Container(),
+          //SizedBox(height: 12,),
+          // widget.isReceived?Wrap(
+          //   runSpacing: 12,
+          //   spacing: 12,
+          //   children: [
+          //     CustomButtonWithPaidUnPaid(
+          //       title: 'ধাপ - 1',
+          //       isSelectable: true,
+          //       onTab: (){
+          //
+          //       },
+          //     ),
+          //     CustomButtonWithPaidUnPaid(
+          //       title: 'ধাপ - 2',
+          //       isSelectable: false,
+          //       onTab: (){
+          //
+          //       },
+          //     ),
+          //   ],
+          // ):Container(),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
@@ -29,13 +30,12 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
 
   ListOfUser? listOfUser;
   List<BeneficiaryData> dataList = [];
-  ApiResponse notifyData = ApiResponse(
-    isWorking: true,
-  );
+  List<BeneficiaryData> filterDataList = [];
+  ApiResponse notifyData = ApiResponse(isWorking: true);
 
   int pageNo = 1;
 
-
+  bool isSearchStart = false;
 
 
   @override
@@ -189,21 +189,43 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
                               onPressed: (){
-                                setState(() {
-                                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>SearchBeneficiary(nid: '-${searchController.text.toString()}',)));
-                                });
+                                // setState(() {
+                                //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>SearchBeneficiary(nid: '-${searchController.text.toString()}',)));
+                                // });
+                                if(isSearchStart){
+                                  setState(() {
+                                    dataList = filterDataList;
+                                    isSearchStart = false;
+                                    searchController.clear();
+                                  });
+                                }
                               },
-                              icon: const Icon(Icons.send,color: Colors.green,),
+                              icon: isSearchStart?const Icon(Icons.close,color: Colors.grey,):const Icon(Icons.search,color: Colors.grey,),
                             ),
-                            prefixIcon: const Icon(Icons.search),
-                            hintStyle: const TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
-                            hintText: 'Search',
+                            hintStyle: const TextStyle(height: 0.8,fontSize: 13,fontWeight: FontWeight.w300),
+                            hintText: 'Search with mobile number or nid',
                             border: const OutlineInputBorder(
                                 borderSide: BorderSide.none
                             ),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 12)
                         ),
                         controller: searchController,
+                        onChanged: (value){
+                          setState(() {
+                            isSearchStart = true;
+                            dataList = dataList.where((element) => element.beneficiaryMobile.contains(value.toString())||
+                                element.nidNumber.contains(value.toString())||
+                                element.beneficiaryNameBangla.contains(value.toString())||
+                                element.beneficiaryNameEnglish.contains(value.toString())
+                            ).toList();
+                          });
+                          print(dataList.length);
+                        },
+                        onTap: (){
+                          setState(() {
+                            filterDataList = dataList;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -235,6 +257,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("পরিচয়পত্রঃ ${dataList[position].nidNumber}"),
+                              Text("মোবাইল নম্বরঃ ${dataList[position].beneficiaryMobile}"),
                               Text("ঠিকানাঃ ${dataList[position].upazilaNameBangla}, ${dataList[position].unionNameBangla}, ${dataList[position].wordNameBangla}"),
                               !widget.isBeneficiaryList?Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,6 +269,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                             ],
                           ),
                           onTap: (){
+                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: dataList[position].nidNumber)));
 
                           },
                         ),

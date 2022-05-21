@@ -42,7 +42,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
 
   @override
   void initState() {
-    Provider.of<GetBeneficeryController>(context,listen: false).getData();
+    Provider.of<GetBeneficeryController>(context,listen: false).getData("-${GetStorage().read('user_nid')}",GetStorage().read('b_token'));
     super.initState();
   }
 

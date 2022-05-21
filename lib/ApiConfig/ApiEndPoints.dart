@@ -35,6 +35,10 @@ class ApiEndPoints{
 
 
 
+  final String beneficiaryAllInfo = 'beneficiary-all-info';
+
+
+
   final String saveNid = 'save_nid';
   final String profileUpdate = 'profile-update';
 

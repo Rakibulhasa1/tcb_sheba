@@ -176,7 +176,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 children: [
                   GestureDetector(
                     onTap : (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'সর্বমোট উপকারভোগী',)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'নিবন্ধিত উপকারভোগী',)));
                     },
                     child: Container(
                       height: 100,
