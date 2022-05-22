@@ -114,15 +114,14 @@ class _UserFromState extends State<UserFrom> {
 
            if(userInformationModel!.member!.receivingStatus=='Chance'){
              for(qntIndex;qntIndex < informationForChanceReceive!.member!.packageDetailsInfo!.length;qntIndex++){
-               sebarQuantity = sebarQuantity + informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productName! +" "+ informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productIsActive!.toString() +" "+ informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
+               sebarQuantity = sebarQuantity + informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productName! +" "+ informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productQry!.toString() +" "+ informationForChanceReceive!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
              }
            }
            if(userInformationModel!.member!.receivingStatus=='Yes'){
              for(qntIndex;qntIndex < informationForReceiver!.member!.packageDetailsInfo!.length;qntIndex++){
-               sebarQuantity = sebarQuantity + informationForReceiver!.member!.packageDetailsInfo![qntIndex].productName! +" "+ informationForReceiver!.member!.packageDetailsInfo![qntIndex].productIsActive!.toString() +" "+ informationForReceiver!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
+               sebarQuantity = sebarQuantity + informationForReceiver!.member!.packageDetailsInfo![qntIndex].productName! +" "+ informationForReceiver!.member!.packageDetailsInfo![qntIndex].productQty!.toString() +" "+ informationForReceiver!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
              }
            }
-
           }
           return ListView(
             children: [

@@ -157,13 +157,16 @@ class PackageDetailsInfo {
     this.productIsActive,
     this.productUnit,
     this.productName,
+    this.productQty,
   });
 
+  var productQty;
   var productIsActive;
   var productName;
   var productUnit;
 
   factory PackageDetailsInfo.fromJson(Map<String, dynamic> json) => PackageDetailsInfo(
+    productQty: nullConverter(json["product_qty"]),
     productIsActive: nullConverter(json["product_is_active"]),
     productUnit: nullConverter(json["product_unit"]),
     productName: nullConverter(json["product_name"]),
