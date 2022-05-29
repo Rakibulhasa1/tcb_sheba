@@ -5,7 +5,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/AdminDashboard/Widget/custom_button_with_paid_unpaid.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/HelperClass.dart';
 
 class UserDetailsViewByAdmin extends StatefulWidget {
@@ -25,7 +24,6 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
   @override
   void initState() {
     String nid = widget.userNid.split('-').last;
-    print(nid);
     Provider.of<BeneficiaryInfoController>(context,listen: false).getData(nid,GetStorage().read('token'));
     super.initState();
   }

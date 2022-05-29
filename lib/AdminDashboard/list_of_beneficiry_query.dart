@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -63,6 +65,8 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
       if(widget.isCity)
         'union_id' : widget.wordId,
     };
+
+    log("${body}");
     ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryList}?page=$pageNo',body: body,token: GetStorage().read('token')).then((value){
 
       setState(() {

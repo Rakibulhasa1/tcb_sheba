@@ -79,53 +79,50 @@ class _ProfileState extends State<Profile> {
               ),
             ),
 
-            // Positioned(
-            //   bottom: 0.0,
-            //   left: 0.0,
-            //   right: 0.0,
-            //   child: InkWell(
-            //     onTap: (){
-            //       AwesomeDialog(
-            //         context: context,
-            //         animType: AnimType.SCALE,
-            //         dialogType: DialogType.INFO,
-            //         body: const Center(child: Text(
-            //           'আপনি কি লগঅউট করতে চাচ্ছেন?',
-            //           style: TextStyle(fontSize: 12),
-            //         ),),
-            //         title: 'Logout',
-            //         btnOkOnPress: () {
-            //           GetStorage().remove('token');
-            //           GetStorage().remove('email');
-            //           GetStorage().remove('password');
-            //           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-            //         },
-            //         btnCancelOnPress: (){
-            //
-            //         }
-            //       ).show();
-            //     },
-            //     child: Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 24),
-            //       child: Container(
-            //         padding: const EdgeInsets.symmetric(horizontal: 12),
-            //         height: 40,
-            //         width: MediaQuery.of(context).size.width,
-            //         decoration: BoxDecoration(
-            //           borderRadius: BorderRadius.circular(5),
-            //           color: Colors.red.withOpacity(0.5),
-            //         ),
-            //         child: Row(
-            //           children: const [
-            //             Icon(Icons.logout,color: Colors.red,),
-            //             SizedBox(width: 12,),
-            //             Text('Logout',style: TextStyle(color: Colors.red,fontSize: 14,fontWeight: FontWeight.bold),),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: InkWell(
+                onTap: (){
+                  AwesomeDialog(
+                    context: context,
+                    animType: AnimType.SCALE,
+                    dialogType: DialogType.INFO,
+                    body: const Center(child: Text(
+                      'আপনি কি লগঅউট করতে চাচ্ছেন?',
+                      style: TextStyle(fontSize: 12),
+                    ),),
+                    title: 'Logout',
+                    btnOkOnPress: () {
+                      GetStorage().remove('token');
+                      GetStorage().remove('email');
+                      GetStorage().remove('password');
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+                    },
+                    btnCancelOnPress: (){
+
+                    }
+                  ).show();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.red.withOpacity(0.5),
+                  ),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.logout,color: Colors.white,),
+                      SizedBox(width: 12,),
+                      Text('Logout',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
           ],
         );

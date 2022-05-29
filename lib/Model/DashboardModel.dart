@@ -79,8 +79,8 @@ class PieChartInfo {
   int? receiverTotalQty;
 
   factory PieChartInfo.fromJson(Map<String, dynamic> json) => PieChartInfo(
-    beneficiaryOccupationName: nullConverter(json["beneficiary_occupation_name"]),
-    receiverTotalQty: json["receiver_total_qty"],
+    beneficiaryOccupationName: nullConverter(json["beneficiary_occupation_name"]??""),
+    receiverTotalQty: json["receiver_total_qty"]??0,
   );
 }
 

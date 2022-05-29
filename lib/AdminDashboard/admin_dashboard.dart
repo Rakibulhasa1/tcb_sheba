@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -19,6 +21,7 @@ import 'package:tcb/app_theme.dart';
 
 
 class AdminDashboard extends StatefulWidget {
+
   const AdminDashboard({Key? key}) : super(key: key);
 
   @override
@@ -26,7 +29,6 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-
 
   TextEditingController searchController = TextEditingController();
   bool isReceivePieChart = true;
@@ -52,29 +54,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   TimerList? dropSelectedText;
 
+  TimerList? defaultDate = TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now());
 
-  List<StepModel> dropdownList2 = [
-    StepModel(
-      stepId: 2,
-      deliveryStartDateTime: DateTime.now(),
-      deliveryEndDateTime: DateTime.now(),
-      createdBy: DateTime.now(),
-      stepName: 'ধাপ-১',
-    ),
-    StepModel(
-      stepId: 5,
-      deliveryStartDateTime: DateTime.now(),
-      deliveryEndDateTime: DateTime.now(),
-      createdBy: DateTime.now(),
-      stepName: 'ধাপ-২',
-    ),
-  ];
 
-  StepModel? selectDropdown;
+  List<StepModel> stepList = [];
+
+
+  StepModel? selectStep = StepModel(stepName: 'ধাপ-১',stepId: '1',createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
 
   @override
   void initState() {
-    DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+    DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}&step_id=${selectStep!.stepId}');
     DataResponse().getStepData(context: context);
     super.initState();
   }
@@ -111,7 +101,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     onChanged: (newValue) {
                       setState(() {
                         dropSelectedText = newValue! as TimerList?;
-                        String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}';
+                        String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}&step_id=${selectStep!.stepId}';
                         DataResponse().getAdminData(context: context,prams: prams);
                       });
                     },
@@ -128,7 +118,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     return Container();
                   }
                   if(!notifyData.notifyDropDown.responseError!&&!notifyData.notifyDropDown.isWorking!){
-                    //dropdownList2 = notifyData.stepModel;
+                    stepList = notifyData.stepModel;
                   }
                   return Container(
                     height: 38,
@@ -137,11 +127,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton(
-                        hint: const Text('ধাপ-১'),
+                        hint: Text('${selectStep!.stepName}'),
                         icon: const Icon(Icons.keyboard_arrow_down),
                         isExpanded: true,
-                        value: selectDropdown,
-                        items: dropdownList2.map((StepModel items) {
+                        items: stepList.map((StepModel items) {
                           return DropdownMenuItem(
                             value: items,
                             child: Text(items.stepName),
@@ -149,12 +138,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
-                            selectDropdown = newValue! as StepModel?;
-                            if(selectDropdown!.stepId==2){
-                              String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}';
+                            selectStep = newValue! as StepModel?;
+                          });
+
+                          setState(() {
+                            if(dropSelectedText!=null){
+                              String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}&step_id=${selectStep!.stepId}';
                               DataResponse().getAdminData(context: context,prams: prams);
                             }else{
-                              String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}&step_id=${selectDropdown!.stepId}';
+                              String prams = '?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}';
                               DataResponse().getAdminData(context: context,prams: prams);
                             }
                           });
@@ -286,6 +278,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           for(int i=0;i<notifyPieChart.pieChartDataList.length;i++){
                             totalBeneficery['${notifyPieChart.pieChartDataList[i].beneficiaryOccupationName}'] = notifyPieChart.pieChartDataList[i].receiverTotalQty!.toDouble();
                             totalReceiveBeneficery['${notifyPieChart.pieChartDataList[i].beneficiaryOccupationName}'] = notifyPieChart.pieChartDataList[i].receiverTotalQty!.toDouble();
+
+                            log("${notifyPieChart.pieChartDataList[i].receiverTotalQty!.toDouble()}");
+                            log("${notifyPieChart.pieChartDataList[i].receiverTotalQty!.toDouble()}");
                           }
                         }
 
@@ -414,6 +409,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                 seriesData.add(
                   charts.Series(
+                    labelAccessorFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty.toString(),
                     domainFn: (AreaWiseData pollution, _) => pollution.areaName,
                     measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                     id: 'beneficiaryList',
@@ -426,6 +422,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                 seriesData.add(
                   charts.Series(
+                    labelAccessorFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty.toString(),
                     domainFn: (AreaWiseData pollution, _) => pollution.areaName,
                     measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                     id: 'beneficiaryReceiveList',
@@ -437,6 +434,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 );
 
 
+
+
                 if(!notifyData.notifyDashboardData.isWorking!&&!notifyData.notifyDashboardData.responseError!){
                   seriesData.clear();
 
@@ -445,18 +444,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                   seriesData.add(
                     charts.Series(
+                      labelAccessorFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty.toString(),
                       domainFn: (AreaWiseData pollution, _) => pollution.areaName,
                       measureFn: (AreaWiseData pollution, _) => pollution.beneficiaryTotalQty,
                       id: 'beneficiaryList',
                       data: beneficiaryList!,
                       fillPatternFn: (_, __) => charts.FillPatternType.solid,
-                      fillColorFn: (AreaWiseData pollution, _) =>
-                          charts.ColorUtil.fromDartColor(primaryPerpleColor),
+                      fillColorFn: (AreaWiseData pollution, _) => charts.ColorUtil.fromDartColor(primaryPerpleColor),
                     ),
                   );
 
                   seriesData.add(
                     charts.Series(
+                      labelAccessorFn: (AreaWiseData pollution, _) => pollution.receiverTotalQty.toString(),
                       domainFn: (AreaWiseData pollution, _) => pollution.areaName,
                       measureFn: (AreaWiseData pollution, _) => pollution.receiverTotalQty,
                       id: 'beneficiaryReceiveList',
@@ -470,52 +470,68 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      height: 260,
-                      width: notifyData.divisionListAndQty!.isNotEmpty?notifyData.divisionListAndQty!.length*75:600,
-                      child: charts.BarChart(
-                        seriesData,
-                        animate: true,
-                        barGroupingType: charts.BarGroupingType.grouped,
-                        animationDuration: const Duration(microseconds: 1000),
-                            selectionModels: [
-                              charts.SelectionModelConfig(
-                                type: charts.SelectionModelType.info,
-                                changedListener: (charts.SelectionModel model){
-                                  switch(model.selectedDatum[0].datum.areaType){
-                                    case 'D':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(title: model.selectedDatum[0].datum.areaName, divisionId: model.selectedDatum[0].datum.areaId)));
-                                      break;
-                                    case 'DI':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UpazilaFilter(name: model.selectedDatum[0].datum.areaName, districtId: model.selectedDatum[0].datum.areaId)));
-                                      break;
-                                    case 'U':
-                                      String cityCorp = '${model.selectedDatum[0].datum.areaName}';
-                                      String machCityData = 'সিটি কর্পোরেশন';
-                                      if(cityCorp.contains(machCityData)){
-                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>CityCorporationWord(name: 'ওয়ার্ড', upazilaId: model.selectedDatum[0].datum.areaId, title: model.selectedDatum[0].datum.areaName,)));
-                                      }else{
-                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(title: model.selectedDatum[0].datum.areaName, upazilaId: model.selectedDatum[0].datum.areaId,name: model.selectedDatum[0].datum.areaName,)));
-                                      }
-                                      break;
-                                    case 'UI':
-                                      String cityCorp = '${model.selectedDatum[0].datum.areaName}';
-                                      String machWordData = 'ওয়ার্ড';
-                                      if(cityCorp.contains(machWordData)){
-                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: true,)));
-                                      }else{
-                                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>WordFilter(unionId: model.selectedDatum[0].datum.areaId,title: model.selectedDatum[0].datum.areaName,)));
-                                      }
-                                      break;
-                                    case 'W':
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: false,)));
-                                      break;
-                                  }
-                                },
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: SizedBox(
+                          height: 260,
+                          width: notifyData.divisionListAndQty!.isNotEmpty?notifyData.divisionListAndQty!.length*110:600,
+                          child: charts.BarChart(
+                            seriesData,
+                            animate: true,
+                            barRendererDecorator: charts.BarLabelDecorator<String>(
+                              insideLabelStyleSpec: charts.TextStyleSpec(
+                                fontWeight: "bold",
+                                fontSize: 8,
+                                color: charts.ColorUtil.fromDartColor(Colors.white),
                               ),
-                            ],
+                              outsideLabelStyleSpec: charts.TextStyleSpec(
+                                fontSize: 8,
+                                color: charts.ColorUtil.fromDartColor(Colors.black),
+                              ),
+                            ),
+                            barGroupingType: charts.BarGroupingType.grouped,
+                            animationDuration: const Duration(microseconds: 1000),
+                                selectionModels: [
+                                  charts.SelectionModelConfig(
+                                    type: charts.SelectionModelType.info,
+                                    changedListener: (charts.SelectionModel model){
+                                      switch(model.selectedDatum[0].datum.areaType){
+                                        case 'D':
+                                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>DistrictGrid(title: model.selectedDatum[0].datum.areaName, divisionId: model.selectedDatum[0].datum.areaId)));
+                                          break;
+                                        case 'DI':
+                                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UpazilaFilter(name: model.selectedDatum[0].datum.areaName, districtId: model.selectedDatum[0].datum.areaId)));
+                                          break;
+                                        case 'U':
+                                          String cityCorp = '${model.selectedDatum[0].datum.areaName}';
+                                          String machCityData = 'সিটি কর্পোরেশন';
+                                          if(cityCorp.contains(machCityData)){
+                                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>CityCorporationWord(name: 'ওয়ার্ড', upazilaId: model.selectedDatum[0].datum.areaId, title: model.selectedDatum[0].datum.areaName,)));
+                                          }else{
+                                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnionFilter(title: model.selectedDatum[0].datum.areaName, upazilaId: model.selectedDatum[0].datum.areaId,name: model.selectedDatum[0].datum.areaName,)));
+                                          }
+                                          break;
+                                        case 'UI':
+                                          String cityCorp = '${model.selectedDatum[0].datum.areaName}';
+                                          String machWordData = 'ওয়ার্ড';
+                                          if(cityCorp.contains(machWordData)){
+                                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: true,)));
+                                          }else{
+                                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>WordFilter(unionId: model.selectedDatum[0].datum.areaId,title: model.selectedDatum[0].datum.areaName,)));
+                                          }
+                                          break;
+                                        case 'W':
+                                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>ViewBeneficaryListTab(wordId: model.selectedDatum[0].datum.areaId,isCity: false,)));
+                                          break;
+                                      }
+                                    },
+                                  ),
+                                ],
+                          ),
+                        ),
                       ),
                     ),
                   ),

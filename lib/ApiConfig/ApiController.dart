@@ -2,6 +2,7 @@
 // ignore_for_file: file_names
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';
@@ -17,14 +18,15 @@ class ApiController{
   Future<ApiResponse<dynamic>> loginResponse({required String endPoint,required Map<String,dynamic> body})async{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
-    print(url);
-    print(body);
+
+
+
     try{
       return await http.post(Uri.parse(url),body: body).then((value){
+        log("${url} ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
           return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
         }
       });
@@ -41,9 +43,10 @@ class ApiController{
       'Accept': 'application/json',
       'Authorization': '$token'
     };
-    print(url);
+
     try{
       return await http.get(Uri.parse(url),headers: header).then((value){
+        log("${url} ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
@@ -63,21 +66,17 @@ class ApiController{
       'Accept': 'application/json',
       'Authorization': '$token'
     };
-    print(url);
-    print(header);
-    print(body);
     try{
       return await http.post(Uri.parse(url),headers: header,body: body).then((value){
+        log("${url} ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
           return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
         }
       });
     }
     catch(e){
-      print(e);
       return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
     }
   }
@@ -89,13 +88,12 @@ class ApiController{
       'Accept': 'application/json',
       'Authorization': '$token'
     };
-    print(url);
     try{
       return await http.delete(Uri.parse(url),headers: header,body: body).then((value){
+        log("${url} ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
           return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
         }
       });
@@ -111,13 +109,12 @@ class ApiController{
       'Accept': 'application/json',
       'Authorization': '$token'
     };
-    print(url);
     try{
       return await http.put(Uri.parse(url),headers: header,body: body).then((value){
+        log("${url} ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
           return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
         }
       });
@@ -136,8 +133,6 @@ class ApiController{
     final String url = ApiEndPoints().baseUrl+endPoint;
     var uri = Uri.parse(url);
     var request = http.MultipartRequest("POST", uri);
-    print(url);
-
 
     var streamBackImage = http.ByteStream(DelegatingStream.typed(dataModel.fontNid.openRead()));
     var lengthBack = await dataModel.fontNid.length();

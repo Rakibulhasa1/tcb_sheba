@@ -9,7 +9,6 @@ import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
-import 'package:tcb/GeneralDashboard/user_from.dart';
 import 'package:tcb/app_theme.dart';
 
 class AdminUserNavigation extends StatefulWidget {
@@ -55,6 +54,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
   }
 
   void getQrScanData(String qrCodeData){
+    print("This is my code '${qrCodeData}' end");
     Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: qrCodeData,)));
   }
 
@@ -112,7 +112,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
+      extendBody: true,
       bottomNavigationBar: BottomAppBar(
         clipBehavior: Clip.antiAlias,
         color: primaryColorGreenLite,
