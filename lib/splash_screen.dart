@@ -27,10 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
         Future.delayed(const Duration(seconds: 2)).then((value){
           if(GetStorage().read('b_token')!=null){
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BeneficerySideNavigation()), (Route<dynamic> route) => false);
-            // if(GetStorage().read('isHasImage')!=null){
-            // }else{
-            //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-            // }
           }else{
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
           }

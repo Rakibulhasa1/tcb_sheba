@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:tcb/AdminDashboard/Model/BeneficiaryAllInfoModel.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
@@ -14,14 +16,16 @@ class BeneficiaryInfoController extends ChangeNotifier{
 
   ApiResponse getUserDataResponse = ApiResponse(isWorking: true);
 
-  void getData(String userNid,String token){
-
+  void getData(String userId,String token,bool isScan){
+    getUserDataResponse = ApiResponse(isWorking: true);
     var body = {
-      'nid_number' : userNid,
+      if(isScan)
+        'nid_number' : userId,
+      if(!isScan)
+        'beneficiary_id' : userId,
     };
+    log("$body");
     ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,token: token,body: body).then((value){
-      print(value.responseCode);
-      print(value.response);
       if(value.responseCode==200){
         try{
           userDataResponse = beneficiaryAllInfoModelFromJson(value.response.toString());

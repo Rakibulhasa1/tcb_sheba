@@ -173,6 +173,9 @@ class ApiController{
       case 200 :
         return ApiResponse(response: value.body,responseError: false, responseCode: value.statusCode);
 
+      case 405 :
+        return ApiResponse(response: value.body,responseError: false, responseCode: value.statusCode);
+
       case 404 :
         return ApiResponse(responseError: true,errorMessage: 'Data Not Found', responseCode: value.statusCode);
 

@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '12'
+    flutterVersionCode = '14'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '4.0.2'
+    flutterVersionName = '4.1.1'
 }
 
 apply plugin: 'com.android.application'
@@ -35,17 +35,8 @@ if (keystorePropertiesFile.exists()) {
 android {
     compileSdkVersion 31
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+    lintOptions {
+        checkReleaseBuilds false
     }
 
     defaultConfig {
@@ -53,21 +44,10 @@ android {
         applicationId "com.spectrum.tcbapp"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 12
-        versionName '4.0.2'
+        versionCode 14
+        versionName '4.1.1'
         multiDexEnabled true
     }
-
-    ///For debuging app
-//    buildTypes {
-//        release {
-//            // TODO: Add your own signing config for the release build.
-//            // Signing with the debug keys for now, so `flutter run --release` works.
-//            signingConfig signingConfigs.debug
-//        }
-//    }
-
-    ///For release app
 
     signingConfigs {
         release {
@@ -92,8 +72,4 @@ android {
 
 flutter {
     source '../..'
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

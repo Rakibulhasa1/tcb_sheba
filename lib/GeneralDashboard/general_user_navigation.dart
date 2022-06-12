@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/SqfliteDataBase/View/create_database_view.dart';
 import 'package:tcb/GeneralDashboard/dashboard.dart';
 import 'package:tcb/GeneralDashboard/profile.dart';
@@ -37,6 +38,8 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
     Future.delayed(Duration.zero).then((value){
       Provider.of<LoginDataController>(context,listen: false).getResponse(body);
     });
+    HelperClass().checkVersion(context);
+
     super.initState();
   }
 

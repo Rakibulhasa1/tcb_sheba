@@ -5,14 +5,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_dashboard.dart';
 import 'package:tcb/BeneficeryDashboard/View/user_inbox.dart';
 import 'package:tcb/BeneficeryDashboard/View/view_qr_and_profile.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/see_qr_data.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
 import 'package:tcb/select_profile_image.dart';
 import 'package:tcb/show_toast.dart';
@@ -42,7 +43,8 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
 
   @override
   void initState() {
-    Provider.of<GetBeneficeryController>(context,listen: false).getData("-${GetStorage().read('user_nid')}",GetStorage().read('b_token'));
+    Provider.of<BeneficiaryInfoController>(context,listen: false).getData("${GetStorage().read('beneficiaryId')}",GetStorage().read('b_token'),false);
+    HelperClass().checkVersion(context);
     super.initState();
   }
 
@@ -92,7 +94,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GetBeneficeryController>(
+    return Consumer<BeneficiaryInfoController>(
       builder: (context,data,child) {
         return Scaffold(
           appBar: AppBar(
@@ -121,7 +123,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
                       },
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.myUserInfo!.beneficiaryImageFile}'),
+                        backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.userData!.beneficiaryImageFile}'),
                       ),
                     ),
                   );
@@ -129,7 +131,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
               ),
             ],
           ),
-          body:Consumer<GetBeneficeryController>(
+          body:Consumer<BeneficiaryInfoController>(
             builder: (context,data,child) {
               if(data.getUserDataResponse.isWorking!){
                 return Center(
@@ -157,15 +159,15 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
                   ),
                 );
               }
-              if(!data.getUserDataResponse.isWorking!&&!data.getUserDataResponse.responseError!){
-                Future.delayed(Duration.zero).then((value){
-                  validateImage(data.myUserInfo!.beneficiaryImageFile).then((value){
-                    if(value==404){
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SelectProfileImage()), (Route<dynamic> route) => false);
-                    }
-                  });
-                });
-              }
+              // if(!data.getUserDataResponse.isWorking!&&!data.getUserDataResponse.responseError!){
+              //   Future.delayed(Duration.zero).then((value){
+              //     validateImage(data.userData!.beneficiaryImageFile).then((value){
+              //       if(value==404){
+              //         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SelectProfileImage()), (Route<dynamic> route) => false);
+              //       }
+              //     });
+              //   });
+              // }
               return myBottomNavigation[currentTab];
             },
           ),
@@ -189,13 +191,13 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
                             SizedBox(height: 24,),
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.myUserInfo!.beneficiaryImageFile}'),
+                              backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.userData!.beneficiaryImageFile}'),
                             ),
                             SizedBox(height: 24,),
-                            Text(data.myUserInfo!.beneficiaryNameBangla,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                            Text(data.userData!.beneficiaryNameBangla,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                             SizedBox(height: 12,),
-                            Text('NID ${data.myUserInfo!.nidNumber}',style: TextStyle(fontSize: 10),),
-                            Text('Family Card ${data.myUserInfo!.familyCardNumber}',style: TextStyle(fontSize: 10),),
+                            Text('NID ${data.userData!.nidNumber}',style: TextStyle(fontSize: 10),),
+                            Text('Family Card ${data.userData!.familyCardNumber}',style: TextStyle(fontSize: 10),),
                           ],
                         );
                       }

@@ -32,6 +32,7 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
 
 
   bool isSearchStart = false;
+  String total = '';
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
         if(value.responseCode==200){
           ListOfUser listOfUser = listOfUserFromJson(value.response.toString());
           dataList.addAll(listOfUser.data!.data!);
+          total = listOfUser.data!.total;
           notifyData = ApiResponse(
             isWorking: false,
             responseError: false,
@@ -118,6 +120,10 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
           return ListView(
             controller: scrollController,
             children: [
+              Padding(
+                padding: EdgeInsets.only(left: 12,top: 12),
+                child: Text("Total : $total",style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
                 child: Container(
@@ -187,7 +193,7 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
                     itemBuilder: (context,position,){
                       return GestureDetector(
                         onTap: (){
-                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: dataList[position].nidNumber,)));
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: dataList[position].beneficiaryId,isScan: false,)));
                         },
                         child: BeneficaryUserTile(beneficiaryData: dataList[position],isReceived: true,),
                       );

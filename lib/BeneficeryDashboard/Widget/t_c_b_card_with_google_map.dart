@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/BeneficeryDashboard/View/view_full_card_and_deliver_list.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/google_map_view.dart';
 import 'package:tcb/BeneficeryDashboard/Widget/view_map_in_full_screen.dart';
@@ -28,9 +28,6 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
 
   @override
   void initState() {
-    if(isError){
-
-    }
     super.initState();
   }
 
@@ -38,7 +35,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GetBeneficeryController>(
+    return Consumer<BeneficiaryInfoController>(
       builder: (context,userData,child) {
         if(userData.getUserDataResponse.isWorking!){
           return Center(
@@ -121,7 +118,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                         height: 65,
                                         width: 65,
                                         child: FadeInImage(
-                                          image: NetworkImage('${ApiEndPoints().imageBaseUrl}${userData.myUserInfo!.beneficiaryImageFile}'),
+                                          image: NetworkImage('${ApiEndPoints().imageBaseUrl}${userData.userData!.beneficiaryImageFile}'),
                                           height: 65,
                                           width: 65,
                                           placeholder: const AssetImage("asstes/emptyProfile.jpg"),
@@ -132,8 +129,8 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                         ),
                                       ),
                                       SizedBox(height: 24,),
-                                      SizedBox(width: 80,child: Text(userData.myUserInfo!.upazilaNameBangla,style: TextStyle(fontSize: 8,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center,)),
-                                      SizedBox(width: 80,child: Text(userData.myUserInfo!.unionNameBangla,style:  TextStyle(fontSize: 8,fontWeight: FontWeight.bold),textAlign: TextAlign.center,)),
+                                      SizedBox(width: 80,child: Text(userData.userData!.upazilaNameBangla,style: TextStyle(fontSize: 8,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center,)),
+                                      SizedBox(width: 80,child: Text(userData.userData!.unionNameBangla,style:  TextStyle(fontSize: 8,fontWeight: FontWeight.bold),textAlign: TextAlign.center,)),
                                     ],
                                   ),
                                   SizedBox(width: 12,),
@@ -141,13 +138,13 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('নাম',style: TextStyle(fontSize: 8),),
-                                      Text(userData.myUserInfo!.beneficiaryNameBangla,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
+                                      Text(userData.userData!.beneficiaryNameBangla,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
                                       SizedBox(height: 8,),
                                       Text('পরিচয় পত্র নম্বর ',style: TextStyle(fontSize: 8,),),
-                                      Text(userData.myUserInfo!.nidNumber,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
+                                      Text(userData.userData!.nidNumber,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
                                       SizedBox(height: 8,),
                                       Text('পরিবার কার্ড ',style: TextStyle(fontSize: 8),),
-                                      Text(userData.myUserInfo!.familyCardNumber,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
+                                      Text(userData.userData!.familyCardNumber,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
                                       SizedBox(height: 8,),
                                       SizedBox(
                                         width: MediaQuery.of(context).size.width-175,
@@ -158,7 +155,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Text('মোবাইল',style: TextStyle(fontSize: 8),),
-                                                Text(userData.myUserInfo!.beneficiaryMobile,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
+                                                Text(userData.userData!.beneficiaryMobile,style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold),),
                                               ],
                                             ),
                                             Spacer(),
@@ -167,7 +164,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                               child: Column(
                                                 children: [
                                                   Text("পেশা",style: TextStyle(fontSize: 8),textAlign: TextAlign.center,),
-                                                  Text(userData.myUserInfo!.beneficiaryOccupationName,style: TextStyle(fontSize: 8),textAlign: TextAlign.center,),
+                                                  Text(userData.userData!.beneficiaryOccupationName,style: TextStyle(fontSize: 8),textAlign: TextAlign.center,),
                                                 ],
                                               ),
                                             ),
@@ -185,7 +182,7 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                                   children: [
                                     SizedBox(height: 10,),
                                     QrImage(
-                                      data: "Mobile : ${userData.myUserInfo!.beneficiaryMobile},NID :-${userData.myUserInfo!.nidNumber}",
+                                      data: "Mobile : ${userData.userData!.beneficiaryMobile},NID :-${userData.userData!.nidNumber}",
                                       version: QrVersions.auto,
                                       size: 80.0,
                                     ),
@@ -199,13 +196,13 @@ class _TCBCardWithGoogleMapState extends State<TCBCardWithGoogleMap> {
                         SizedBox(height: 8,),
                         Builder(
                             builder: (context) {
-                              switch(userData.myUserInfo!.addressType){
+                              switch(userData.userData!.addressType){
                                 case 'U' :
-                                  return Text('জেলা প্রশাসন, ${userData.myUserInfo!.districtNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
+                                  return Text('জেলা প্রশাসন, ${userData.userData!.districtNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
                                 case 'C' :
-                                  return Text('${userData.myUserInfo!.upazilaNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
+                                  return Text('${userData.userData!.upazilaNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
                                 case 'P' :
-                                  return Text('${userData.myUserInfo!.unionNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
+                                  return Text('${userData.userData!.unionNameBangla}',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
                               }
                               return Text('',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
                             }

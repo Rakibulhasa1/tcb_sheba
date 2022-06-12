@@ -269,7 +269,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                             ],
                           ),
                           onTap: (){
-                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: dataList[position].nidNumber)));
+                            Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: dataList[position].beneficiaryId,isScan: false,)));
 
                           },
                         ),

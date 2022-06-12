@@ -6,9 +6,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
+import 'package:tcb/AdminDashboard/card_delivery_details.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
 
 class AdminUserNavigation extends StatefulWidget {
@@ -31,10 +33,11 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
   ];
 
 
-  Future qrScanner()async{
+  Future qrScannerForUserDetails()async{
     var camaraPermission = await Permission.camera.status;
     if(camaraPermission.isGranted){
       String? qrCode = await scanner.scan();
+      //String? qrCode = await qrScanner();
       if(qrCode!=null){
         getQrScanData(qrCode);
       }else{
@@ -52,15 +55,40 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
       }
     }
   }
+  Future qrScannerForCardDelivery()async{
+    var camaraPermission = await Permission.camera.status;
+    if(camaraPermission.isGranted){
+      String? qrCode = await scanner.scan();
+      if(qrCode!=null){
+        getCardDeliveryData(qrCode);
+      }else{
+
+      }
+    }else{
+      var isGrandt  = await Permission.camera.request();
+      if(isGrandt.isGranted){
+        String? qrCode = await scanner.scan();
+        if(qrCode!=null){
+          getCardDeliveryData(qrCode);
+        }else{
+
+        }
+      }
+    }
+  }
 
   void getQrScanData(String qrCodeData){
-    print("This is my code '${qrCodeData}' end");
-    Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: qrCodeData,)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: qrCodeData,isScan: true,)));
+  }
+
+  void getCardDeliveryData(String qrCodeData){
+    Navigator.push(context, CupertinoPageRoute(builder: (context)=>CardDeliveryDetails(userId: qrCodeData)));
   }
 
 
   @override
   void initState() {
+    HelperClass().checkVersion(context);
 
     super.initState();
   }
@@ -108,7 +136,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
         isExtended: true,
         child: const Icon(Icons.qr_code,color: Colors.white,),
         onPressed: () {
-          qrScanner();
+          qrScannerForUserDetails();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -201,6 +229,10 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                       });
 
                       switch(selectedId){
+                        case 1 :
+                          qrScannerForCardDelivery();
+                          Navigator.pop(context);
+                          break;
                         case 14 :
                           AwesomeDialog(
                               context: context,
@@ -245,7 +277,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                                   Builder(
                                     builder: (context) {
                                       switch (naviBarList[position].id){
-                                        case 1 :
+                                        case 2 :
                                           return Icon(Icons.arrow_forward_outlined,color : selectedId==position?Colors.white:Colors.grey[600]);
                                         case 3 :
                                           return Icon(Icons.arrow_forward_outlined,color : selectedId==position?Colors.white:Colors.grey[600]);
@@ -267,7 +299,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                             Builder(
                               builder: (context){
                                 switch (naviBarList[position].id){
-                                  case 1 :
+                                  case 2 :
                                     return selectedId==position?ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
@@ -448,41 +480,32 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
     );
   }
 }
-// ListTile(
-// selected: selectedId ==int.parse(naviBarList[position].id)?true:false,
-// leading: Icon(naviBarList[position].icon),
-// title: Text(naviBarList[position].title),
-// onTap: (){
-// setState(() {
-// selectedId = int.parse(naviBarList[position].id);
-// });
-// },
-// )
 
 List<CustomNaviBarMenu> naviBarList = [
 
   CustomNaviBarMenu(title: 'হোম', id: 0, icon: Icons.home),
-  CustomNaviBarMenu(title: 'উপকারভোগী', id: 1, icon: Icons.person),
-  CustomNaviBarMenu(title: 'ফ্যামিলি কার্ড', id: 2, icon: Icons.payment),
-  CustomNaviBarMenu(title: 'পণ্য ব্যবস্থাপনা', id: 3, icon: Icons.view_in_ar),
-  CustomNaviBarMenu(title: 'বিক্রয় ব্যবস্থপনা', id: 4, icon: Icons.trending_up),
-  CustomNaviBarMenu(title: 'চাহিদাপত্র', id: 5, icon: Icons.task),
-  CustomNaviBarMenu(title: 'ইনভেন্টরী', id: 6, icon: Icons.inventory),
-  CustomNaviBarMenu(title: 'ডিলার ব্যবস্থাপনা', id: 7, icon: Icons.manage_accounts),
-  CustomNaviBarMenu(title: 'মনিটরিং', id: 8, icon: Icons.legend_toggle),
-  CustomNaviBarMenu(title: 'ব্যবহারকারী ব্যবস্থাপনা', id: 9, icon: Icons.manage_accounts),
-  CustomNaviBarMenu(title: 'অভিযোগ ও প্রতিকার', id: 10, icon: Icons.announcement),
-  CustomNaviBarMenu(title: 'যোগাযোগ', id: 11, icon: Icons.compare_arrows),
-  CustomNaviBarMenu(title: 'সেটিংস', id: 12, icon: Icons.settings),
-  CustomNaviBarMenu(title: 'সাপোর্ট', id: 13, icon: Icons.contact_support),
-  CustomNaviBarMenu(title: 'লগআউট', id: 14, icon: Icons.power_settings_new),
+  CustomNaviBarMenu(title: 'কার্ড বিতরণী ব্যবস্থাপনা', id: 1, icon: Icons.credit_card),
+  CustomNaviBarMenu(title: 'উপকারভোগী', id: 2, icon: Icons.person),
+  CustomNaviBarMenu(title: 'ফ্যামিলি কার্ড', id: 3, icon: Icons.payment),
+  CustomNaviBarMenu(title: 'পণ্য ব্যবস্থাপনা', id: 4, icon: Icons.view_in_ar),
+  CustomNaviBarMenu(title: 'বিক্রয় ব্যবস্থপনা', id: 5, icon: Icons.trending_up),
+  CustomNaviBarMenu(title: 'চাহিদাপত্র', id: 6, icon: Icons.task),
+  CustomNaviBarMenu(title: 'ইনভেন্টরী', id: 7, icon: Icons.inventory),
+  CustomNaviBarMenu(title: 'ডিলার ব্যবস্থাপনা', id: 8, icon: Icons.manage_accounts),
+  CustomNaviBarMenu(title: 'মনিটরিং', id: 9, icon: Icons.legend_toggle),
+  CustomNaviBarMenu(title: 'ব্যবহারকারী ব্যবস্থাপনা', id: 10, icon: Icons.manage_accounts),
+  CustomNaviBarMenu(title: 'অভিযোগ ও প্রতিকার', id: 11, icon: Icons.announcement),
+  CustomNaviBarMenu(title: 'যোগাযোগ', id: 12, icon: Icons.compare_arrows),
+  CustomNaviBarMenu(title: 'সেটিংস', id: 13, icon: Icons.settings),
+  CustomNaviBarMenu(title: 'সাপোর্ট', id: 14, icon: Icons.contact_support),
+  CustomNaviBarMenu(title: 'লগআউট', id: 15, icon: Icons.power_settings_new),
 
 ];
 
 List<NaviBarSubMenu> naviSubMenuForBeneficery = [
-  NaviBarSubMenu(title: 'নতুন আবেদন', rootId: 1, id: 0),
-  NaviBarSubMenu(title: 'সকল', rootId: 1, id: 1),
-  NaviBarSubMenu(title: 'এডিটেড', rootId: 1, id: 2),
+  NaviBarSubMenu(title: 'নতুন আবেদন', rootId: 2, id: 0),
+  NaviBarSubMenu(title: 'সকল', rootId: 2, id: 1),
+  NaviBarSubMenu(title: 'এডিটেড', rootId: 2, id: 2),
 ];
 
 

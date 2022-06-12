@@ -27,12 +27,15 @@ class ListOfUser {
 
 class Data {
   Data({
+    this.total,
     this.data,
   });
 
+  var total;
   List<BeneficiaryData>? data;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
+    total: nullConverter(json["total"]),
     data: List<BeneficiaryData>.from(json["data"].map((x) => BeneficiaryData.fromJson(x))),
   );
 }

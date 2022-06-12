@@ -16,6 +16,7 @@ import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
 
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/Model/DashboardModel.dart';
 import 'package:tcb/app_theme.dart';
 
@@ -45,10 +46,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
     TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now()),
     TimerList(title: 'Today', startData: DateTime.now(),endData: DateTime.now()),
     TimerList(title: 'Yesterday', startData: DateTime.now().subtract(const Duration(days: 1)),endData: DateTime.now()),
-    TimerList(title: 'Last 7 Days', startData: DateTime.now().subtract(const Duration(days: 7)),endData: DateTime.now()),
-    TimerList(title: 'Last 30 Days', startData: DateTime.now().subtract(const Duration(days: 30)),endData: DateTime.now()),
-    // TimerList(title: 'This Month', startData: DateTime.now(),endData: DateTime.now()),
-    // TimerList(title: 'Last Month', startData: DateTime.now(),endData: DateTime.now()),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month-1, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month-1, 1),endData: DateTime(DateTime.now().year, DateTime.now().month, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime.now().toString()), startData: DateTime(DateTime.now().year, DateTime.now().month, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+1, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month+1, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month+1, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+2, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month+2, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month+2, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+3, 0)),
   ];
 
 

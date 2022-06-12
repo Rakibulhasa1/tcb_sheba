@@ -35,6 +35,8 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
 
   bool isSearchStart = false;
 
+  String total='';
+
 
 
   @override
@@ -74,6 +76,7 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
         if(value.responseCode==200){
           ListOfUser listOfUser = listOfUserFromJson(value.response.toString());
           dataList.addAll(listOfUser.data!.data!);
+          total = listOfUser.data!.total;
           notifyData = ApiResponse(
             isWorking: false,
             responseError: false,
@@ -113,17 +116,19 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
   Widget build(BuildContext context) {
     return Builder(
         builder: (context) {
-
           if(notifyData.isWorking!){
-            return LoadingWidget();
+            return const LoadingWidget();
           }
           if(notifyData.responseCode==404&&pageNo<1){
             return const ShowError(errorMessage: 'এই ওয়ার্ডে কোনো ডাটা খুঁজে পাওয়া যায়নি');
           }
-
           return ListView(
             controller: scrollController,
             children: [
+              Padding(
+                padding: EdgeInsets.only(left: 12,top: 12),
+                child: Text("Total : $total",style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
                 child: Container(
@@ -187,13 +192,13 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
                 alignment: Alignment.center,
                 children: [
                   ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: dataList.length,
                     itemBuilder: (context,position,){
                       return GestureDetector(
                         onTap: (){
-                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userNid: dataList[position].nidNumber,)));
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: dataList[position].beneficiaryId,isScan: false,)));
                         },
                         child: BeneficaryUserTile(beneficiaryData: dataList[position],isReceived: false,),
                       );
@@ -205,9 +210,9 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
                       height: 40,
                       width: 40,
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(color: Colors.grey[700],borderRadius: BorderRadius.circular(5)),
-                        child: LoadingWidget(),
+                        child: const LoadingWidget(),
                       ),
                     ),
                   ):Positioned(

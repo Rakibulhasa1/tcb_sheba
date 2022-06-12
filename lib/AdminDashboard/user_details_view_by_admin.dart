@@ -8,8 +8,9 @@ import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/HelperClass.dart';
 
 class UserDetailsViewByAdmin extends StatefulWidget {
-  final String userNid;
-  const UserDetailsViewByAdmin({Key? key,required this.userNid}) : super(key: key);
+  final String userId;
+  final bool isScan;
+  const UserDetailsViewByAdmin({Key? key,required this.userId,required this.isScan}) : super(key: key);
 
   @override
   _UserDetailsViewByAdminState createState() => _UserDetailsViewByAdminState();
@@ -23,8 +24,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
 
   @override
   void initState() {
-    String nid = widget.userNid.split('-').last;
-    Provider.of<BeneficiaryInfoController>(context,listen: false).getData(nid,GetStorage().read('token'));
+    Provider.of<BeneficiaryInfoController>(context,listen: false).getData(widget.userId,GetStorage().read('token'),widget.isScan);
     super.initState();
   }
 
@@ -59,7 +59,15 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
 
             return ListView(
               children: [
-
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40,
+                    color: Colors.green,
+                    child: const Text('কার্ড বিতরণী স্ট্যাটাস',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                  ),
+                ),
                 Container(
                   color: Colors.white,
                   child: Padding(
@@ -74,7 +82,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                               padding: const EdgeInsets.only(left: 8),
                               child: Image.asset('asstes/freedom50.png',height: 23,),
                             ),
-                            Text('উপকারভোগীর পণ্য প্রাপ্তির রিপোর্ট',style: TextStyle(color: Colors.pink,fontWeight: FontWeight.bold,fontSize: 12),),
+                            Text('উপকারভোগীর পণ্য প্রাপ্তির রিপোর্ট',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 16),),
                             Padding(
                               padding: const EdgeInsets.only(right: 12),
                               child: Image.asset('asstes/mujib100.png',height: 23,),
@@ -201,7 +209,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                 SizedBox(height: 24),
                 data.receiverInfo.isEmpty?const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Center(child: Text('এখনো কোন টিসিবি পণ্য গ্রহণ করা হয়নি',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold))),
+                  child: Center(child: Text('এই উপকারভোগী এখনও টিসিবি পণ্য গ্রহণ করেন নি',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.red))),
                 ):const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Text('টিসিবি পণ্য গ্রহণের বিবরণ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),

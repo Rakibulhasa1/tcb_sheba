@@ -5,7 +5,6 @@ import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/AdminDashboard/Controller/location_data_controller.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/splash_screen.dart';
 
 void main()async {
@@ -24,7 +23,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context)=>LoginDataController()),
         ChangeNotifierProvider(create: (context)=>DashboardController()),
         ChangeNotifierProvider(create: (context)=>LocationDataController()),
-        ChangeNotifierProvider(create: (context)=>GetBeneficeryController()),
         ChangeNotifierProvider(create: (context)=>BeneficiaryInfoController()),
       ],
       child: MaterialApp(

@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
+import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/select_profile_image.dart';
 import 'package:tcb/show_toast.dart';
@@ -57,18 +57,18 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
           )
         ],
       ),
-      body: Consumer<GetBeneficeryController>(
+      body: Consumer<BeneficiaryInfoController>(
         builder: (context,data,child) {
 
-          if(data.usersData!.member!.receivingStatus=='Yes'){
-            try{
+          if(!data.getUserDataResponse.responseError!){
 
-              for(qntIndex;qntIndex < data.informationForReceiver!.member!.packageDetailsInfo!.length;qntIndex++){
-                sebarQuantity = sebarQuantity + data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productName! +" "+ data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productIsActive!.toString() +" "+ data.informationForReceiver!.member!.packageDetailsInfo![qntIndex].productUnit!+ ', ';
+            for(int i = 0;i<data.receiverInfo.length;i++){
+              data.receiverInfo[i].packageDetails = "";
+              for(int j = 0;j<data.packageDetailsInfoArray.length;j++){
+                if(data.receiverInfo[i].packageId==data.packageDetailsInfoArray[j].packageId){
+                  data.receiverInfo[i].packageDetails = data.receiverInfo[i].packageDetails + "${data.packageDetailsInfoArray[j].productName} ${data.packageDetailsInfoArray[j].productQty} ${data.packageDetailsInfoArray[j].productUnit}, ";
+                }
               }
-
-            }catch(e){
-              sebarQuantity = '';
             }
           }
 
@@ -123,13 +123,11 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                           height: 70,
                                           width: 70,
                                           child: FadeInImage(
-                                            image: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.myUserInfo!.beneficiaryImageFile}'),
+                                            image: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.userData!.beneficiaryImageFile}'),
                                             height: 70,
                                             width: 70,
                                             placeholder: const AssetImage("asstes/emptyProfile.jpg"),
                                             imageErrorBuilder: (context, error, stackTrace) {
-
-                                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SelectProfileImage()), (Route<dynamic> route) => false);
                                               return Image.asset('asstes/emptyProfile.jpg', fit: BoxFit.cover);
                                             },
                                             fit: BoxFit.cover,
@@ -138,10 +136,10 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                         SizedBox(height: 28,),
                                         SizedBox(
                                           width: 100,
-                                          child: Text(data.myUserInfo!.upazilaNameBangla,style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center),
+                                          child: Text(data.userData!.upazilaNameBangla,style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center),
                                         ),
                                         SizedBox(
-                                          width: 100,child: Text(data.myUserInfo!.unionNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),textAlign: TextAlign.center),
+                                          width: 100,child: Text(data.userData!.unionNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),textAlign: TextAlign.center),
                                         ),
                                       ],
                                     ),
@@ -152,17 +150,17 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                         Text('নাম',style: TextStyle(fontSize: 10),),
                                         SizedBox(
                                           width: 120,
-                                          child: Text(data.myUserInfo!.beneficiaryNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                                          child: Text(data.userData!.beneficiaryNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                                         ),
                                         SizedBox(height: 10,),
                                         Text('পরিচয় পত্র নম্বর ',style: TextStyle(fontSize: 10,),),
                                         SizedBox(
                                           width: 120,
-                                          child: Text(data.myUserInfo!.nidNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                          child: Text(data.userData!.nidNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
                                         ),
                                         SizedBox(height: 10,),
                                         Text('পরিবার কার্ড ',style: TextStyle(fontSize: 10),),
-                                        SizedBox(width: 120,child: Text(data.myUserInfo!.familyCardNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),)),
+                                        SizedBox(width: 120,child: Text(data.userData!.familyCardNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),)),
                                         SizedBox(height: 10,),
                                         SizedBox(
                                           width: MediaQuery.of(context).size.width-150,
@@ -173,7 +171,7 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text('মোবাইল',style: TextStyle(fontSize: 10),),
-                                                  Text(data.myUserInfo!.beneficiaryMobile,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                                  Text(data.userData!.beneficiaryMobile,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
                                                 ],
                                               ),
                                               Spacer(),
@@ -182,7 +180,7 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                                 child: Column(
                                                   children: [
                                                     Text("পেশা",style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
-                                                    Text(data.myUserInfo!.beneficiaryOccupationName,style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
+                                                    Text(data.userData!.beneficiaryOccupationName,style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
                                                   ],
                                                 ),
                                               ),
@@ -200,7 +198,7 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                                     children: [
                                       SizedBox(height: 10,),
                                       QrImage(
-                                        data: "Mobile : ${data.myUserInfo!.beneficiaryMobile},NID :-${data.myUserInfo!.nidNumber}",
+                                        data: "Mobile : ${data.userData!.beneficiaryMobile},NID :-${data.userData!.nidNumber}",
                                         version: QrVersions.auto,
                                         size: 90.0,
                                       ),
@@ -215,13 +213,13 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                           SizedBox(height: 8,),
                           Builder(
                               builder: (context) {
-                                switch(data.myUserInfo!.addressType){
+                                switch(data.userData!.addressType){
                                   case 'U' :
-                                    return Text('জেলা প্রশাসন, ${data.myUserInfo!.districtNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
+                                    return Text('জেলা প্রশাসন, ${data.userData!.districtNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
                                   case 'C' :
-                                    return Text('${data.myUserInfo!.upazilaNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
+                                    return Text('${data.userData!.upazilaNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
                                   case 'P' :
-                                    return Text('${data.myUserInfo!.unionNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
+                                    return Text('${data.userData!.unionNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),);
                                 }
                                 return Text('',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),);
                               }
@@ -296,70 +294,78 @@ class _ViewFullCardAndDeliverListState extends State<ViewFullCardAndDeliverList>
                   ],
                 ),
               ),
+              data.receiverInfo.isEmpty?const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Center(child: Text('এখনো কোন টিসিবি পণ্য গ্রহণ করা হয়নি',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold))),
+              ):const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('টিসিবি পণ্য গ্রহণের বিবরণ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+              ),
               Builder(
-                builder: (context) {
-
-                  if(data.usersData!.member!.receivingStatus=='No'){
-                    return Container();
-                  }
-
-                  if(data.usersData!.member!.receivingStatus=='Yes'){
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 8),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24,vertical: 24),
-                          child: Text('টিসিবি পণ্য গ্রহণের বিবরণ'),
-                        ),
-                        Container(
-                          height: 150,
-                          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
+                  builder: (context) {
+                    if(data.receiverInfo.isEmpty){
+                      return Container();
+                    }
+                    else{
+                      return ListView.builder(
+                        itemCount: data.receiverInfo.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context,position){
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.green.withOpacity(0.2)
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(data.informationForReceiver!.member!.assignInfo!.packageName!,style: TextStyle(fontSize: 16),),
-                                        Text(sebarQuantity,style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                                        Text(data.informationForReceiver!.member!.assignInfo!.dealerName!,style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                                        Text('সেবা প্রদানের তারিখ ${HelperClass.convertAsMonthDayYear(data.informationForReceiver!.member!.beneficiaryReceiveInfo!.receivedDate.toString())}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                                      ],
-                                    ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        child: Text('সেবা/পণ্য প্রদানের তারিখ: ${HelperClass.convertAsMonthDayYear(data.receiverInfo[position].receivedDate.toString())}',style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.bold),),
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text("সেবার বিবরণ: ${data.receiverInfo[position].packageName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
+                                      Text("${data.receiverInfo[position].packageDetails}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
+                                      Divider(color: Colors.white,height: 10,thickness: 2),
+                                      Text("ডিলারের নাম: ${data.receiverInfo[position].dealerName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                      Text("সেবা প্রাপ্তি স্থান: ${data.receiverInfo[position].distributionPlace!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                      Text('ওটিপি কোড: ${data.receiverInfo[position].otpCode.toString()}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 11,),
-                              Wrap(
-                                runSpacing: 12,
-                                spacing: 12,
-                                children: [
-                                  CustomButtonWithPaidUnPaid(
-                                    title: data.informationForReceiver!.member!.assignInfo!.stepName.toString(),
-                                    isSelectable: true,
-                                    onTab: (){
+                                  SizedBox(height: 11,),
+                                  Wrap(
+                                    runSpacing: 12,
+                                    spacing: 12,
+                                    children: [
+                                      CustomButtonWithPaidUnPaid(
+                                        title: data.receiverInfo[position].stepName.toString(),
+                                        isSelectable: true,
+                                        onTab: (){
 
-                                    },
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
+                            ),
+                          );
+                        },
+                      );
+                    }
                   }
-                  return Container();
-                }
               ),
             ],
           );

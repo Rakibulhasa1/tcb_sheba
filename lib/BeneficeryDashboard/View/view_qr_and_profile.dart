@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
+import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/BeneficeryDashboard/Controller/GetBeneficeryController.dart';
 import 'package:tcb/show_toast.dart';
 
 class ViewQRandProfile extends StatefulWidget {
@@ -28,7 +28,7 @@ class _ViewQRandProfileState extends State<ViewQRandProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Profile')),
-      body: Consumer<GetBeneficeryController>(
+      body: Consumer<BeneficiaryInfoController>(
           builder: (context,data,child) {
             return ListView(
               children: [
@@ -47,13 +47,13 @@ class _ViewQRandProfileState extends State<ViewQRandProfile> {
                             SizedBox(height: 24,),
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.myUserInfo!.beneficiaryImageFile}'),
+                              backgroundImage: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.userData!.beneficiaryImageFile}'),
                             ),
                             SizedBox(height: 24,),
-                            Text(data.myUserInfo!.beneficiaryNameBangla,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                            Text(data.userData!.beneficiaryNameBangla,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                             SizedBox(height: 12,),
-                            Text('NID ${data.myUserInfo!.nidNumber}',style: TextStyle(fontSize: 10),),
-                            Text('Family Card ${data.myUserInfo!.familyCardNumber}',style: TextStyle(fontSize: 10),),
+                            Text('NID ${data.userData!.nidNumber}',style: TextStyle(fontSize: 10),),
+                            Text('Family Card ${data.userData!.familyCardNumber}',style: TextStyle(fontSize: 10),),
                           ],
                         );
                       }
@@ -64,7 +64,7 @@ class _ViewQRandProfileState extends State<ViewQRandProfile> {
                     child: Container(
                       color: Colors.white,
                       child: QrImage(
-                        data: "Mobile : ${data.myUserInfo!.beneficiaryMobile},NID :-${data.myUserInfo!.nidNumber}",
+                        data: "Mobile : ${data.userData!.beneficiaryMobile},NID :-${data.userData!.nidNumber}",
                         version: QrVersions.auto,
                         size: 250.0,
                       ),
