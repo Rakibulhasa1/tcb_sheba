@@ -1,3 +1,4 @@
+import 'package:fast_qr_reader_view/fast_qr_reader_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
@@ -6,8 +7,14 @@ import 'package:tcb/AdminDashboard/Controller/location_data_controller.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
 import 'package:tcb/splash_screen.dart';
-
+List<CameraDescription>? cameras;
 void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    cameras = await availableCameras();
+  } on QRReaderException catch (e) {
+
+  }
   await GetStorage.init();
   runApp(const MyApp());
 }
