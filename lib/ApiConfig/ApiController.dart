@@ -168,6 +168,48 @@ class ApiController{
   }
 
 
+  Future<ApiResponse<String>> updateUserProfile({required File imageFile,required String userId,required String endPoint}) async {
+
+
+    final String url = ApiEndPoints().baseUrl+endPoint;
+    var uri = Uri.parse(url);
+    print("$uri");
+    var request = http.MultipartRequest("POST", uri);
+
+    var streamBackImage = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var lengthBack = await imageFile.length();
+
+
+    var multipartFile = http.MultipartFile(
+      'beneficiary_image_file', streamBackImage, lengthBack, filename: basename(imageFile.path),
+    );
+
+    request.files.add(multipartFile);
+
+    request.headers.addAll({
+      'Accept': 'application/json',
+      'Authorization': GetStorage().read('token'),
+    });
+
+    request.fields.addAll({
+      'beneficiary_id': userId,
+    });
+
+    var response = await request.send();
+    print(response.statusCode);
+
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+
+    if(response.statusCode==200){
+      return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
+    }else{
+      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
+    }
+  }
+
+
   dynamic responseDataPrepare({required http.Response value}){
     switch(value.statusCode){
       case 200 :

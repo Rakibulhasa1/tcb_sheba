@@ -189,18 +189,19 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
                               onPressed: (){
-                                // setState(() {
-                                //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>SearchBeneficiary(nid: '-${searchController.text.toString()}',)));
-                                // });
-                                if(isSearchStart){
-                                  setState(() {
-                                    dataList = filterDataList;
-                                    isSearchStart = false;
-                                    searchController.clear();
-                                  });
-                                }
+                                setState(() {
+                                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: searchController.text,isScan: true,)));
+                                });
+                                // if(isSearchStart){
+                                //   setState(() {
+                                //     dataList = filterDataList;
+                                //     isSearchStart = false;
+                                //     searchController.clear();
+                                //   });
+                                // }
                               },
-                              icon: isSearchStart?const Icon(Icons.close,color: Colors.grey,):const Icon(Icons.search,color: Colors.grey,),
+                              //icon: isSearchStart?const Icon(Icons.close,color: Colors.grey,):const Icon(Icons.search,color: Colors.grey,),
+                              icon: const Icon(Icons.send,color: Colors.grey,),
                             ),
                             hintStyle: const TextStyle(height: 0.8,fontSize: 13,fontWeight: FontWeight.w300),
                             hintText: 'Search with mobile number or nid',
@@ -211,20 +212,20 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                         ),
                         controller: searchController,
                         onChanged: (value){
-                          setState(() {
-                            isSearchStart = true;
-                            dataList = dataList.where((element) => element.beneficiaryMobile.contains(value.toString())||
-                                element.nidNumber.contains(value.toString())||
-                                element.beneficiaryNameBangla.contains(value.toString())||
-                                element.beneficiaryNameEnglish.contains(value.toString())
-                            ).toList();
-                          });
-                          print(dataList.length);
+                          // setState(() {
+                          //   isSearchStart = true;
+                          //   dataList = dataList.where((element) => element.beneficiaryMobile.contains(value.toString())||
+                          //       element.nidNumber.contains(value.toString())||
+                          //       element.beneficiaryNameBangla.contains(value.toString())||
+                          //       element.beneficiaryNameEnglish.contains(value.toString())
+                          //   ).toList();
+                          // });
+                          // print(dataList.length);
                         },
                         onTap: (){
-                          setState(() {
-                            filterDataList = dataList;
-                          });
+                          // setState(() {
+                          //   filterDataList = dataList;
+                          // });
                         },
                       ),
                     ),

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
@@ -9,11 +13,12 @@ import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
+import 'package:tcb/GeneralDashboard/bar_code_scanner_widget.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/Model/DashboardModel.dart';
 import 'package:tcb/AdminDashboard/beneficary_list_view.dart';
 import 'package:tcb/show_toast.dart';
 import 'package:tcb/GeneralDashboard/user_from.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -23,8 +28,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
-
 
   TextEditingController nidController = TextEditingController();
   TextEditingController smsController = TextEditingController();
@@ -39,12 +42,17 @@ class _DashboardState extends State<Dashboard> {
   String? nidText;
   String? smsText;
 
+  Future barCodeScan()async{
+
+  }
+
+
   Future qrScanner()async{
     var camaraPermission = await Permission.camera.status;
     if(camaraPermission.isGranted){
       String? qrCode = await scanner.scan();
       if(qrCode!=null){
-        getQrScanData(qrCode);
+        getQrScanData(qrCode,1);
       }else{
         ShowToast.myToast('QR Code has No data', Colors.black, 2);
       }
@@ -53,7 +61,7 @@ class _DashboardState extends State<Dashboard> {
       if(isGrandt.isGranted){
         String? qrCode = await scanner.scan();
         if(qrCode!=null){
-          getQrScanData(qrCode);
+          getQrScanData(qrCode,1);
         }else{
           ShowToast.myToast('QR Code has No data', Colors.black, 2);
         }
@@ -61,8 +69,8 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  void getQrScanData(String qrCodeData){
-    Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: qrCodeData)));
+  void getQrScanData(String qrCodeData,int isQR){
+    Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: qrCodeData,isQR : isQR)));
   }
 
   @override
@@ -202,7 +210,6 @@ class _DashboardState extends State<Dashboard> {
             ],
           ),
         ),
-        const SizedBox(height: 40,),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 12),
           child: InkWell(
@@ -222,6 +229,35 @@ class _DashboardState extends State<Dashboard> {
                   Icon(Icons.qr_code,color: Colors.white,size: 48,),
                   SizedBox(width: 24,),
                   Text('QR Code স্ক্যান করুন',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 12),
+          child: InkWell(
+            onTap: (){
+
+              Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScannerWidget()));
+
+              // HelperClass().getImage(ImageSource.camera).then((value){
+              //   barCodeScan();
+              // });
+            },
+            child: Container(
+              alignment: Alignment.center,
+              height: 90,
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(FontAwesomeIcons.barcode,color: Colors.white,size: 38,),
+                  SizedBox(width: 24,),
+                  Text('NID Code স্ক্যান করুন',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
                 ],
               ),
             ),
@@ -279,7 +315,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: "-${nidText!}")));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: "${nidText!}",isQR: 3,)));
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20,right: 20),
@@ -341,7 +377,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: smsText!)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: smsController.text,isQR: 4,)));
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20,right: 20),

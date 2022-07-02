@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/BeneficeryDashboard/Model/user_update_data_model.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/show_toast.dart';
 
 class ViewNidCard extends StatefulWidget {
@@ -20,32 +21,10 @@ class ViewNidCard extends StatefulWidget {
 
 class _ViewNidCardState extends State<ViewNidCard> {
 
-  final ImagePicker image = ImagePicker();
 
   File? fontPartImage;
   File? backPartImage;
 
-  Future<File> getImage(ImageSource source)async{
-    XFile? imageFile;
-    imageFile = await image.pickImage(source: source);
-    return File(imageFile!.path);
-  }
-
-  Future<File> cropImage(File orignalImage,String title)async{
-    File? cropImage;
-    await ImageCropper().cropImage(
-      sourcePath: orignalImage.path,
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Crop $title NID card',
-          toolbarColor: Colors.green,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.ratio16x9,
-          lockAspectRatio: false),
-    ).then((value){
-      cropImage = value!;
-    });
-    return cropImage!;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +43,8 @@ class _ViewNidCardState extends State<ViewNidCard> {
                       MaterialButton(
                         onPressed: (){
                           Navigator.pop(context);
-                          getImage(ImageSource.camera).then((value){
-                            cropImage(value,'font').then((value){
+                          HelperClass().getImage(ImageSource.camera).then((value){
+                            HelperClass().cropNIDImage(value,'font').then((value){
                               setState(() {
                                 fontPartImage = value;
                               });
@@ -77,8 +56,8 @@ class _ViewNidCardState extends State<ViewNidCard> {
                       MaterialButton(
                         onPressed: (){
                           Navigator.pop(context);
-                          getImage(ImageSource.gallery).then((value){
-                            cropImage(value,'font').then((value){
+                          HelperClass().getImage(ImageSource.gallery).then((value){
+                            HelperClass().cropNIDImage(value,'font').then((value){
                               setState(() {
                                 fontPartImage = value;
                               });
@@ -130,8 +109,8 @@ class _ViewNidCardState extends State<ViewNidCard> {
                     MaterialButton(
                       onPressed: (){
                         Navigator.pop(context);
-                        getImage(ImageSource.camera).then((value){
-                          cropImage(value,'back').then((value){
+                        HelperClass().getImage(ImageSource.camera).then((value){
+                          HelperClass().cropNIDImage(value,'back').then((value){
                             setState(() {
                               backPartImage = value;
                             });
@@ -143,8 +122,8 @@ class _ViewNidCardState extends State<ViewNidCard> {
                     MaterialButton(
                       onPressed: (){
                         Navigator.pop(context);
-                        getImage(ImageSource.gallery).then((value){
-                          cropImage(value,'back').then((value){
+                        HelperClass().getImage(ImageSource.gallery).then((value){
+                          HelperClass().cropNIDImage(value,'back').then((value){
                             setState(() {
                               backPartImage = value;
                             });

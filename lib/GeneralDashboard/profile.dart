@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/change_password.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -83,44 +85,70 @@ class _ProfileState extends State<Profile> {
               bottom: 0.0,
               left: 0.0,
               right: 0.0,
-              child: InkWell(
-                onTap: (){
-                  AwesomeDialog(
-                    context: context,
-                    animType: AnimType.SCALE,
-                    dialogType: DialogType.INFO,
-                    body: const Center(child: Text(
-                      'আপনি কি লগঅউট করতে চাচ্ছেন?',
-                      style: TextStyle(fontSize: 12),
-                    ),),
-                    title: 'Logout',
-                    btnOkOnPress: () {
-                      GetStorage().remove('token');
-                      GetStorage().remove('email');
-                      GetStorage().remove('password');
-                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+              child: Column(
+                children: [
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
                     },
-                    btnCancelOnPress: (){
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.red.withOpacity(0.5),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.key,color: Colors.white,),
+                          SizedBox(width: 12,),
+                          Text('Change password',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  InkWell(
+                    onTap: (){
+                      AwesomeDialog(
+                        context: context,
+                        animType: AnimType.SCALE,
+                        dialogType: DialogType.INFO,
+                        body: const Center(child: Text(
+                          'আপনি কি লগঅউট করতে চাচ্ছেন?',
+                          style: TextStyle(fontSize: 12),
+                        ),),
+                        title: 'Logout',
+                        btnOkOnPress: () {
+                          GetStorage().remove('token');
+                          GetStorage().remove('email');
+                          GetStorage().remove('password');
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+                        },
+                        btnCancelOnPress: (){
 
-                    }
-                  ).show();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.red.withOpacity(0.5),
+                        }
+                      ).show();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.red.withOpacity(0.5),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.logout,color: Colors.white,),
+                          SizedBox(width: 12,),
+                          Text('Logout',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.logout,color: Colors.white,),
-                      SizedBox(width: 12,),
-                      Text('Logout',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
-                    ],
-                  ),
-                ),
+                ],
               ),
             ),
 

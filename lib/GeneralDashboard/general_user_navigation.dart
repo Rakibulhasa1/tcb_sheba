@@ -49,33 +49,6 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
       appBar: AppBar(
         title: Text('Dashboard'),
         actions: [
-          bottomNavigatonIndex==2?IconButton(
-            onPressed: (){
-
-              AwesomeDialog(
-                  context: context,
-                  animType: AnimType.SCALE,
-                  dialogType: DialogType.INFO,
-                  body: const Center(child: Text(
-                    'আপনি কি লগঅউট করতে চাচ্ছেন?',
-                    style: TextStyle(fontSize: 12),
-                  ),),
-                  title: 'Logout',
-                  btnOkOnPress: () {
-                    GetStorage().remove('token');
-                    GetStorage().remove('email');
-                    GetStorage().remove('password');
-                    GetStorage().remove('userType');
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-                  },
-                  btnCancelOnPress: (){
-
-                  }
-              ).show();
-
-            },
-            icon: const Icon(Icons.power_settings_new),
-          ):Container(),
           IconButton(
             onPressed: (){
 

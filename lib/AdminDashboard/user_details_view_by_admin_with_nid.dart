@@ -7,33 +7,94 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
+import 'package:tcb/AdminDashboard/Model/BeneficiaryAllInfoModel.dart';
 import 'package:tcb/AdminDashboard/Widget/custom_button_with_paid_unpaid.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
+import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/show_toast.dart';
 
-class UserDetailsViewByAdmin extends StatefulWidget {
-  final String userId;
-  final bool isScan;
-  const UserDetailsViewByAdmin({Key? key,required this.userId,required this.isScan}) : super(key: key);
+class UserDetailsViewByAdminWithNid extends StatefulWidget {
+  final String nidData;
+  const UserDetailsViewByAdminWithNid({Key? key,required this.nidData}) : super(key: key);
 
   @override
-  _UserDetailsViewByAdminState createState() => _UserDetailsViewByAdminState();
+  _UserDetailsViewByAdminWithNidState createState() => _UserDetailsViewByAdminWithNidState();
 }
 
-class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
+class _UserDetailsViewByAdminWithNidState extends State<UserDetailsViewByAdminWithNid> {
 
   String sebarQuantity = '';
   File? profileImage;
 
   int qntIndex = 0;
 
+  ApiResponse getUserDataResponse = ApiResponse(isWorking: true);
+
+  BeneficiaryAllInfoModel? userDataResponse;
+  BeneficiaryInfo? userData;
+  List<ReceiverInfo> receiverInfo = [];
+  List<PackageDetailsInfoArray> packageDetailsInfoArray = [];
+
   @override
   void initState() {
-    Provider.of<BeneficiaryInfoController>(context,listen: false).getData(widget.userId,GetStorage().read('token'),widget.isScan);
+    String newNid = '';
+    try{
+      newNid = widget.nidData.substring( widget.nidData.indexOf("NW")+2, widget.nidData.indexOf("OL")-1);
+      getData(newNid: newNid);
+    }catch(e){
+
+    }
     super.initState();
   }
+
+  void getData({required String newNid}){
+    var body = {
+      'nid_number' : newNid,
+    };
+
+    print(body);
+    ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,token: GetStorage().read('token'),body: body).then((value){
+      if(value.responseCode==200){
+        try{
+          userDataResponse = beneficiaryAllInfoModelFromJson(value.response.toString());
+          if(userDataResponse!.status!='Token is Expired'){
+
+            setState(() {
+              userData  = userDataResponse!.userData!.beneficiaryInfo;
+              receiverInfo = userDataResponse!.userData!.receiverInfo!;
+              packageDetailsInfoArray = userDataResponse!.userData!.packageDetailsInfoArray!;
+
+              getUserDataResponse = ApiResponse(isWorking: false,responseError: false);
+            });
+
+          }else{
+            setState(() {
+              getUserDataResponse = ApiResponse(
+                isWorking: false,
+                responseError: true,
+                errorMessage: 'Token is Expired',
+              );
+            });
+          }
+        }catch(e){
+          setState(() {
+            getUserDataResponse = ApiResponse(
+              isWorking: false,
+              responseError: true,
+              errorMessage: 'error',
+            );
+          });
+        }
+      }else{
+        setState(() {
+          getUserDataResponse = ApiResponse(isWorking: false,responseError: true,errorMessage: 'error',);
+        });
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +104,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
         actions: [
           profileImage!=null?IconButton(
             onPressed: (){
-              ApiController().updateUserProfile(imageFile: profileImage!,userId: widget.userId, endPoint: ApiEndPoints().profileUpdate).then((value){
+              ApiController().updateUserProfile(imageFile: profileImage!,userId: widget.nidData, endPoint: ApiEndPoints().profileUpdate).then((value){
                 if(value.responseCode==200){
                   ShowToast.myToast('Upload Successfully', Colors.black, 2);
                 }else{
@@ -55,26 +116,26 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
           ):Container(),
         ],
       ),
-      body: Consumer<BeneficiaryInfoController>(
-          builder: (context,data,child) {
+      body: Builder(
+          builder: (context) {
 
-            if(data.getUserDataResponse.isWorking!){
+            if(getUserDataResponse.isWorking!){
               return const Center(child: CircularProgressIndicator());
             }
 
-            if(data.getUserDataResponse.responseError!){
+            if(getUserDataResponse.responseError!){
               return const Center(
-                child: Text('Data Not Found'),
+                child: Text('কোন ডাটা খুঁজে পাওয়া যায়নি ।'),
               );
             }
 
-            if(!data.getUserDataResponse.responseError!){
+            if(!getUserDataResponse.responseError!){
 
-              for(int i = 0;i<data.receiverInfo.length;i++){
-                data.receiverInfo[i].packageDetails = "";
-                for(int j = 0;j<data.packageDetailsInfoArray.length;j++){
-                  if(data.receiverInfo[i].packageId==data.packageDetailsInfoArray[j].packageId){
-                    data.receiverInfo[i].packageDetails = data.receiverInfo[i].packageDetails + "${data.packageDetailsInfoArray[j].productName} ${data.packageDetailsInfoArray[j].productQty} ${data.packageDetailsInfoArray[j].productUnit}, ";
+              for(int i = 0;i<receiverInfo.length;i++){
+                receiverInfo[i].packageDetails = "";
+                for(int j = 0;j<packageDetailsInfoArray.length;j++){
+                  if(receiverInfo[i].packageId==packageDetailsInfoArray[j].packageId){
+                    receiverInfo[i].packageDetails = receiverInfo[i].packageDetails + "${packageDetailsInfoArray[j].productName} ${packageDetailsInfoArray[j].productQty} ${packageDetailsInfoArray[j].productUnit}, ";
                   }
                 }
               }
@@ -174,7 +235,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                             alignment: Alignment.center,
                                             children: [
                                               FadeInImage(
-                                                image: NetworkImage('${ApiEndPoints().imageBaseUrl}${data.userData!.beneficiaryImageFile}'),
+                                                image: NetworkImage('${ApiEndPoints().imageBaseUrl}${userData!.beneficiaryImageFile}'),
                                                 height: 70,
                                                 width: 70,
                                                 placeholder: const AssetImage("asstes/emptyProfile.jpg"),
@@ -204,13 +265,13 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                         alignment: Alignment.center,
                                         child: Builder(
                                             builder: (context) {
-                                              switch(data.userData!.addressType){
+                                              switch(userData!.addressType){
                                                 case 'U' :
-                                                  return Text('${data.userData!.districtNameBangla},${data.userData!.upazilaNameBangla},${data.userData!.unionNameBangla},${data.userData!.wordNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center,);
+                                                  return Text('${userData!.districtNameBangla},${userData!.upazilaNameBangla},${userData!.unionNameBangla},${userData!.wordNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center,);
                                                 case 'C' :
-                                                  return Text('${data.userData!.upazilaNameBangla},${data.userData!.unionNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center);
+                                                  return Text('${userData!.upazilaNameBangla},${userData!.unionNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center);
                                                 case 'P' :
-                                                  return Text('${data.userData!.districtNameBangla},${data.userData!.upazilaNameBangla},${data.userData!.unionNameBangla},${data.userData!.wordNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center);
+                                                  return Text('${userData!.districtNameBangla},${userData!.upazilaNameBangla},${userData!.unionNameBangla},${userData!.wordNameBangla}',style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center);
                                               }
                                               return Text('',style:  TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.green),textAlign: TextAlign.center);
                                             }
@@ -225,17 +286,17 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                       Text('নাম',style: TextStyle(fontSize: 10),),
                                       SizedBox(
                                         width: 120,
-                                        child: Text(data.userData!.beneficiaryNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                                        child: Text(userData!.beneficiaryNameBangla,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                                       ),
                                       SizedBox(height: 10,),
                                       Text('পরিচয় পত্র নম্বর ',style: TextStyle(fontSize: 10,),),
                                       SizedBox(
                                         width: 120,
-                                        child: Text(data.userData!.nidNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                        child: Text(userData!.nidNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
                                       ),
                                       SizedBox(height: 10,),
                                       Text('পরিবার কার্ড ',style: TextStyle(fontSize: 10),),
-                                      SizedBox(width: 120,child: Text(data.userData!.familyCardNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),)),
+                                      SizedBox(width: 120,child: Text(userData!.familyCardNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),)),
                                       SizedBox(height: 10,),
                                       SizedBox(
                                         width: MediaQuery.of(context).size.width-150,
@@ -246,7 +307,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Text('মোবাইল',style: TextStyle(fontSize: 10),),
-                                                Text(data.userData!.beneficiaryMobile,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                                Text(userData!.beneficiaryMobile,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
                                               ],
                                             ),
                                             Spacer(),
@@ -255,7 +316,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                               child: Column(
                                                 children: [
                                                   Text("পেশা",style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
-                                                  Text(data.userData!.beneficiaryOccupationName,style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
+                                                  Text(userData!.beneficiaryOccupationName,style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
                                                 ],
                                               ),
                                             ),
@@ -273,7 +334,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                   children: [
                                     SizedBox(height: 10,),
                                     QrImage(
-                                      data: "Mobile : ${data.userData!.beneficiaryMobile},NID :-${data.userData!.nidNumber}",
+                                      data: "Mobile : ${userData!.beneficiaryMobile},NID :-${userData!.nidNumber}",
                                       version: QrVersions.auto,
                                       size: 90.0,
                                     ),
@@ -290,7 +351,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                   ),
                 ),
                 SizedBox(height: 24),
-                data.receiverInfo.isEmpty?const Padding(
+                receiverInfo.isEmpty?const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Center(child: Text('এই উপকারভোগী এখনও টিসিবি পণ্য গ্রহণ করেন নি',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.red))),
                 ):const Padding(
@@ -299,12 +360,12 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                 ),
                 Builder(
                     builder: (context) {
-                      if(data.receiverInfo.isEmpty){
+                      if(receiverInfo.isEmpty){
                         return Container();
                       }
                       else{
                         return ListView.builder(
-                          itemCount: data.receiverInfo.length,
+                          itemCount: receiverInfo.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context,position){
@@ -324,7 +385,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          child: Text('সেবা/পণ্য প্রদানের তারিখ: ${HelperClass.convertAsMonthDayYear(data.receiverInfo[position].receivedDate.toString())}',style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.bold),),
+                                          child: Text('সেবা/পণ্য প্রদানের তারিখ: ${HelperClass.convertAsMonthDayYear(receiverInfo[position].receivedDate.toString())}',style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.bold),),
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
                                           decoration: BoxDecoration(
@@ -332,12 +393,12 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                           ),
                                         ),
                                         SizedBox(height: 8),
-                                        Text("সেবার বিবরণ: ${data.receiverInfo[position].packageName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
-                                        Text("${data.receiverInfo[position].packageDetails}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
+                                        Text("সেবার বিবরণ: ${receiverInfo[position].packageName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
+                                        Text("${receiverInfo[position].packageDetails}",style: TextStyle(fontSize: 12,color: Colors.grey[700],fontWeight: FontWeight.bold),),
                                         Divider(color: Colors.white,height: 10,thickness: 2),
-                                        Text("ডিলারের নাম: ${data.receiverInfo[position].dealerName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                                        Text("সেবা প্রাপ্তি স্থান: ${data.receiverInfo[position].distributionPlace!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                                        Text('ওটিপি কোড: ${data.receiverInfo[position].otpCode.toString()}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                        Text("ডিলারের নাম: ${receiverInfo[position].dealerName!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                        Text("সেবা প্রাপ্তি স্থান: ${receiverInfo[position].distributionPlace!}",style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                                        Text('ওটিপি কোড: ${receiverInfo[position].otpCode.toString()}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
                                       ],
                                     ),
                                     SizedBox(height: 11,),
@@ -346,7 +407,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                       spacing: 12,
                                       children: [
                                         CustomButtonWithPaidUnPaid(
-                                          title: data.receiverInfo[position].stepName.toString(),
+                                          title: receiverInfo[position].stepName.toString(),
                                           isSelectable: true,
                                           onTab: (){
 

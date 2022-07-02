@@ -41,6 +41,7 @@ class ApiEndPoints{
 
   final String saveNid = 'save_nid';
   final String profileUpdate = 'profile-update';
+  final String changePassword = 'change-password-update';
 
 }
 

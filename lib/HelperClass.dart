@@ -1,12 +1,17 @@
 // ignore_for_file: file_names
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:new_version/new_version.dart';
 
 
 class HelperClass{
 
+  final ImagePicker image = ImagePicker();
 
   static String convertAsMonthDayYearAndTime(String dateTime){
 
@@ -82,5 +87,45 @@ class HelperClass{
 
     print(status.localVersion);
     print(status.storeVersion);
+  }
+
+  Future<File> getImage(ImageSource source)async{
+    XFile? imageFile;
+    imageFile = await image.pickImage(source: source);
+    return File(imageFile!.path);
+  }
+
+  Future<File> cropNIDImage(File orignalImage,String title)async{
+    File? cropImage;
+    await ImageCropper().cropImage(
+      sourcePath: orignalImage.path,
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop $title NID card',
+          toolbarColor: Colors.green,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.ratio16x9,
+          lockAspectRatio: false),
+    ).then((value){
+      cropImage = value!;
+    });
+    return cropImage!;
+  }
+
+  Future<File> cropProfileImage(File orignalImage,String title)async{
+    File? cropImage;
+    await ImageCropper().cropImage(
+      compressFormat: ImageCompressFormat.png,
+      compressQuality: 50,
+      sourcePath: orignalImage.path,
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop $title NID card',
+          toolbarColor: Colors.green,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: false),
+    ).then((value){
+      cropImage = value!;
+    });
+    return cropImage!;
   }
 }

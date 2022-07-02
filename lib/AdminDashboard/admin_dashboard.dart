@@ -11,7 +11,6 @@ import 'package:tcb/AdminDashboard/LocationView/word_filter.dart';
 import 'package:tcb/AdminDashboard/Model/step_list_model.dart';
 import 'package:tcb/AdminDashboard/beneficary_list_view.dart';
 import 'package:tcb/AdminDashboard/LocationView/district_grid.dart';
-import 'package:tcb/AdminDashboard/scan_bar_code.dart';
 import 'package:tcb/AdminDashboard/view_beneficary_list_tab.dart';
 import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
@@ -60,13 +59,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
 
   List<StepModel> stepList = [];
+  int status = 1;
 
 
-  StepModel? selectStep = StepModel(stepName: 'ধাপ-১',stepId: '1',createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
+  StepModel? selectStep = StepModel(stepName: 'ধাপ-১',stepId: '6',createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
 
   @override
   void initState() {
-    DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}&step_id=${selectStep!.stepId}');
     DataResponse().getStepData(context: context);
     super.initState();
   }
@@ -77,7 +76,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
     return ListView(
       children: [
-
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+        //   child: MaterialButton(
+        //     color: Colors.green,
+        //     onPressed: (){
+        //       defaultView();
+        //     },
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: const [
+        //         Icon(FontAwesomeIcons.barcode,color: Colors.white,size: 18),
+        //         SizedBox(width: 12),
+        //         Text("Barcode Scan",style: TextStyle(color: Colors.white)),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         const SizedBox(height: 12,),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -122,6 +137,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   }
                   if(!notifyData.notifyDropDown.responseError!&&!notifyData.notifyDropDown.isWorking!){
                     stepList = notifyData.stepModel;
+                    if(stepList.isNotEmpty&&status==1){
+                      DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}&step_id=${stepList.last.stepId}');
+                    }
+                    status=2;
                   }
                   return Container(
                     height: 38,
@@ -161,12 +180,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             ],
           ),
-        ),
-        MaterialButton(
-          onPressed: (){
-            Navigator.push(context, CupertinoPageRoute(builder: (context)=>ScanBarCode()));
-          },
-          child: Text("Bar Code Scan"),
         ),
         Consumer<DashboardController>(
           builder: (context,notifyData,child) {

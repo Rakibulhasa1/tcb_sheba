@@ -6,12 +6,14 @@ import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
+import 'package:tcb/AdminDashboard/bar_code_scan_registration.dart';
 import 'package:tcb/AdminDashboard/card_delivery_details.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
+import 'package:tcb/change_password.dart';
 
 class AdminUserNavigation extends StatefulWidget {
 
@@ -78,6 +80,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
   }
 
   void getQrScanData(String qrCodeData){
+    print("QR Data : ${qrCodeData}");
     Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserDetailsViewByAdmin(userId: qrCodeData,isScan: true,)));
   }
 
@@ -233,7 +236,12 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                           qrScannerForCardDelivery();
                           Navigator.pop(context);
                           break;
-                        case 14 :
+
+                        case 15 :
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
+                          break;
+
+                        case 16 :
                           AwesomeDialog(
                               context: context,
                               animType: AnimType.SCALE,
@@ -308,7 +316,12 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                                         return Padding(
                                           padding: const EdgeInsets.only(left: 60),
                                           child: InkWell(
-                                            onTap: (){},
+                                            onTap: (){
+                                              switch(naviSubMenuForProductMenupolation[position].id){
+                                                case 0 :
+                                                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScanWithRegister()));
+                                              }
+                                            },
                                             child: Container(
                                               alignment: Alignment.centerLeft,
                                               child: Padding(
@@ -335,7 +348,9 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                                         return Padding(
                                           padding: const EdgeInsets.only(left: 60),
                                           child: InkWell(
-                                            onTap: (){},
+                                            onTap: (){
+
+                                            },
                                             child: Container(
                                               alignment: Alignment.centerLeft,
                                               child: Padding(
@@ -498,7 +513,8 @@ List<CustomNaviBarMenu> naviBarList = [
   CustomNaviBarMenu(title: 'যোগাযোগ', id: 12, icon: Icons.compare_arrows),
   CustomNaviBarMenu(title: 'সেটিংস', id: 13, icon: Icons.settings),
   CustomNaviBarMenu(title: 'সাপোর্ট', id: 14, icon: Icons.contact_support),
-  CustomNaviBarMenu(title: 'লগআউট', id: 15, icon: Icons.power_settings_new),
+  CustomNaviBarMenu(title: 'চেঞ্জ পাসওয়ার্ড', id: 15, icon: Icons.key),
+  CustomNaviBarMenu(title: 'লগআউট', id: 16, icon: Icons.power_settings_new),
 
 ];
 

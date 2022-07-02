@@ -15,12 +15,14 @@ import 'package:tcb/custom_loader.dart';
 import 'package:tcb/show_error_message.dart';
 import 'package:tcb/show_toast.dart';
 import 'package:tcb/GeneralDashboard/view_registration_code.dart';
+import 'package:intl/intl.dart';
 
 class UserFrom extends StatefulWidget {
 
   final String qrCode;
+  final int isQR;
 
-  const UserFrom({Key? key,required this.qrCode}) : super(key: key);
+  const UserFrom({Key? key,required this.qrCode,required this.isQR}) : super(key: key);
 
   @override
   _UserFromState createState() => _UserFromState();
@@ -47,7 +49,37 @@ class _UserFromState extends State<UserFrom> {
 
   @override
   void initState() {
-    var body = {'nid_number' : widget.qrCode};
+    Map<String, dynamic> body={};
+
+    if(widget.isQR==1){
+      body = {'nid_number' : widget.qrCode};
+    }
+    if(widget.isQR==2){
+      String oldNid = '';
+      String newNid = '';
+      String dateOfBirth = '';
+      String fullName = '';
+
+      newNid = widget.qrCode.substring( widget.qrCode.indexOf("NW")+2, widget.qrCode.indexOf("OL")-1);
+      oldNid = widget.qrCode.substring( widget.qrCode.indexOf("OL")+2,widget.qrCode.indexOf("BR")-1);
+      dateOfBirth = widget.qrCode.substring( widget.qrCode.indexOf("BR")+2,widget.qrCode.indexOf("PE")-1);
+      fullName = widget.qrCode.substring( widget.qrCode.indexOf("NM")+2,widget.qrCode.indexOf("NW")-1);
+
+      body = {
+        'nid_number' : oldNid,
+        'full_name' : fullName,
+        'date_of_birth' : DateFormat('yyyy-MM-dd').format(DateTime.parse(dateOfBirth)),
+        'smart_card_no' : newNid,
+      };
+    }
+    if(widget.isQR==3){
+      body = {'nid_number' : widget.qrCode};
+    }
+    if(widget.isQR==4){
+      body = {'otp_code' : widget.qrCode};
+    }
+
+    print(body);
     ApiController().postRequest(endPoint: ApiEndPoints().qrCodeSearch,body: body,token: GetStorage().read('token')).then((value){
       print(value.response);
       if(value.responseCode==200){
@@ -407,8 +439,6 @@ class _UserFromState extends State<UserFrom> {
                         default :
                           return Container();
                       }
-
-
                     }
                   ),
                 ),
@@ -513,8 +543,7 @@ class _UserFromState extends State<UserFrom> {
                     ),
                   ),
                       );
-
-                case 'Chance' :
+                    case 'Chance' :
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         child: Row(
