@@ -68,7 +68,7 @@ class HelperClass{
 
   void checkVersion(BuildContext context)async{
     final newVersion = NewVersion(
-      androidId: "com.spectrum.officers_club_dhaka",
+      androidId: "com.spectrum.tcbapp",
       iOSId: "",
     );
 

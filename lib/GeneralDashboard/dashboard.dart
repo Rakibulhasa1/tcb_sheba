@@ -238,12 +238,7 @@ class _DashboardState extends State<Dashboard> {
           padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 12),
           child: InkWell(
             onTap: (){
-
               Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScannerWidget()));
-
-              // HelperClass().getImage(ImageSource.camera).then((value){
-              //   barCodeScan();
-              // });
             },
             child: Container(
               alignment: Alignment.center,
@@ -257,7 +252,7 @@ class _DashboardState extends State<Dashboard> {
                 children: const [
                   Icon(FontAwesomeIcons.barcode,color: Colors.white,size: 38,),
                   SizedBox(width: 24,),
-                  Text('NID Code স্ক্যান করুন',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+                  Text('NID Barcode স্ক্যান করুন',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
                 ],
               ),
             ),

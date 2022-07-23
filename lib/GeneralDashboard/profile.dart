@@ -121,9 +121,7 @@ class _ProfileState extends State<Profile> {
                         ),),
                         title: 'Logout',
                         btnOkOnPress: () {
-                          GetStorage().remove('token');
-                          GetStorage().remove('email');
-                          GetStorage().remove('password');
+                          GetStorage().erase();
                           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
                         },
                         btnCancelOnPress: (){

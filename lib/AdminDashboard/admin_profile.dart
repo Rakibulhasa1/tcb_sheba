@@ -14,7 +14,7 @@ class _AdminProfileState extends State<AdminProfile> {
     return Center(
       child: ElevatedButton(
         onPressed: (){
-          GetStorage().remove('token');
+          GetStorage().erase();
         },
         child: Text('Logout'),
       ),

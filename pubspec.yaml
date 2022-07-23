@@ -41,6 +41,7 @@ dependencies:
   new_version: ^0.3.1
   font_awesome_flutter: ^10.1.0
   qr_mobile_vision: ^3.0.1
+  get: ^4.6.5
 
 
 dev_dependencies:

@@ -262,10 +262,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
                           ),),
                           title: 'Logout',
                           btnOkOnPress: () {
-                            GetStorage().remove('b_token');
-                            GetStorage().remove('userType');
-                            GetStorage().remove('user_id');
-
+                            GetStorage().erase();
                             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
                           },
                           btnCancelOnPress: (){

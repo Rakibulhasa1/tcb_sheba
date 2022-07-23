@@ -2,10 +2,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
+import 'package:tcb/AdminDashboard/bar_code_scan_for_beneficery_details.dart';
 import 'package:tcb/AdminDashboard/bar_code_scan_registration.dart';
 import 'package:tcb/AdminDashboard/card_delivery_details.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
@@ -139,7 +141,63 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
         isExtended: true,
         child: const Icon(Icons.qr_code,color: Colors.white,),
         onPressed: () {
-          qrScannerForUserDetails();
+          showDialog(context: context, builder: (context){
+            return Dialog(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))
+              ),
+              insetPadding: const EdgeInsets.all(48),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 24,vertical: 24),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Select',style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,),),
+                    SizedBox(height: 24),
+                    InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                        qrScannerForUserDetails();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.qr_code),
+                            SizedBox(width: 10),
+                            Text('Scan QR Code'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScanWithBeneficeryDetails()));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(FontAwesomeIcons.barcode),
+                            SizedBox(width: 10),
+                            Text('NID Scan'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
