@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +8,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/AdminDashboard/bar_code_scan_for_beneficery_details.dart';
 import 'package:tcb/AdminDashboard/bar_code_scan_registration.dart';
 import 'package:tcb/AdminDashboard/card_delivery_details.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
+import 'package:tcb/AdminDashboard/submit_for_registration.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
 import 'package:tcb/change_password.dart';
+import 'package:tcb/terms_and_condition.dart';
 
 class AdminUserNavigation extends StatefulWidget {
 
@@ -102,33 +107,15 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffolKey,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
-        child: Material(
-          color: primaryColorGreenLite,
-          elevation: 3.0,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 12,vertical: 12),
-            alignment: Alignment.bottomCenter,
-
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 24,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('asstes/freedom50.png',height: 30,),
-                    Image.asset('asstes/mainLogo.png',height: 30,),
-                    Image.asset('asstes/mujib100.png',height: 30,),
-                  ],
-                ),
-                Spacer(),
-                const SizedBox(height: 12,),
-                Text('হাতের মুঠোয় টিসিবি পণ্য',style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.grey[100]),),
-              ],
-            ),
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Image.asset('asstes/mainLogo.png',height: 30,),
+              SizedBox(width: 10,),
+              Text('Upokari',style: TextStyle(color: Colors.white),)
+            ],
           ),
         ),
       ),
@@ -275,7 +262,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                 padding: EdgeInsets.only(top: 28),
                 alignment: Alignment.center,
                 color: primaryPerpleColor,
-                child: const Text('TCB Menu',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+                child: const Text('Upokari Menu',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
               ),
             ),
             SizedBox(
@@ -295,11 +282,18 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                           Navigator.pop(context);
                           break;
 
-                        case 15 :
+                        case 14 :
+                          Navigator.pop(context);
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
+                          break;
+
+
+                        case 16 :
+                          Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
                           break;
 
-                        case 16 :
+                        case 17 :
                           AwesomeDialog(
                               context: context,
                               animType: AnimType.SCALE,
@@ -317,7 +311,7 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                                 Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
                               },
                               btnCancelOnPress: (){
-
+                                Navigator.pop(context);
                               }
                           ).show();
                           break;
@@ -569,10 +563,12 @@ List<CustomNaviBarMenu> naviBarList = [
   CustomNaviBarMenu(title: 'ব্যবহারকারী ব্যবস্থাপনা', id: 10, icon: Icons.manage_accounts),
   CustomNaviBarMenu(title: 'অভিযোগ ও প্রতিকার', id: 11, icon: Icons.announcement),
   CustomNaviBarMenu(title: 'যোগাযোগ', id: 12, icon: Icons.compare_arrows),
+
   CustomNaviBarMenu(title: 'সেটিংস', id: 13, icon: Icons.settings),
-  CustomNaviBarMenu(title: 'সাপোর্ট', id: 14, icon: Icons.contact_support),
-  CustomNaviBarMenu(title: 'চেঞ্জ পাসওয়ার্ড', id: 15, icon: Icons.key),
-  CustomNaviBarMenu(title: 'লগআউট', id: 16, icon: Icons.power_settings_new),
+  CustomNaviBarMenu(title: 'Terms And Condition', id: 14, icon: Icons.verified_user),
+  CustomNaviBarMenu(title: 'সাপোর্ট', id: 15, icon: Icons.contact_support),
+  CustomNaviBarMenu(title: 'চেঞ্জ পাসওয়ার্ড', id: 16, icon: Icons.key),
+  CustomNaviBarMenu(title: 'লগআউট', id: 17, icon: Icons.power_settings_new),
 
 ];
 

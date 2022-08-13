@@ -8,6 +8,7 @@ import 'package:qr_mobile_vision/qr_camera.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/AdminDashboard/submit_for_registration.dart';
+import 'package:tcb/show_toast.dart';
 
 class BarCodeScanWithRegister extends StatefulWidget {
   BarCodeScanWithRegister({Key? key}) : super(key: key);
@@ -34,15 +35,18 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
 
   final ImagePicker image = ImagePicker();
   File? nidImage;
+  File? nid2Image;
   File? profileImage;
 
   String phoneNumber='';
   String gardianMane='';
 
-  TextEditingController addressController =  TextEditingController(text: 'আড়াইহাজার পৌরসভা, ওয়ার্ড নং - 5,');
+  TextEditingController addressController =  TextEditingController(text: '');
   TextEditingController holdingController =  TextEditingController();
   TextEditingController mobileController =  TextEditingController();
-  TextEditingController gardianNameController =  TextEditingController();
+  TextEditingController fatherNameController =  TextEditingController();
+  TextEditingController motherNameController =  TextEditingController();
+  TextEditingController spouseNameController =  TextEditingController();
 
   bool isWorking = false;
 
@@ -387,44 +391,115 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         crossFadeState: genderSelectedIndex!=3?CrossFadeState.showFirst:CrossFadeState.showSecond,
                         duration: Duration(milliseconds: 500),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                      AnimatedCrossFade(
+                        firstChild: Column(
                           children: [
-                            Text(marriageStatusSelectedIndex!=5?'  ${genderSelectedIndex==1?'স্ত্রী':genderSelectedIndex==2?'স্বামী':'পিতা/মাতা'}':'পিতা/মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
-                              ),
-                              child: TextFormField(
-                                enabled: true,
-                                decoration: const InputDecoration(
-                                    hintText: 'নাম লিখুন',
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('পিতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
                                     ),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 4)
-                                ),
-                                controller: gardianNameController,
-                                onChanged: (value){
-                                  setState(() {
-                                    gardianMane = value;
-                                  });
-                                },
-                                validator: (value){
-                                  if(value!.isEmpty){
-                                    return marriageStatusSelectedIndex!=5?'  ${genderSelectedIndex==1?'স্ত্রীর নাম লিখুন':genderSelectedIndex==2?'স্বামীর নাম লিখুন':'পিতা/মাতার নাম লিখুন'}':'পিতা/মাতার নাম লিখুন';
-                                  }
-                                },
+                                    child: TextFormField(
+                                      enabled: true,
+                                      decoration: const InputDecoration(
+                                          hintText: 'নাম লিখুন',
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                      ),
+                                      controller: fatherNameController,
+                                      onChanged: (value){
+                                        setState(() {
+                                          gardianMane = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(height: 24),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
+                                    ),
+                                    child: TextFormField(
+                                      enabled: true,
+                                      decoration: const InputDecoration(
+                                          hintText: 'নাম লিখুন',
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                      ),
+                                      controller: motherNameController,
+                                      onChanged: (value){
+                                        setState(() {
+                                          gardianMane = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(height: 24),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
+                        secondChild: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(genderSelectedIndex==1?'স্ত্রী':'স্বামী',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
+                                ),
+                                child: TextFormField(
+                                  enabled: true,
+                                  decoration: const InputDecoration(
+                                      hintText: 'নাম লিখুন',
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                  ),
+                                  controller: spouseNameController,
+                                  onChanged: (value){
+                                    setState(() {
+                                      gardianMane = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                        crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex==5?CrossFadeState.showFirst:CrossFadeState.showSecond,
+                        duration: Duration(milliseconds: 500),
                       ),
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
@@ -474,7 +549,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               ),
                               child: TextFormField(
                                 maxLines : 3,
-                                enabled: false,
+                                enabled: true,
                                 onChanged: (value){
 
                                 },
@@ -551,11 +626,6 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                     contentPadding: EdgeInsets.symmetric(vertical: 4)
                                 ),
                                 controller: holdingController,
-                                validator: (value){
-                                  if(value!.isEmpty){
-                                    return 'বাড়ি/হোল্ডিং লিখুন';
-                                  }
-                                },
                               ),
                             ),
                             SizedBox(height: 24),
@@ -638,7 +708,37 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.add,size: 32),
-                                Text('আপনার NID কার্ডের সম্মুখ পেইজা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                                Text('আপনার NID কার্ডের সম্মুখ পেইজ\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: InkWell(
+                          onTap: (){
+                            getImage(ImageSource.camera).then((value){
+                              cropImage(value).then((value){
+                                setState(() {
+                                  nid2Image = value;
+                                });
+                              });
+                            });
+                          },
+                          child: Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.grey),
+                              color: Colors.green.withOpacity(0.3),
+                            ),
+                            child: nid2Image!=null?Image.file(nid2Image!):Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add,size: 32),
+                                Text('আপনার NID কার্ডের পিছনের পেইজ\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -650,25 +750,37 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: GestureDetector(
                           onTap: () {
                             if(_submit()){
-                              RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
-                                oldNid: '',
-                                nid: nid,
-                                name: fullName,
-                                phone: mobileController.text,
-                                dateOfBirth: dateOfBirth,
-                                marrigeReq: marriageStatusSelectedIndex,
-                                gender: genderStatus,
-                                marrigialStatus: marriageStatus,
-                                gardianName: gardianNameController.text,
-                                grnderReq: genderSelectedIndex,
-                                ocupation: selectedValue,
-                                currentAddress: addressController.text,
-                                roadNo: selectedRoad,
-                                houseHolding: holdingController.text,
-                                profileImage: profileImage!,
-                                nidImage: nidImage!,
-                              );
-                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));
+                              if(mobileController.text.isNotEmpty&&nidImage!=null&&nidImage!=null){
+                                RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
+                                  oldNid: nid,
+                                  smartCardNid: '',
+                                  phone: mobileController.text??'',
+                                  dateOfBirth: dateOfBirth,
+                                  gender: genderStatus,
+                                  marrigialStatus: marriageStatus,
+                                  ocupation: selectedValue,
+                                  currentAddress: addressController.text??'',
+                                  roadNo: selectedRoad,
+                                  houseHolding: holdingController.text??'',
+                                  profileImage: profileImage!,
+                                  nid2Image: nid2Image!,
+                                  nidImage: nidImage!,
+                                  barthNo: '',
+                                  fatherName: fatherNameController.text??'',
+                                  fullData: value!,
+                                  fulName: fullName,
+                                  motherName: motherNameController.text??'',
+                                  spouseName: spouseNameController.text??'',
+                                );
+                                Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));
+                              }else{
+                                if(nidImage==null||nid2Image==null||profileImage==null){
+                                  ShowToast.myToast("Please input nid card or profile picture", Colors.black, 2);
+                                }
+                                if(mobileController.text.length<11){
+                                  ShowToast.myToast("Please input phone number", Colors.black, 2);
+                                }
+                              }
                             }
                           },
                           child: Container(
@@ -688,6 +800,8 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                   ),
                 ),
               );
+
+
             }else{
               String oldNid = '';
               String newNid = '';
@@ -1002,39 +1116,115 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       crossFadeState: genderSelectedIndex!=3?CrossFadeState.showFirst:CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 500),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                    AnimatedCrossFade(
+                      firstChild: Column(
                         children: [
-                          Text(marriageStatusSelectedIndex!=5?'  ${genderSelectedIndex==1?'স্ত্রী':genderSelectedIndex==2?'স্বামী':'পিতা/মাতা'}':'পিতা/মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
-                            ),
-                            child: TextFormField(
-                              enabled: true,
-                              decoration: const InputDecoration(
-                                  hintText: 'নাম লিখুন',
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('পিতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 4)
-                              ),
-                              controller: gardianNameController,
-                              onChanged: (value){
-                                setState(() {
-                                  gardianMane = value;
-                                });
-                              },
+                                  child: TextFormField(
+                                    enabled: true,
+                                    decoration: const InputDecoration(
+                                        hintText: 'নাম লিখুন',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                    ),
+                                    controller: fatherNameController,
+                                    onChanged: (value){
+                                      setState(() {
+                                        gardianMane = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 24),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 24),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
+                                  ),
+                                  child: TextFormField(
+                                    enabled: true,
+                                    decoration: const InputDecoration(
+                                        hintText: 'নাম লিখুন',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                    ),
+                                    controller: motherNameController,
+                                    onChanged: (value){
+                                      setState(() {
+                                        gardianMane = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 24),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
+                      secondChild: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(genderSelectedIndex==1?'স্ত্রী':'স্বামী',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: gardianMane.length>1?Colors.green.withOpacity(0.3):Colors.grey[200]
+                              ),
+                              child: TextFormField(
+                                enabled: true,
+                                decoration: const InputDecoration(
+                                    hintText: 'নাম লিখুন',
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                ),
+                                controller: spouseNameController,
+                                onChanged: (value){
+                                  setState(() {
+                                    gardianMane = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
+                      crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex==5?CrossFadeState.showFirst:CrossFadeState.showSecond,
+                      duration: Duration(milliseconds: 500),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
@@ -1252,25 +1442,58 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                     SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: InkWell(
+                        onTap: (){
+                          getImage(ImageSource.camera).then((value){
+                            cropImage(value).then((value){
+                              setState(() {
+                                nid2Image = value;
+                              });
+                            });
+                          });
+                        },
+                        child: Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey),
+                            color: Colors.green.withOpacity(0.3),
+                          ),
+                          child: nid2Image!=null?Image.file(nid2Image!):Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add,size: 32),
+                              Text('আপনার NID কার্ডের পিছনের পেইজা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: GestureDetector(
                         onTap: (){
                           RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
                             oldNid: oldNid,
-                            nid: newNid,
-                            name: fullName,
-                            phone: mobileController.text,
+                            smartCardNid: newNid,
+                            phone: mobileController.text??'',
                             dateOfBirth: dateOfBirth,
                             gender: genderStatus,
                             marrigialStatus: marriageStatus,
-                            gardianName: gardianNameController.text,
-                            marrigeReq: marriageStatusSelectedIndex,
-                            grnderReq: genderSelectedIndex,
                             ocupation: selectedValue,
-                            currentAddress: addressController.text,
+                            currentAddress: addressController.text??'',
                             roadNo: selectedRoad,
-                            houseHolding: holdingController.text,
+                            houseHolding: holdingController.text??'',
                             profileImage: profileImage!,
+                            nid2Image: nid2Image!,
                             nidImage: nidImage!,
+                            barthNo: '',
+                            fatherName: fatherNameController.text??'',
+                            fullData: value!,
+                            fulName: fullName,
+                            motherName: motherNameController.text??'',
+                            spouseName: spouseNameController.text??'',
                           );
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));                        },
                         child: Container(
@@ -1304,7 +1527,6 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                 ),
               ),
               qrCodeCallback: (value){
-                print(value);
                 setState(() {
                   this.value = value;
                 });

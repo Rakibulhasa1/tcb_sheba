@@ -59,7 +59,7 @@ class BeneficiaryData {
     this.districtNameBangla,
     this.divisionName,
     this.countryName,
-
+    this.packageName,
     this.receiveDate,
     this.stepName,
     this.dealerName,
@@ -68,6 +68,7 @@ class BeneficiaryData {
   var beneficiaryId;
   var beneficiarySl;
   var familyCardNumber;
+  var packageName;
   var otpCode;
   var nidNumber;
   var addressType;
@@ -92,6 +93,7 @@ class BeneficiaryData {
     beneficiarySl: nullConverter(json["beneficiary_sl"]),
     familyCardNumber: nullConverter(json["family_card_number"]),
     otpCode: nullConverter(json["otp_code"]),
+    packageName: nullConverter(json["package_name"]),
     nidNumber: nullConverter(json["nid_number"]),
     addressType: nullConverter(json["address_type"]),
     beneficiaryNameBangla: nullConverter(json["beneficiary_name_bangla"]),

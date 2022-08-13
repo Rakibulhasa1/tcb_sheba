@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Controller/BeneficiaryInfoController.dart';
-import 'package:tcb/AdminDashboard/Controller/location_data_controller.dart';
+import 'package:tcb/AdminDashboard/Controller/dealer_data_controller.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
+import 'package:tcb/MasterApiController.dart';
 import 'package:tcb/splash_screen.dart';
 
 void main()async {
@@ -23,12 +24,13 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context)=>LoginDataController()),
         ChangeNotifierProvider(create: (context)=>DashboardController()),
-        ChangeNotifierProvider(create: (context)=>LocationDataController()),
+        ChangeNotifierProvider(create: (context)=>DealerInfoController()),
         ChangeNotifierProvider(create: (context)=>BeneficiaryInfoController()),
+        ChangeNotifierProvider(create: (context)=>MasterApiController()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'TCB',
+        title: 'Upokari',
         theme: ThemeData(
             appBarTheme: const AppBarTheme(backgroundColor: Colors.green, elevation: 0.0,),
         ),

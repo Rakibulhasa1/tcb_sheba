@@ -34,7 +34,6 @@ class BeneficiaryInfoController extends ChangeNotifier{
             userData  = userDataResponse!.userData!.beneficiaryInfo;
             receiverInfo = userDataResponse!.userData!.receiverInfo!;
             packageDetailsInfoArray = userDataResponse!.userData!.packageDetailsInfoArray!;
-
             getUserDataResponse = ApiResponse(isWorking: false,responseError: false);
           }else{
             getUserDataResponse = ApiResponse(

@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
+import 'package:tcb/MasterApiController.dart';
 import 'package:tcb/show_toast.dart';
 
 import 'AdminDashboard/admin_user_navigation.dart';
@@ -23,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    Provider.of<MasterApiController>(context,listen: false).getMasterData();
       if(GetStorage().read('token')==null||GetStorage().read('token')==''){
         Future.delayed(const Duration(seconds: 2)).then((value){
           if(GetStorage().read('b_token')!=null){
@@ -41,6 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'){
                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
                   }else if(GetStorage().read('userType')=='B'){
+
+                  }else if(GetStorage().read('userType')=='R'){
 
                   }else{
                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
@@ -62,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
           });
         });
       }
-
     super.initState();
   }
 
@@ -74,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
         alignment: Alignment.center,
         children: [
           Center(
-            child: Image.asset('asstes/logo.png'),
+            child: Image.asset('asstes/mainLogo.png',height: 140,width: 140,),
           ),
           Positioned(
             bottom: 10.0,

@@ -20,6 +20,7 @@ import 'package:tcb/show_toast.dart';
 
 
 import 'package:http/http.dart'as http;
+import 'package:tcb/terms_and_condition.dart';
 
 class BeneficerySideNavigation extends StatefulWidget {
   const BeneficerySideNavigation({Key? key}) : super(key: key);
@@ -250,6 +251,35 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
                     },
                   ),
                   Spacer(),
+                  InkWell(
+                    onTap: (){
+                      Navigator.pop(context);
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.verified_user_sharp,color: Colors.grey[600]),
+                                  const SizedBox(width: 24,),
+                                  Text('Terms And Condition',style: TextStyle(color : Colors.grey[600]),),
+                                ],
+                              ),
+                            ),
+                            Divider(color: Colors.grey[700],height: 1,),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   InkWell(
                     onTap: (){
                       AwesomeDialog(

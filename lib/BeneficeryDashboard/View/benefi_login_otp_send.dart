@@ -41,7 +41,7 @@ class _BenefiLoginOtpSendState extends State<BenefiLoginOtpSend> {
           SizedBox(height: 24),
           Text('Enter the code sent to the number',style: TextStyle(fontSize: 14,color: Colors.grey[800])),
           SizedBox(height: 24),
-          Text(widget.password,style: TextStyle(fontSize: 14,color: Colors.black)),
+          //Text(widget.password,style: TextStyle(fontSize: 14,color: Colors.black)),
           SizedBox(height: 32),
           Padding(
             padding: const EdgeInsets.all(8.0),

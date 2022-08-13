@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Controller/dealer_data_controller.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
@@ -34,8 +35,8 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LoginDataController>(
-      builder: (context,profileData,child) {
+    return Consumer2<LoginDataController,DealerInfoController>(
+      builder: (context,profileData,dealerData,child) {
         if(profileData.apiResponse.isWorking!){
           return const Center(
             child: CircularProgressIndicator(),
@@ -57,7 +58,7 @@ class _ProfileState extends State<Profile> {
               child: Container(
                 padding: EdgeInsets.all(12),
                 alignment: Alignment.bottomCenter,
-                height: 200,
+                height: 170,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
@@ -66,7 +67,7 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(profileData.userProfileModel!.data!.userName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 20),),
+                    Text(profileData.userProfileModel!.data!.userFullName,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 20),),
                     Text(profileData.userProfileModel!.data!.userMobile,style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 16),),
                     SizedBox(height: 24,),
                   ],
@@ -74,82 +75,26 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             Positioned(
-              top: 50,
+              top: 30,
               child: CircleAvatar(
-                radius: 50,
+                radius: 70,
                 backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+profileData.userProfileModel!.data!.userImage,),
               ),
             ),
-
             Positioned(
-              bottom: 0.0,
-              left: 0.0,
-              right: 0.0,
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      height: 40,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.red.withOpacity(0.5),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.key,color: Colors.white,),
-                          SizedBox(width: 12,),
-                          Text('Change password',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  InkWell(
-                    onTap: (){
-                      AwesomeDialog(
-                        context: context,
-                        animType: AnimType.SCALE,
-                        dialogType: DialogType.INFO,
-                        body: const Center(child: Text(
-                          'আপনি কি লগঅউট করতে চাচ্ছেন?',
-                          style: TextStyle(fontSize: 12),
-                        ),),
-                        title: 'Logout',
-                        btnOkOnPress: () {
-                          GetStorage().erase();
-                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-                        },
-                        btnCancelOnPress: (){
-
-                        }
-                      ).show();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      height: 40,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.red.withOpacity(0.5),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.logout,color: Colors.white,),
-                          SizedBox(width: 12,),
-                          Text('Logout',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              top: 300,
+              child: Builder(
+                builder: (context) {
+                  if(dealerData.apiResponse.isWorking!){
+                    return Container();
+                  }
+                  if(dealerData.apiResponse.responseError!){
+                    return Container();
+                  }
+                  return Text('${dealerData.dealerInfoModels!.dealerAddress}');
+                }
               ),
             ),
-
           ],
         );
       }

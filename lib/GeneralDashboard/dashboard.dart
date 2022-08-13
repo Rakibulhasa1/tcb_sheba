@@ -136,73 +136,79 @@ class _DashboardState extends State<Dashboard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap : (){
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'উপকারভোগীর সংখ্যা',)));
-                },
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.green.withOpacity(0.5),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 120,
-                          child : Text('উপকারভোগীর সংখ্যা',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                        ),
-                        Consumer<DashboardController>(
-                            builder: (context,notifyData,child) {
-                              if(notifyData.notifyDashboardData.isWorking!){
-                                return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+              Expanded(
+                flex: 5,
+                child: GestureDetector(
+                  onTap : (){
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'উপকারভোগীর সংখ্যা',)));
+                  },
+                  child: Container(
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.withOpacity(0.5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 120,
+                            child : Text('উপকারভোগী সংখ্যা/\nবরাদ্ধ সংখ্যা',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                          ),
+                          Consumer<DashboardController>(
+                              builder: (context,notifyData,child) {
+                                if(notifyData.notifyDashboardData.isWorking!){
+                                  return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+                                }
+                                if(notifyData.notifyDashboardData.responseError!){
+                                  return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+                                }
+                                return Text("-",style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
                               }
-                              if(notifyData.notifyDashboardData.responseError!){
-                                return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
-                              }
-                              return Text(notifyData.data!.totalBeneficiary,style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
-                            }
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 12,),
-              GestureDetector(
-                onTap : (){
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী',)));
-                },
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.green.withOpacity(0.5),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Text('সুবিধাপ্রাপ্ত উপকারভোগী',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                        ),
-                        Consumer<DashboardController>(
-                            builder: (context,notifyData,child) {
-                              if(notifyData.notifyDashboardData.isWorking!){
-                                return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+              Expanded(
+                flex: 5,
+                child: GestureDetector(
+                  onTap : (){
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী',)));
+                  },
+                  child: Container(
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.withOpacity(0.5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 120,
+                            child: Text('সুবিধাপ্রাপ্ত উপকারভোগী\nসংখ্যা',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                          ),
+                          Consumer<DashboardController>(
+                              builder: (context,notifyData,child) {
+                                if(notifyData.notifyDashboardData.isWorking!){
+                                  return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+                                }
+                                if(notifyData.notifyDashboardData.responseError!){
+                                  return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
+                                }
+                                return Text(notifyData.data!.totalReceiver,style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),);
                               }
-                              if(notifyData.notifyDashboardData.responseError!){
-                                return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
-                              }
-                              return Text(notifyData.data!.totalReceiver,style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),);
-                            }
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

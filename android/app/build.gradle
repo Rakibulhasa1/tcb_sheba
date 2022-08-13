@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     lintOptions {
         checkReleaseBuilds false
@@ -41,7 +41,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.spectrum.tcbapp"
+        applicationId "com.spectrum.upokari"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 16

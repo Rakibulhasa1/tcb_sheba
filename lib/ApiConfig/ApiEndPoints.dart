@@ -9,8 +9,8 @@ class ApiEndPoints{
   //final String baseUrl = 'http://185.209.228.191/api/';
   //final String imageBaseUrl = 'http://185.209.228.191/images/';
 
-  final String baseUrl = 'http://upokari.com/api/';
-  final String imageBaseUrl = 'http://upokari.com/images/';
+  final String baseUrl = 'https://upokari.com/api/';
+  final String imageBaseUrl = 'https://upokari.com/images/';
 
   // final String baseUrl = 'https://tcbone.spectrum.com.bd/api/';
   // final String imageBaseUrl = 'https://tcbone.spectrum.com.bd/images/';
@@ -42,6 +42,13 @@ class ApiEndPoints{
   final String saveNid = 'save_nid';
   final String profileUpdate = 'profile-update';
   final String changePassword = 'change-password-update';
+
+
+  final String beneficiaryRegistration = 'beneficiary-registration-by-nid-v1';
+  final String dealerReport = 'dealer-report';
+  final String dealerData = 'dealer-user-info';
+
+
 
 }
 
