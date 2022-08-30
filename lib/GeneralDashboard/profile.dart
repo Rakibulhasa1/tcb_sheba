@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
 import 'package:tcb/AdminDashboard/Controller/dealer_data_controller.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
@@ -50,7 +51,6 @@ class _ProfileState extends State<Profile> {
           alignment: Alignment.center,
           fit: StackFit.expand,
           children: [
-
             Positioned(
               top: 100,
               left: 20,
@@ -93,6 +93,71 @@ class _ProfileState extends State<Profile> {
                   }
                   return Text('${dealerData.dealerInfoModels!.dealerAddress}');
                 }
+              ),
+            ),
+            Positioned(
+              top: 350,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 0,vertical: 24),
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.grey[200],
+                  child: Consumer<DashboardController>(
+                      builder: (context,data,child) {
+                        if(data.notifyDropDown.isWorking!){
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 12,left: 24,right: 24),
+                            child: Container(
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                            ),
+                          );
+                        }
+                        if(data.notifyDropDown.responseError!){
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 12,left: 24,right: 24),
+                            child: Container(
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                            ),
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Text("বরাদ্দকৃত এলাকা সমূহ",style: TextStyle(color: Colors.grey[700],fontSize: 20)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Wrap(
+                                runSpacing: 4.0,
+                                spacing: 4.0,
+                                direction: Axis.horizontal,
+                                children: [
+                                  for(int i=0;i<data.data!.dealerAssignInfo!.length;i++)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.green,
+                                      ),
+                                      child: Text("${data.data!.dealerAssignInfo![i].assignUnionName}, ${data.data!.dealerAssignInfo![i].stepName}",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                                      padding: EdgeInsets.all(8),
+                                    ),
+                                ],
+                              ),
+                            ),
+
+                          ],
+                        );
+                      }
+                  ),
+                ),
               ),
             ),
           ],

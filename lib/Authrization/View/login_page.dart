@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Widget/custom_button_with_selectable.dart';
-import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/AdminDashboard/admin_user_navigation.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/Model/UserProfileModel.dart';
 import 'package:tcb/BeneficeryDashboard/View/benefi_login_otp_send.dart';
-import 'package:tcb/BeneficeryDashboard/View/beneficery_dashboard.dart';
-import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/MasterApiController.dart';
-import 'package:tcb/otp_verification.dart';
+import 'package:tcb/RegisteredUserDashboard/registration_user_navigation.dart';
+import 'package:tcb/WordCouncilorDashboard/word_cawnsilor_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +33,19 @@ class _LoginPageState extends State<LoginPage> {
   int selectableUser = 0;
 
   bool isAccept = false;
+  bool isBilling = false;
+
+  void billingButton(){
+    setState(() {
+      isBilling = true;
+    });
+    Future.delayed(Duration(seconds: 2)).then((value){
+      setState(() {
+        isBilling = false;
+      });
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,16 +80,16 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                         ),
-                        SizedBox(width: 12,),
-                        CustomButtonWithSelectable(
-                          title: "উপকারভোগী",
-                          isSelectable: selectableUser==1?true:false,
-                          onTab: (){
-                            setState(() {
-                              selectableUser = 1;
-                            });
-                          },
-                        ),
+                        // SizedBox(width: 12,),
+                        // CustomButtonWithSelectable(
+                        //   title: "উপকারভোগী",
+                        //   isSelectable: selectableUser==1?true:false,
+                        //   onTab: (){
+                        //     setState(() {
+                        //       selectableUser = 1;
+                        //     });
+                        //   },
+                        // ),
                       ],
                     ),
                   ),
@@ -218,111 +228,118 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 24,),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Row(
-                      children: [
-                        CheckboxTheme(
-                          child: Checkbox(
-                            value: isAccept,
-                            onChanged: (value){
-                              setState((){
-                                isAccept = !isAccept;
-                              });
-                            },
-                          ),
-                          data: CheckboxThemeData(
-                            splashRadius: 20,
-                          ),
-                        ),
-                        Wrap(
+                    child: Container(
+
+                      color: isBilling?Colors.red:Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Row(
                           children: [
-                            Text('I accept the upokari.com '),
-                            InkWell(
-                              onTap: (){
-                                showDialog(
-                                  context: context,
-                                  builder: (context){
-                                    return Dialog(
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(20.0))
-                                      ),
-                                      insetPadding: const EdgeInsets.all(16),
-                                      child: Consumer<MasterApiController>(
-                                        builder: (context,data,child) {
-                                          return Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 24,vertical: 12),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Row(
+                            CheckboxTheme(
+                              child: Checkbox(
+                                value: isAccept,
+                                onChanged: (value){
+                                  setState((){
+                                    isAccept = !isAccept;
+                                  });
+                                },
+                              ),
+                              data: CheckboxThemeData(
+                                splashRadius: 20,
+                              ),
+                            ),
+                            Wrap(
+                              children: [
+                                Text('I accept the upokari.com '),
+                                InkWell(
+                                  onTap: (){
+                                    showDialog(
+                                      context: context,
+                                      builder: (context){
+                                        return Dialog(
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(Radius.circular(20.0))
+                                          ),
+                                          insetPadding: const EdgeInsets.all(16),
+                                          child: Consumer<MasterApiController>(
+                                            builder: (context,data,child) {
+                                              return Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 24,vertical: 12),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    Text('Terms & Condition',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
-                                                    Spacer(),
-                                                    IconButton(
-                                                      onPressed: (){
-                                                        Navigator.pop(context);
-                                                      },
-                                                      icon: Icon(Icons.remove_circle_outline_rounded),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 24),
-                                                Container(
-                                                  height: 300,
-                                                  child: SingleChildScrollView(child: Text(data.masterData!.temsCondition.length<50?HelperClass().terms:'${data.masterData!.temsCondition}',textAlign: TextAlign.justify,)),
-                                                ),
-                                                SizedBox(height: 24),
-                                                Row(
-                                                  children: [
-                                                    Spacer(),
-
-                                                    InkWell(
-                                                      borderRadius: BorderRadius.circular(25),
-                                                      child: Container(
-                                                        child: Text('Denied'),
-                                                        padding: EdgeInsets.symmetric(horizontal: 24,vertical: 6),
-                                                      ),
-                                                      onTap: (){
-                                                        setState((){
-                                                          isAccept = false;
-                                                        });
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-
-                                                    InkWell(
-                                                      borderRadius: BorderRadius.circular(25),
-                                                      child: Container(
-                                                        child: Text('Accept',style: TextStyle(color: Colors.white)),
-                                                        padding: EdgeInsets.symmetric(horizontal: 24,vertical: 6),
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(25),
-                                                            color: Colors.blue
+                                                    Row(
+                                                      children: [
+                                                        Text('Terms & Condition',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                                                        Spacer(),
+                                                        IconButton(
+                                                          onPressed: (){
+                                                            Navigator.pop(context);
+                                                          },
+                                                          icon: Icon(Icons.remove_circle_outline_rounded),
                                                         ),
-                                                      ),
-                                                      onTap: (){
-                                                        setState((){
-                                                          isAccept = true;
-                                                        });
-                                                        Navigator.pop(context);
-                                                      },
+                                                      ],
                                                     ),
+                                                    SizedBox(height: 24),
+                                                    Container(
+                                                      height: 300,
+                                                      child: SingleChildScrollView(child: Text(data.masterData!.temsCondition.length<50?HelperClass().terms:'${data.masterData!.temsCondition}',textAlign: TextAlign.justify,)),
+                                                    ),
+                                                    SizedBox(height: 24),
+                                                    Row(
+                                                      children: [
+                                                        Spacer(),
+
+                                                        InkWell(
+                                                          borderRadius: BorderRadius.circular(25),
+                                                          child: Container(
+                                                            child: Text('Denied'),
+                                                            padding: EdgeInsets.symmetric(horizontal: 24,vertical: 6),
+                                                          ),
+                                                          onTap: (){
+                                                            setState((){
+                                                              isAccept = false;
+                                                            });
+                                                            Navigator.pop(context);
+                                                          },
+                                                        ),
+
+                                                        InkWell(
+                                                          borderRadius: BorderRadius.circular(25),
+                                                          child: Container(
+                                                            child: Text('Accept',style: TextStyle(color: Colors.white)),
+                                                            padding: EdgeInsets.symmetric(horizontal: 24,vertical: 6),
+                                                            decoration: BoxDecoration(
+                                                                borderRadius: BorderRadius.circular(25),
+                                                                color: Colors.blue
+                                                            ),
+                                                          ),
+                                                          onTap: (){
+                                                            setState((){
+                                                              isAccept = true;
+                                                            });
+                                                            Navigator.pop(context);
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 12),
                                                   ],
                                                 ),
-                                                SizedBox(height: 12),
-                                              ],
-                                            ),
-                                          );
-                                        }
-                                      ),
+                                              );
+                                            }
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                              child: Text('Terms & Condition',style: TextStyle(fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
+                                  child: Text('Terms & Condition',style: TextStyle(fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24,),
@@ -411,15 +428,14 @@ class _LoginPageState extends State<LoginPage> {
                                   GetStorage().write('email', userNameController.text);
                                   GetStorage().write('password', passwordController.text);
                                   GetStorage().write('userType', userData.data!.userAreaType);
-                                  if(userData.data!.userAreaType=='DD'||userData.data!.userAreaType=='DE'){
+                                  if(userData.data!.userAreaType=='DD'||userData.data!.userAreaType=='DE'||userData.data!.userAreaType=='TR'){
                                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
-                                  }
-                                  else{
-                                    if(userData.data!.userAreaType=='R'){
-
-                                    }else{
-                                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
-                                    }
+                                  }else if(userData.data!.userAreaType=='UI'){
+                                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => RegistrationUserNavigation()), (Route<dynamic> route) => false);
+                                  }else if(userData.data!.userAreaType=='R'){
+                                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => WardCounsilorUserNavigation()), (Route<dynamic> route) => false);
+                                  }else{
+                                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
                                   }
                                   setState(() {
                                     isWorking = false;
@@ -452,15 +468,20 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ):Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32,vertical: 24),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.grey,
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 45,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                        width: MediaQuery.of(context).size.width,
-                        child: const Text('Submit',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                    child: InkWell(
+                      onTap: (){
+                        billingButton();
+                      },
+                      child: Material(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.grey,
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 45,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                          width: MediaQuery.of(context).size.width,
+                          child: const Text('Submit',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                        ),
                       ),
                     ),
                   ),

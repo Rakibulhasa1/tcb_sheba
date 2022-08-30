@@ -47,8 +47,8 @@ class _BeneficaryUserTileState extends State<BeneficaryUserTile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.beneficiaryData.beneficiaryNameBangla,style: TextStyle(fontSize: 16),),
-                      Text('NID : ${widget.beneficiaryData.nidNumber}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
-                      Text('মোবাইল  ${widget.beneficiaryData.beneficiaryMobile}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                      Text('ফ্যামিলি কার্ডঃ ${widget.beneficiaryData.familyCardNumber}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
+                      Text('মোবাইলঃ ${widget.beneficiaryData.beneficiaryMobile}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
                       Text('${widget.beneficiaryData.upazilaNameBangla}, ${widget.beneficiaryData.unionNameBangla}, ${widget.beneficiaryData.wordNameBangla}',style: TextStyle(fontSize: 12,color: Colors.grey[700]),),
                     ],
                   ),
@@ -56,27 +56,6 @@ class _BeneficaryUserTileState extends State<BeneficaryUserTile> {
               ),
             ],
           ),
-          //SizedBox(height: 12,),
-          // widget.isReceived?Wrap(
-          //   runSpacing: 12,
-          //   spacing: 12,
-          //   children: [
-          //     CustomButtonWithPaidUnPaid(
-          //       title: 'ধাপ - 1',
-          //       isSelectable: true,
-          //       onTab: (){
-          //
-          //       },
-          //     ),
-          //     CustomButtonWithPaidUnPaid(
-          //       title: 'ধাপ - 2',
-          //       isSelectable: false,
-          //       onTab: (){
-          //
-          //       },
-          //     ),
-          //   ],
-          // ):Container(),
         ],
       ),
     );

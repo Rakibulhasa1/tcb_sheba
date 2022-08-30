@@ -150,7 +150,7 @@ class _CreateReportState extends State<CreateReport> {
                                 children: [
                                   IconButton(
                                     onPressed: (){
-                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ReportDownload()));
+                                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ReportDownload(stepId: dealerReportList![i].stepId,)));
                                     },
                                     icon: Icon(Icons.remove_red_eye),
                                   ),

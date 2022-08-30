@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/AdminDashboard/submit_for_registration.dart';
+import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/show_toast.dart';
 
 class BarCodeScanWithRegister extends StatefulWidget {
@@ -41,9 +43,12 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   String phoneNumber='';
   String gardianMane='';
 
+  bool isCurrentPhone = false;
+
   TextEditingController addressController =  TextEditingController(text: '');
   TextEditingController holdingController =  TextEditingController();
   TextEditingController mobileController =  TextEditingController();
+  TextEditingController confirmMobileController =  TextEditingController();
   TextEditingController fatherNameController =  TextEditingController();
   TextEditingController motherNameController =  TextEditingController();
   TextEditingController spouseNameController =  TextEditingController();
@@ -94,7 +99,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barcode Scan'),
+        title: Text('NID Scan Result'),
       ),
       body : Builder(
         builder: (context){
@@ -112,7 +117,40 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
 
               }
 
+              var body = {
+                "nid_number" : nid,
+              };
 
+              ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
+                if(responseValue.responseCode==200){
+                  showDialog(barrierDismissible: false,context: context, builder: (context){
+                    return Dialog(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                            child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
+                          ),
+                          Row(
+                            children: [
+                              Spacer(),
+                              MaterialButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                child: Text("বাতিল করুন"),
+                              ),
+                              SizedBox(width: 8),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+                }
+              });
               return Container(
                 alignment: Alignment.center,
                 height: MediaQuery.of(context).size.height,
@@ -127,7 +165,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  এনআইডি',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  এনআইডি *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -154,7 +192,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  পুরো নাম',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  পুরো নাম *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -181,7 +219,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  জন্ম তারিখ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  জন্ম তারিখ *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -208,18 +246,18 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  মোবাইলে নম্বর',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  মোবাইলে নম্বর *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: phoneNumber.length==11?Colors.green.withOpacity(0.3):Colors.red.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(5),
+                                color: phoneNumber.length==11?Colors.green.withOpacity(0.3):Colors.red.withOpacity(0.3),
                               ),
                               child: TextFormField(
                                 enabled: true,
                                 keyboardType: TextInputType.phone,
                                 decoration: const InputDecoration(
-                                    hintText: 'নম্বর লিখুন',
+                                    hintText: '01X XXXXXXXX',
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide.none
                                     ),
@@ -242,6 +280,49 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           ],
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: phoneNumber.length==11?Colors.green.withOpacity(0.3):Colors.red.withOpacity(0.3),
+                              ),
+                              child: TextFormField(
+                                enabled: true,
+                                keyboardType: TextInputType.phone,
+                                decoration: const InputDecoration(
+                                    hintText: 'মোবাইল নম্বর পুনরায় লিখুন *',
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide.none
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 4)
+                                ),
+                                controller: confirmMobileController,
+                                onChanged: (value){
+                                  setState(() {
+                                    if(mobileController.text==value){
+                                      isCurrentPhone = true;
+                                    }else{
+                                      isCurrentPhone = false;
+                                    }
+                                    phoneNumber = value;
+                                  });
+                                },
+                                validator: (value){
+                                  if(value!.isEmpty){
+                                    return 'মোবাইল নম্বর লিখুন';
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
@@ -249,7 +330,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('  লিঙ্গ',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                              Text('  লিঙ্গ *',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                               Wrap(
                                 direction: Axis.horizontal,
                                 runSpacing: 12,
@@ -305,7 +386,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('  বৈবাহিক অবস্থা',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                                Text('  বৈবাহিক অবস্থা *',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                                 Row(
                                   children: [
                                     InkWell(
@@ -505,7 +586,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  পেশা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  পেশা *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               width: MediaQuery.of(context).size.width,
                               height: 38,
@@ -606,7 +687,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  বাড়ি/হোল্ডিং',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text('  বাড়ি/হোল্ডিং/ফ্লাট/অন্যান্য',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -665,7 +746,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      profileImage!=null?Text('ছবি সংযুক্ত করা হয়েছে'):Text('কোন ছবি সংযুক্ত করা হয়নি'),
+                                      profileImage!=null?Text('ছবি সংযুক্ত করা হয়েছে'):Text('কোন ছবি সংযুক্ত করা হয়নি',style: TextStyle(color: Colors.red),),
                                       SizedBox(height: 12),
                                       Container(
                                         alignment: Alignment.center,
@@ -674,7 +755,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                           borderRadius: BorderRadius.circular(10),
                                           color: Colors.green,
                                         ),
-                                        child: Text('আপনার মুখমন্ডলের ছবি\nসংযুক্ত করুন',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.center),
+                                        child: Text(profileImage!=null?'আবেদনকারীর মুখমন্ডলের\nছবি পৰিৱৰ্তন করুন':'আবেদনকারীর মুখমন্ডলের\nছবি সংযুক্ত করুন',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.center),
                                       ),
                                     ],
                                   ),
@@ -708,7 +789,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.add,size: 32),
-                                Text('আপনার NID কার্ডের সম্মুখ পেইজ\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                                Text('আবেদনকারীর NID কার্ডের সম্মুখ পৃষ্ঠা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -738,7 +819,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.add,size: 32),
-                                Text('আপনার NID কার্ডের পিছনের পেইজ\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                                Text('আবেদনকারীর NID কার্ডের পিছনের পৃষ্ঠা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -750,7 +831,8 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: GestureDetector(
                           onTap: () {
                             if(_submit()){
-                              if(mobileController.text.isNotEmpty&&nidImage!=null&&nidImage!=null){
+
+                              if(mobileController.text.isNotEmpty&&nidImage!=null&&nidImage!=null&&isCurrentPhone){
                                 RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
                                   oldNid: nid,
                                   smartCardNid: '',
@@ -774,11 +856,17 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 );
                                 Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));
                               }else{
+
+                                print('ehllo');
+
                                 if(nidImage==null||nid2Image==null||profileImage==null){
                                   ShowToast.myToast("Please input nid card or profile picture", Colors.black, 2);
                                 }
                                 if(mobileController.text.length<11){
                                   ShowToast.myToast("Please input phone number", Colors.black, 2);
+                                }
+                                if(isCurrentPhone){
+                                  ShowToast.myToast("Please input your valid phone number", Colors.black, 2);
                                 }
                               }
                             }
@@ -817,6 +905,41 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
 
               }
 
+              var body = {
+                "nid_number" : newNid,
+              };
+
+
+              ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
+                if(responseValue.responseCode==200){
+                  showDialog(barrierDismissible: false,context: context, builder: (context){
+                    return Dialog(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                            child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
+                          ),
+                          Row(
+                            children: [
+                              Spacer(),
+                              MaterialButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                child: Text("বাতিল করুন"),
+                              ),
+                              SizedBox(width: 8),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+                }
+              });
 
               return Container(
                 alignment: Alignment.center,
@@ -830,7 +953,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  স্মার্ট কার্ড নম্বর',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  স্মার্ট কার্ড নম্বর *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -857,7 +980,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  পুরাতন এনআইডি',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  পুরাতন এনআইডি *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -884,7 +1007,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  পুরো নাম',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  পুরো নাম *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -892,7 +1015,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 color: Colors.green.withOpacity(0.3)
                             ),
                             child: TextFormField(
-                              enabled: true,
+                              enabled: false,
                               initialValue: fullName,
                               decoration: const InputDecoration(
                                   border: OutlineInputBorder(
@@ -911,7 +1034,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  জন্ম তারিখ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  জন্ম তারিখ *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -919,7 +1042,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 color: Colors.green.withOpacity(0.3)
                             ),
                             child: TextFormField(
-                              enabled: true,
+                              enabled: false,
                               initialValue: dateOfBirth,
                               decoration: const InputDecoration(
                                   border: OutlineInputBorder(
@@ -938,7 +1061,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  মোবাইলে নম্বর',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  মোবাইলে নম্বর *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -949,7 +1072,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               enabled: true,
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
-                                  hintText: 'নম্বর লিখুন',
+                                  hintText: '01X XXXXXXXX',
                                   border: OutlineInputBorder(
                                       borderSide: BorderSide.none
                                   ),
@@ -960,6 +1083,54 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 setState(() {
                                   phoneNumber = value;
                                 });
+                              },
+                              validator: (value){
+                                if(value!.isEmpty){
+                                  return 'মোবাইল নম্বর লিখুন';
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: phoneNumber.length==11?Colors.green.withOpacity(0.3):Colors.red.withOpacity(0.3),
+                            ),
+                            child: TextFormField(
+                              enabled: true,
+                              keyboardType: TextInputType.phone,
+                              decoration: const InputDecoration(
+                                  hintText: 'মোবাইল নম্বর পুনরায় লিখুন *',
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 4)
+                              ),
+                              controller: confirmMobileController,
+                              onChanged: (value){
+                                setState(() {
+                                  if(mobileController.text==value){
+                                    isCurrentPhone = true;
+                                  }else{
+                                    isCurrentPhone = false;
+                                  }
+                                  phoneNumber = value;
+                                });
+                              },
+                              validator: (value){
+                                if(value!.isEmpty){
+                                  return 'মোবাইল নম্বর লিখুন';
+                                }
                               },
                             ),
                           ),
@@ -974,7 +1145,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('  লিঙ্গ',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                            Text('  লিঙ্গ *',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                             Wrap(
                               direction: Axis.horizontal,
                               runSpacing: 12,
@@ -1030,7 +1201,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('  বৈবাহিক অবস্থা',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
+                              Text('  বৈবাহিক অবস্থা *',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
                               Row(
                                 children: [
                                   InkWell(
@@ -1230,7 +1401,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  পেশা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  পেশা *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             width: MediaQuery.of(context).size.width,
                             height: 38,
@@ -1331,7 +1502,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  বাড়ি/হোল্ডিং',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  বাড়ি/হোল্ডিং/ফ্লাট/অন্যান্য',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -1390,7 +1561,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    profileImage!=null?Text('ছবি সংযুক্ত করা হয়েছে'):Text('কোন ছবি সংযুক্ত করা হয়নি'),
+                                    profileImage!=null?Text('ছবি সংযুক্ত করা হয়েছে'):Text('কোন ছবি সংযুক্ত করা হয়নি',style: TextStyle(color: Colors.red),),
                                     SizedBox(height: 12),
                                     Container(
                                       alignment: Alignment.center,
@@ -1399,7 +1570,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                         borderRadius: BorderRadius.circular(10),
                                         color: Colors.green,
                                       ),
-                                      child: Text('আপনার মুখমন্ডলের ছবি\nসংযুক্ত করুন',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.center),
+                                      child: Text(profileImage!=null?'আবেদনকারীর মুখমন্ডলের\nছবি পৰিৱৰ্তন করুন':'আবেদনকারীর মুখমন্ডলের\nছবি সংযুক্ত করুন',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.center),
                                     ),
                                   ],
                                 ),
@@ -1427,13 +1598,13 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(color: Colors.grey),
-                            color: Colors.grey[200],
+                            color: Colors.green.withOpacity(0.3),
                           ),
                           child: nidImage!=null?Image.file(nidImage!):Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add,size: 32),
-                              Text('আপনার NID কার্ডের সম্মুখ পেইজা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                              Text('আবেদনকারীর NID কার্ডের সম্মুখ পৃষ্ঠা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
@@ -1463,39 +1634,55 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add,size: 32),
-                              Text('আপনার NID কার্ডের পিছনের পেইজা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
+                              Text('আবেদনকারীর NID কার্ডের পিছনের পৃষ্ঠা\nসংযুক্ত করতে এখানে ক্লিক করুন',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[700],fontSize: 12,fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                       ),
                     ),
                     SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: GestureDetector(
-                        onTap: (){
-                          RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
-                            oldNid: oldNid,
-                            smartCardNid: newNid,
-                            phone: mobileController.text??'',
-                            dateOfBirth: dateOfBirth,
-                            gender: genderStatus,
-                            marrigialStatus: marriageStatus,
-                            ocupation: selectedValue,
-                            currentAddress: addressController.text??'',
-                            roadNo: selectedRoad,
-                            houseHolding: holdingController.text??'',
-                            profileImage: profileImage!,
-                            nid2Image: nid2Image!,
-                            nidImage: nidImage!,
-                            barthNo: '',
-                            fatherName: fatherNameController.text??'',
-                            fullData: value!,
-                            fulName: fullName,
-                            motherName: motherNameController.text??'',
-                            spouseName: spouseNameController.text??'',
-                          );
-                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));                        },
+                        onTap: () {
+                          if(_submit()){
+                            if(mobileController.text.isNotEmpty&&nidImage!=null&&nidImage!=null&&isCurrentPhone){
+                              RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
+                                oldNid: oldNid,
+                                smartCardNid: newNid,
+                                phone: mobileController.text??'',
+                                dateOfBirth: dateOfBirth,
+                                gender: genderStatus,
+                                marrigialStatus: marriageStatus,
+                                ocupation: selectedValue,
+                                currentAddress: addressController.text??'',
+                                roadNo: selectedRoad,
+                                houseHolding: holdingController.text??'',
+                                profileImage: profileImage!,
+                                nid2Image: nid2Image!,
+                                nidImage: nidImage!,
+                                barthNo: '',
+                                fatherName: fatherNameController.text??'',
+                                fullData: value!,
+                                fulName: fullName,
+                                motherName: motherNameController.text??'',
+                                spouseName: spouseNameController.text??'',
+                              );
+                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));
+                            }else{
+                              if(nidImage==null||nid2Image==null||profileImage==null){
+                                ShowToast.myToast("Please input nid card or profile picture", Colors.black, 2);
+                              }
+                              if(mobileController.text.length<11){
+                                ShowToast.myToast("Please input phone number", Colors.black, 2);
+                              }
+                              if(!isCurrentPhone){
+                                ShowToast.myToast("Please input your valid phone number", Colors.black, 2);
+                              }
+                            }
+                          }
+                        },
                         child: Container(
                           alignment: Alignment.center,
                           height: 50,

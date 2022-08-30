@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.spectrum.tcbapp">
+    package="com.spectrum.upokari">
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -14,10 +14,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
    <application
-        android:label="Tcb Sheba"
+        android:label="Upokari"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.spectrum.upokari.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

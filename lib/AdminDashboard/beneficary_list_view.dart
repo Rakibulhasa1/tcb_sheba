@@ -257,7 +257,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("পরিচয়পত্রঃ ${dataList[position].nidNumber}"),
+                              Text("ফ্যামিলি কার্ডঃ ${dataList[position].familyCardNumber}"),
                               Text("মোবাইল নম্বরঃ ${dataList[position].beneficiaryMobile}"),
                               Text("ঠিকানাঃ ${dataList[position].upazilaNameBangla}, ${dataList[position].unionNameBangla}, ${dataList[position].wordNameBangla}"),
                               !widget.isBeneficiaryList?Column(

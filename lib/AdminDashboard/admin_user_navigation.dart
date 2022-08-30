@@ -20,6 +20,7 @@ import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
 import 'package:tcb/change_password.dart';
+import 'package:tcb/support_team_message.dart';
 import 'package:tcb/terms_and_condition.dart';
 
 class AdminUserNavigation extends StatefulWidget {
@@ -282,18 +283,24 @@ class _AdminUserNavigationState extends State<AdminUserNavigation> {
                           Navigator.pop(context);
                           break;
 
-                        case 14 :
+                        case 11 :
+                          Navigator.pop(context);
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>SupportTeamMessage()));
+
+                          break;
+
+                        case 13 :
                           Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
                           break;
 
 
-                        case 16 :
+                        case 15 :
                           Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
                           break;
 
-                        case 17 :
+                        case 16 :
                           AwesomeDialog(
                               context: context,
                               animType: AnimType.SCALE,
@@ -561,9 +568,7 @@ List<CustomNaviBarMenu> naviBarList = [
   CustomNaviBarMenu(title: 'ডিলার ব্যবস্থাপনা', id: 8, icon: Icons.manage_accounts),
   CustomNaviBarMenu(title: 'মনিটরিং', id: 9, icon: Icons.legend_toggle),
   CustomNaviBarMenu(title: 'ব্যবহারকারী ব্যবস্থাপনা', id: 10, icon: Icons.manage_accounts),
-  CustomNaviBarMenu(title: 'অভিযোগ ও প্রতিকার', id: 11, icon: Icons.announcement),
-  CustomNaviBarMenu(title: 'যোগাযোগ', id: 12, icon: Icons.compare_arrows),
-
+  CustomNaviBarMenu(title: 'আমাকে বলুন', id: 11, icon: Icons.announcement),
   CustomNaviBarMenu(title: 'সেটিংস', id: 13, icon: Icons.settings),
   CustomNaviBarMenu(title: 'Terms And Condition', id: 14, icon: Icons.verified_user),
   CustomNaviBarMenu(title: 'সাপোর্ট', id: 15, icon: Icons.contact_support),

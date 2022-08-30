@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,8 @@ import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/MasterApiController.dart';
+import 'package:tcb/RegisteredUserDashboard/registration_user_navigation.dart';
+import 'package:tcb/WordCouncilorDashboard/word_cawnsilor_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 
 import 'AdminDashboard/admin_user_navigation.dart';
@@ -41,12 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
               var myData = json.decode(value.response.toString());
               if(myData['status']=='success'){
                 if(GetStorage().read('userType')!=null){
-                  if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'){
+                  if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'||GetStorage().read('userType')=='TR'){
                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
-                  }else if(GetStorage().read('userType')=='B'){
-
                   }else if(GetStorage().read('userType')=='R'){
-
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => WardCounsilorUserNavigation()), (Route<dynamic> route) => false);
+                  }else if(GetStorage().read('userType')=='UI'){
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => RegistrationUserNavigation()), (Route<dynamic> route) => false);
                   }else{
                     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
                   }

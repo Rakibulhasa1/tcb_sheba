@@ -14,7 +14,8 @@ import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/Model/ListOfUser.dart';
 
 class ReportDownload extends StatefulWidget {
-  const ReportDownload({Key? key}) : super(key: key);
+  final String stepId;
+  const ReportDownload({Key? key,required this.stepId}) : super(key: key);
 
   @override
   _ReportDownloadState createState() => _ReportDownloadState();
@@ -51,7 +52,7 @@ class _ReportDownloadState extends State<ReportDownload> {
   }
 
   void getData(){
-    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo',token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo&step_id=${widget.stepId}',token: GetStorage().read('token')).then((value){
 
       setState(() {
         print(value.responseCode);

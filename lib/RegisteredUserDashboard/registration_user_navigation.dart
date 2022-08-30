@@ -8,6 +8,7 @@ import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/HelperClass.dart';
+import 'package:tcb/RegisteredUserDashboard/registration_dashboard.dart';
 import 'package:tcb/SqfliteDataBase/View/create_database_view.dart';
 import 'package:tcb/GeneralDashboard/dashboard.dart';
 import 'package:tcb/GeneralDashboard/profile.dart';
@@ -15,18 +16,18 @@ import 'package:tcb/change_password.dart';
 import 'package:tcb/support_team_message.dart';
 import 'package:tcb/terms_and_condition.dart';
 
-class GeneralUserNavigation extends StatefulWidget {
-  const GeneralUserNavigation({Key? key}) : super(key: key);
+class RegistrationUserNavigation extends StatefulWidget {
+  const RegistrationUserNavigation({Key? key}) : super(key: key);
 
   @override
-  _GeneralUserNavigationState createState() => _GeneralUserNavigationState();
+  _RegistrationUserNavigationState createState() => _RegistrationUserNavigationState();
 }
 
-class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
+class _RegistrationUserNavigationState extends State<RegistrationUserNavigation> {
 
 
   List<Widget> widgetList = [
-    Dashboard(),
+    RegistureUserDashboard(),
     CreateReport(),
     Profile(),
   ];
@@ -227,7 +228,6 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
                 },
                 leading: Icon(Icons.exit_to_app,color: Colors.white,size: 24),
                 title: Text('Logout',style: TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.bold)),
-
               ),
             ],
           ),

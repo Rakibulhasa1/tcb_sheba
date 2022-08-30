@@ -264,24 +264,17 @@ class _UserFromV2State extends State<UserFromV2> {
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('সেবার বিবরণ',style: TextStyle(fontSize: 16),),
+                                          const Text('প্যাকেজ/সেবা',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForReceiver!.member!.assignInfo!.packageName!,style:const TextStyle(fontSize: 16),),
                                         ]
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('সেবার পরিমান',style: TextStyle(fontSize: 16),),
+                                          const Text('পণ্যের বিবরণ',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(sebarQuantity,style: const TextStyle(fontSize: 16),),
 
-                                        ]
-                                    ),
-                                    TableRow(
-                                        children: [
-                                          const Text('ট্র্যাকসেল নম্বর',style: TextStyle(fontSize: 16),),
-                                          const Text(':',style: TextStyle(fontSize: 16),),
-                                          Text(informationForReceiver!.member!.dealerDetailsInfo![0].trackSellNumber!,style: const TextStyle(fontSize: 16),),
                                         ]
                                     ),
                                     TableRow(
@@ -337,9 +330,11 @@ class _UserFromV2State extends State<UserFromV2> {
                                 ),
                                 child: const Text('সেবা প্রদানের তথ্য',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                               ),
+                              SizedBox(height: 10),
                               Align(
                                 child : Text(HelperClass.convertAsMonthDayYear(informationForChanceReceive!.member!.assignInfo!.assignDate.toString()),style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                               ),
+                              SizedBox(height: 10),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Table(
@@ -359,51 +354,32 @@ class _UserFromV2State extends State<UserFromV2> {
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('সেবার বিবরণ',style: TextStyle(fontSize: 16),),
+                                          const Text('প্যাকেজ/সেবা',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForChanceReceive!.member!.assignInfo!.packageName!,style:const TextStyle(fontSize: 16),),
                                         ]
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('সেবার পরিমান',style: TextStyle(fontSize: 16),),
+                                          const Text('পণ্যের বিবরণ',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(sebarQuantity,style: const TextStyle(fontSize: 16),),
 
                                         ]
                                     ),
-                                    TableRow(
-                                        children: [
-                                          const Text('ট্র্যাকসেল নম্বর',style: TextStyle(fontSize: 16),),
-                                          const Text(':',style: TextStyle(fontSize: 16),),
-                                          Text(informationForChanceReceive!.member!.dealerDetailsInfo![0].trackSellNumber!,style: const TextStyle(fontSize: 16),),
-                                        ]
-                                    ),
-                                    TableRow(
-                                        children: [
-                                          const Text('ডিলারের নাম',style: TextStyle(fontSize: 16),),
-                                          const Text(':',style: TextStyle(fontSize: 16),),
-                                          Text(informationForChanceReceive!.member!.assignInfo!.dealerName,style: const TextStyle(fontSize: 16),),
-                                        ]
-                                    ),
-                                    TableRow(
-                                        children: [
-                                          const Text('বিক্রয়কারীর নাম',style: TextStyle(fontSize: 16),),
-                                          const Text(':',style: TextStyle(fontSize: 16),),
-                                          Text(informationForChanceReceive!.member!.dealerDetailsInfo![0].destributorName!,style: const TextStyle(fontSize: 16),),
-                                        ]
-                                    ),
                                   ],
                                 ),
                               ),
+                              SizedBox(height: 24),
                               Container(
                                 alignment: Alignment.center,
-                                height: 50,
+
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
                                   color: Colors.green,
                                 ),
-                                child: const Text('উপকারভোগীকে পণ্য বিতরণ করা হচ্ছে।',style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                                child: const Text('উল্লেখিত উপকারভোগীকে পণ্য প্রদান করা যাবে',style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.center,),
+                                padding: EdgeInsets.all(8),
                               ),
                             ],
                           );

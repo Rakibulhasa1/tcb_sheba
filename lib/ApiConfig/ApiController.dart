@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
@@ -12,6 +13,7 @@ import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/BeneficeryDashboard/Model/user_update_data_model.dart';
+import 'package:tcb/show_toast.dart';
 
 
 class ApiController{
@@ -238,16 +240,16 @@ class ApiController{
     request.fields.addAll(body);
 
     var response = await request.send();
-    print(response.statusCode);
-
-    response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
+    var responseData;
+    response.stream.transform(utf8.decoder).listen((event) {
+      var response = json.decode(event.toString());
+      ShowToast.myToast(response['data'], Colors.black, 2);
     });
 
     if(response.statusCode==200){
-      return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(response: responseData.toString(),responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: false);
     }else{
-      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(response: responseData.toString(),responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
     }
   }
 

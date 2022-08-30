@@ -147,15 +147,14 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                         };
 
                         ApiController().userRegistration(endPoint: ApiEndPoints().beneficiaryRegistration,body: body, dataModel: widget.data).then((value) {
+
                           if(value.responseCode==200){
-                            ShowToast.myToast("Upload Successfully", Colors.black, 2);
                             setState((){
                               isWorking = false;
                             });
                             Navigator.pop(context);
                             Navigator.pop(context);
                           }else{
-                            ShowToast.myToast("Something is wrong", Colors.black, 2);
                             setState((){
                               isWorking = false;
                             });

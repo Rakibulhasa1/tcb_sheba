@@ -22,6 +22,7 @@ class DealerReportModel {
 
 class DealerReportList {
   DealerReportList({
+    this.stepId,
     this.stepName,
     this.packageName,
     this.deliveryStartDateTime,
@@ -31,6 +32,7 @@ class DealerReportList {
     this.dealerId,
   });
 
+  var stepId;
   var stepName;
   var packageName;
   var deliveryStartDateTime;
@@ -40,6 +42,7 @@ class DealerReportList {
   var dealerId;
 
   factory DealerReportList.fromJson(Map<String, dynamic> json) => DealerReportList(
+    stepId: nullConverter(json["step_id"]),
     stepName: nullConverter(json["step_name"]),
     packageName: nullConverter(json["package_name"]),
     deliveryStartDateTime: nullConverter(json["delivery_start_date_time"]),
