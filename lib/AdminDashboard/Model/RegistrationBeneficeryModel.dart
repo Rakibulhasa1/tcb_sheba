@@ -22,6 +22,12 @@ class RegistrationBeneficeryModel{
   final File nidImage;
   final File nid2Image;
 
+  final String spouseNid;
+  final String spouseDob;
+  final String spouseSmartCard;
+
+  final int genderType;
+
   RegistrationBeneficeryModel(
       {
         required this.phone,
@@ -43,6 +49,10 @@ class RegistrationBeneficeryModel{
         required this.fulName,
         required this.motherName,
         required this.spouseName,
+        required this.spouseNid,
+        required this.spouseDob,
+        required this.spouseSmartCard,
+        required this.genderType,
       }
     );
 }

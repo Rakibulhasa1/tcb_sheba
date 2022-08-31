@@ -30,71 +30,193 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
       body: ListView(
         children: [
           SizedBox(height: 24),
-          Center(child: Image.file(widget.data.profileImage,height: 200,width: 200,alignment: Alignment.center)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Image.file(widget.data.profileImage,height: 200,width: 150,alignment: Alignment.center,fit: BoxFit.cover,),
+                SizedBox(width: 7,),
+                Column(
+                  children: [
+                    Image.file(widget.data.nidImage,height: 100-5,width: MediaQuery.of(context).size.width/2-10,alignment: Alignment.center,fit: BoxFit.cover),
+                    SizedBox(height: 7,),
+                    Image.file(widget.data.nid2Image,height: 100-5,width :  MediaQuery.of(context).size.width/2-10,alignment: Alignment.center,fit: BoxFit.cover)
+                  ],
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 24),
             child: Table(
-              
               border: TableBorder.all(),
               children: [
                 TableRow(children: [
-                  Text('এনআইডি', textAlign: TextAlign.center, style: TextStyle()),
-                  Text('${widget.data.oldNid}', textAlign: TextAlign.center, style: TextStyle()),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('এনআইডি', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.oldNid}', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('স্মার্ট কার্ড', textAlign: TextAlign.center, style: TextStyle()),
-                  Text('${widget.data.smartCardNid}', textAlign: TextAlign.center, style: TextStyle()),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('স্মার্ট কার্ড', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.smartCardNid}', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('পুরো নাম', textAlign: TextAlign.center),
-                  Text('${widget.data.fulName}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('পুরো নাম', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.fulName}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('জন্ম তারিখ', textAlign: TextAlign.center, style: TextStyle()),
-                  Text('${widget.data.dateOfBirth}', textAlign: TextAlign.center, style: TextStyle()),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('জন্ম তারিখ', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.dateOfBirth}', textAlign: TextAlign.start, style: TextStyle()),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('মোবাইলে নম্বর', textAlign: TextAlign.center),
-                  Text('${widget.data.phone}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('মোবাইলে নম্বর', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.phone}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('লিঙ্গ', textAlign: TextAlign.center),
-                  Text('${widget.data.gender}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('লিঙ্গ', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.gender}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('বৈবাহিক অবস্থা', textAlign: TextAlign.center),
-                  Text('${widget.data.marrigialStatus}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('বৈবাহিক অবস্থা', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.marrigialStatus}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('স্ত্রী/স্বামী',textAlign: TextAlign.center),
-                  Text('${widget.data.spouseName}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.data.genderType==2?'স্বামীর নাম':widget.data.genderType==1?'স্ত্রীর নাম':"",textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.spouseName}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('পিতা/মাতা',textAlign: TextAlign.center),
-                  Text('${widget.data.fatherName}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.data.genderType==2?'স্বামীর nid নম্বর':widget.data.genderType==1?'স্ত্রীর nid নম্বর':'',textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.spouseNid}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('পেশা', textAlign: TextAlign.center),
-                  Text('${widget.data.ocupation}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.data.genderType==2?'স্বামীর স্মার্ট কার্ড নম্বর':widget.data.genderType==1?'স্ত্রীর স্মার্ট কার্ড নম্বর':'',textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.spouseSmartCard}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('বর্তমান ঠিকানা', textAlign: TextAlign.center),
-                  Text('${widget.data.currentAddress}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.data.genderType==2?'স্বামীর জন্ম তারিখ':widget.data.genderType==1?'স্ত্রীর জন্ম তারিখ':'',textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.spouseDob}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('রাস্তা/পাড়া/মহল্লা', textAlign: TextAlign.center),
-                  Text('${widget.data.roadNo}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('পিতা/মাতা',textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.fatherName}', textAlign: TextAlign.start),
+                  ),
                 ]),
                 TableRow(children: [
-                  Text('বাড়ি/হোল্ডিং', textAlign: TextAlign.center),
-                  Text('${widget.data.houseHolding}', textAlign: TextAlign.center),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('পেশা', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.ocupation}', textAlign: TextAlign.start),
+                  ),
+                ]),
+                TableRow(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('বর্তমান ঠিকানা', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.currentAddress}', textAlign: TextAlign.start),
+                  ),
+                ]),
+                TableRow(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('রাস্তা/পাড়া/মহল্লা', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.roadNo}', textAlign: TextAlign.start),
+                  ),
+                ]),
+                TableRow(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('বাড়ি/হোল্ডিং', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.houseHolding}', textAlign: TextAlign.start),
+                  ),
                 ]),
               ],
             ),
           ),
-          Center(child: Image.file(widget.data.nidImage,height: 200,width: MediaQuery.of(context).size.width,alignment: Alignment.center)),
+          Center(),
           SizedBox(height: 8),
-          Center(child: Image.file(widget.data.nid2Image,height: 200,width: MediaQuery.of(context).size.width,alignment: Alignment.center)),
+          Center(),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
