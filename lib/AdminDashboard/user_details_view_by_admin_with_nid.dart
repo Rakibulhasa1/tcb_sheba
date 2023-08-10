@@ -55,7 +55,7 @@ class _UserDetailsViewByAdminWithNidState extends State<UserDetailsViewByAdminWi
     };
 
     print(body);
-    ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,token: GetStorage().read('token'),body: body).then((value){
+    ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,body: body).then((value){
       if(value.responseCode==200){
         try{
           userDataResponse = beneficiaryAllInfoModelFromJson(value.response.toString());

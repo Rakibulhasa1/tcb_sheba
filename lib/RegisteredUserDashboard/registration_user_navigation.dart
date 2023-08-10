@@ -5,12 +5,13 @@ import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Controller/dealer_data_controller.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/Controller/UserInfoController.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/RegisteredUserDashboard/registration_dashboard.dart';
+import 'package:tcb/RegisteredUserDashboard/registration_profile.dart';
+import 'package:tcb/RegisteredUserDashboard/registration_report.dart';
 import 'package:tcb/SqfliteDataBase/View/create_database_view.dart';
-import 'package:tcb/GeneralDashboard/dashboard.dart';
 import 'package:tcb/GeneralDashboard/profile.dart';
 import 'package:tcb/change_password.dart';
 import 'package:tcb/support_team_message.dart';
@@ -28,24 +29,15 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
 
   List<Widget> widgetList = [
     RegistureUserDashboard(),
-    CreateReport(),
-    Profile(),
+    RegistrationReport(),
+    RegistrationProfile(),
   ];
 
   int bottomNavigatonIndex = 0;
 
   @override
   void initState() {
-    var body = {
-      'email' : GetStorage().read('email'),
-      'password' : GetStorage().read('password'),
-    };
-    Future.delayed(Duration.zero).then((value){
-      Provider.of<LoginDataController>(context,listen: false).getResponse(body);
-      Provider.of<DealerInfoController>(context,listen: false).getDealerData();
-    });
-    HelperClass().checkVersion(context);
-
+    //HelperClass().checkVersion(context);
     super.initState();
   }
 
@@ -62,19 +54,13 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
             icon: const Icon(Icons.qr_code),
           ),
 
-          bottomNavigatonIndex==2?Container():Consumer<LoginDataController>(
+          bottomNavigatonIndex==2?Container():Consumer<UserInfoController>(
             builder: (context,data,child) {
-              if(data.apiResponse.isWorking!){
-                return Container();
-              }
-              if(data.apiResponse.responseError!){
-                return Container();
-              }
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userProfileModel!.data!.userImage!),
+                  backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userInfoModel!.data!.userInfo!.userImage!),
                 ),
               );
             }
@@ -116,14 +102,8 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
           top: true,
           child: Column(
             children: [
-              Consumer<LoginDataController>(
+              Consumer<UserInfoController>(
                   builder: (context,data,child) {
-                    if(data.apiResponse.isWorking!){
-                      return Container();
-                    }
-                    if(data.apiResponse.responseError!){
-                      return Container();
-                    }
                     return Container(
                       height: 150,
                       alignment: Alignment.bottomCenter,
@@ -133,10 +113,10 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
                           CircleAvatar(
                             radius: 36,
                             backgroundColor: Colors.blue,
-                            backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userProfileModel!.data!.userImage,),
+                            backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userInfoModel!.data!.userInfo!.userImage,),
                           ),
-                          Text(data.userProfileModel!.data!.userFullName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
-                          Text(data.userProfileModel!.data!.userMobile),
+                          Text(data.userInfoModel!.data!.userInfo!.userFullName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+                          Text(data.userInfoModel!.data!.userInfo!.userMobile),
                         ],
                       ),
                     );
@@ -173,14 +153,14 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
                 leading: Icon(Icons.person),
                 title: Text('প্রোফাইল'),
               ),
-              ListTile(
-                onTap: (){
-                  Navigator.pop(context);
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
-                },
-                leading: Icon(Icons.lock),
-                title: Text('চেঞ্জ পাসওয়ার্ড'),
-              ),
+              // ListTile(
+              //   onTap: (){
+              //     Navigator.pop(context);
+              //     Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
+              //   },
+              //   leading: Icon(Icons.lock),
+              //   title: Text('পাসওয়ার্ড পৰিৱৰ্তন'),
+              // ),
               ListTile(
                 onTap: (){
 
@@ -194,7 +174,7 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
                   Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
                 },
                 leading: Icon(Icons.account_tree),
-                title: Text('Terms and Condition'),
+                title: Text('শর্তাবলী'),
               ),
               ListTile(
                 onTap: (){
@@ -217,6 +197,10 @@ class _RegistrationUserNavigationState extends State<RegistrationUserNavigation>
                         style: TextStyle(fontSize: 12),
                       ),),
                       title: 'Logout',
+                      btnOkText: "Yes",
+                      btnCancelText: "No",
+                      btnOkColor: Colors.green,
+                      btnCancelColor: Colors.red,
                       btnOkOnPress: () {
                         GetStorage().erase();
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);

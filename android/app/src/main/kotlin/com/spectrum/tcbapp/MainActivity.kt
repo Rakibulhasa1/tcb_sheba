@@ -1,4 +1,4 @@
-package com.spectrum.upokari
+package com.spectrum.tcbapp
 
 import io.flutter.embedding.android.FlutterActivity
 

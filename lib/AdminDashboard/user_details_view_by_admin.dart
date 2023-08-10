@@ -231,7 +231,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                       Text('পরিচয় পত্র নম্বর ',style: TextStyle(fontSize: 10,),),
                                       SizedBox(
                                         width: 120,
-                                        child: Text(data.userData!.nidNumber,style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                        child: Text(HelperClass.nidEnc(data.userData!.nidNumber),style:  TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
                                       ),
                                       SizedBox(height: 10,),
                                       Text('পরিবার কার্ড ',style: TextStyle(fontSize: 10),),
@@ -273,7 +273,7 @@ class _UserDetailsViewByAdminState extends State<UserDetailsViewByAdmin> {
                                   children: [
                                     SizedBox(height: 10,),
                                     QrImage(
-                                      data: "Mobile : ${data.userData!.beneficiaryMobile},NID :-${data.userData!.nidNumber}",
+                                      data: "Mobile : ${data.userData!.beneficiaryMobile},NID :-${HelperClass.nidEnc(data.userData!.nidNumber)}",
                                       version: QrVersions.auto,
                                       size: 90.0,
                                     ),

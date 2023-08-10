@@ -19,10 +19,11 @@ import 'package:intl/intl.dart';
 
 class UserFromV2 extends StatefulWidget {
 
-  final String qrCode;
+  final String? qrCode;
   final int isQR;
+  final bool? comeFromNidScan;
 
-  const UserFromV2({Key? key,required this.qrCode,required this.isQR}) : super(key: key);
+  const UserFromV2({Key? key,required this.qrCode,required this.isQR,this.comeFromNidScan}) : super(key: key);
 
   @override
   _UserFromV2State createState() => _UserFromV2State();
@@ -52,7 +53,7 @@ class _UserFromV2State extends State<UserFromV2> {
     Map<String, dynamic> body={'nid_number' : widget.qrCode};
 
     print(body);
-    ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body).then((value){
       print(value.response);
       if(value.responseCode==200){
         setState(() {
@@ -92,7 +93,7 @@ class _UserFromV2State extends State<UserFromV2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
+      appBar: widget.comeFromNidScan!=null?null:AppBar(
         title: const Text('User Information'),
       ),
       body: Builder(
@@ -240,7 +241,7 @@ class _UserFromV2State extends State<UserFromV2> {
                                 decoration: BoxDecoration(
                                   color: Colors.green.withOpacity(0.4),
                                 ),
-                                child: const Text('সেবা প্রদানের তথ্য',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                child: const Text('সেবা প্রাপ্তির তথ্য',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                               ),
                               Align(
                                 child : Text(HelperClass.convertAsMonthDayYear(informationForReceiver!.member!.beneficiaryReceiveInfo!.receivedDate.toString()),style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
@@ -257,7 +258,7 @@ class _UserFromV2State extends State<UserFromV2> {
                                   children: [
                                     TableRow(
                                         children: [
-                                          const Text('সেবা প্রদানের ধাপ',style: TextStyle(fontSize: 16),),
+                                          const Text('সেবার ধাপ',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForReceiver!.member!.assignInfo!.stepName.toString(),style: const TextStyle(fontSize: 16),),
                                         ]
@@ -279,7 +280,7 @@ class _UserFromV2State extends State<UserFromV2> {
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('ডিলারের নাম',style: TextStyle(fontSize: 16),),
+                                          const Text('সেবা প্রদানকারী ডিলারের নাম',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForReceiver!.member!.assignInfo!.dealerName!,style: const TextStyle(fontSize: 16),),
                                         ]
@@ -535,7 +536,7 @@ class _UserFromV2State extends State<UserFromV2> {
                                   };
 
                                   print(myBody);
-                                  ApiController().postRequest(endPoint: ApiEndPoints().getOTP,body: myBody,token: GetStorage().read('token')).then((value){
+                                  ApiController().postRequest(endPoint: ApiEndPoints().getOTP,body: myBody).then((value){
                                     print('${value.responseCode} ${value.errorMessage}');
                                     if(value.responseCode==200){
                                       setState(() {

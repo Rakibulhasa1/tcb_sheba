@@ -25,7 +25,7 @@ class BeneficiaryInfoController extends ChangeNotifier{
         'beneficiary_id' : userId,
     };
     log("$body");
-    ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,token: token,body: body).then((value){
+    ApiController().postRequest(endPoint: ApiEndPoints().beneficiaryAllInfo,body: body).then((value){
       if(value.responseCode==200){
         try{
           userDataResponse = beneficiaryAllInfoModelFromJson(value.response.toString());

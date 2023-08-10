@@ -5,8 +5,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Controller/dealer_data_controller.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
-import 'package:tcb/Authrization/Controller/LoginDataController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/Controller/UserInfoController.dart';
+import 'package:tcb/GeneralDashboard/MessageBox.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/SqfliteDataBase/View/create_database_view.dart';
 import 'package:tcb/GeneralDashboard/dashboard.dart';
@@ -40,10 +41,9 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
       'password' : GetStorage().read('password'),
     };
     Future.delayed(Duration.zero).then((value){
-      Provider.of<LoginDataController>(context,listen: false).getResponse(body);
       Provider.of<DealerInfoController>(context,listen: false).getDealerData();
     });
-    HelperClass().checkVersion(context);
+    //HelperClass().checkVersion(context);
 
     super.initState();
   }
@@ -61,19 +61,13 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
             icon: const Icon(Icons.qr_code),
           ),
 
-          bottomNavigatonIndex==2?Container():Consumer<LoginDataController>(
+          bottomNavigatonIndex==2?Container():Consumer<UserInfoController>(
             builder: (context,data,child) {
-              if(data.apiResponse.isWorking!){
-                return Container();
-              }
-              if(data.apiResponse.responseError!){
-                return Container();
-              }
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userProfileModel!.data!.userImage!),
+                  backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userInfoModel!.data!.userInfo!.userImage!),
                 ),
               );
             }
@@ -115,14 +109,8 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
           top: true,
           child: Column(
             children: [
-              Consumer<LoginDataController>(
+              Consumer<UserInfoController>(
                   builder: (context,data,child) {
-                    if(data.apiResponse.isWorking!){
-                      return Container();
-                    }
-                    if(data.apiResponse.responseError!){
-                      return Container();
-                    }
                     return Container(
                       height: 150,
                       alignment: Alignment.bottomCenter,
@@ -132,10 +120,10 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
                           CircleAvatar(
                             radius: 36,
                             backgroundColor: Colors.blue,
-                            backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userProfileModel!.data!.userImage,),
+                            backgroundImage: NetworkImage(ApiEndPoints().imageBaseUrl+data.userInfoModel!.data!.userInfo!.userImage,),
                           ),
-                          Text(data.userProfileModel!.data!.userFullName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
-                          Text(data.userProfileModel!.data!.userMobile),
+                          Text(data.userInfoModel!.data!.userInfo!.userFullName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+                          Text(data.userInfoModel!.data!.userInfo!.userMobile),
                         ],
                       ),
                     );
@@ -156,16 +144,6 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
                 onTap: (){
                   Navigator.pop(context);
                   setState(() {
-                    bottomNavigatonIndex = 1;
-                  });
-                },
-                leading: Icon(Icons.add_chart_outlined),
-                title: Text('রিপোর্ট'),
-              ),
-              ListTile(
-                onTap: (){
-                  Navigator.pop(context);
-                  setState(() {
                     bottomNavigatonIndex = 2;
                   });
                 },
@@ -175,26 +153,55 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
               ListTile(
                 onTap: (){
                   Navigator.pop(context);
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
+                  setState(() {
+                    bottomNavigatonIndex = 1;
+                  });
                 },
-                leading: Icon(Icons.lock),
-                title: Text('চেঞ্জ পাসওয়ার্ড'),
+                leading: Icon(Icons.add_chart_outlined),
+                title: Text('রিপোর্ট'),
               ),
+              // ListTile(
+              //   onTap: (){
+              //     Navigator.pop(context);
+              //     Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
+              //   },
+              //   leading: Icon(Icons.published_with_changes_rounded),
+              //   title: Text('পাসওয়ার্ড পৰিৱৰ্তন'),
+              // ),
               ListTile(
                 onTap: (){
-
+                  Navigator.pop(context);
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>MessageBox()));
                 },
-                leading: Icon(Icons.radio_button_checked_outlined),
-                title: Text('আমাদের সম্পর্কে'),
+                leading: Icon(Icons.message),
+                title: Text('মেসেজ'),
               ),
               ListTile(
                 onTap: (){
                   Navigator.pop(context);
                   Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
                 },
-                leading: Icon(Icons.account_tree),
-                title: Text('Terms and Condition'),
+                leading: Icon(Icons.note),
+                title: Text('ব্যবহারের শর্তাবলী'),
               ),
+
+              ListTile(
+                onTap: (){
+                  Navigator.pop(context);
+                  //Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
+                },
+                leading: Icon(Icons.sentiment_satisfied),
+                title: Text('সচারচর জিজ্ঞাসা'),
+              ),
+
+              ListTile(
+                onTap: (){
+
+                },
+                leading: Icon(Icons.radio_button_checked_outlined),
+                title: Text('উপকারী আ্যপ সম্পর্কে জানুন'),
+              ),
+
               ListTile(
                 onTap: (){
                   Navigator.pop(context);
@@ -216,6 +223,10 @@ class _GeneralUserNavigationState extends State<GeneralUserNavigation> {
                         style: TextStyle(fontSize: 12),
                       ),),
                       title: 'Logout',
+                      btnOkText: "Yes",
+                      btnCancelText: "No",
+                      btnOkColor: Colors.green,
+                      btnCancelColor: Colors.red,
                       btnOkOnPress: () {
                         GetStorage().erase();
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);

@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
+import 'package:tcb/AdminDashboard/registration_otp.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/show_toast.dart';
@@ -20,6 +23,17 @@ class SubmitForRegistration extends StatefulWidget {
 class _SubmitForRegistrationState extends State<SubmitForRegistration> {
 
   bool isWorking = false;
+  
+  bool isAccept = false;
+
+
+  String modData(String data){
+    if(data!=""){
+      return data;
+    }else{
+      return "প্রযোজ্য নয়";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +82,7 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.smartCardNid}', textAlign: TextAlign.start, style: TextStyle()),
+                    child: Text(modData(widget.data.smartCardNid), textAlign: TextAlign.start, style: TextStyle()),
                   ),
                 ]),
                 TableRow(children: [
@@ -124,11 +138,21 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                 TableRow(children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
+                    child: Text('ফ্যামিলি মেম্বার', textAlign: TextAlign.start),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${widget.data.familyNumber}', textAlign: TextAlign.start),
+                  ),
+                ]),
+                TableRow(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(widget.data.genderType==2?'স্বামীর নাম':widget.data.genderType==1?'স্ত্রীর নাম':"",textAlign: TextAlign.start),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.spouseName}', textAlign: TextAlign.start),
+                    child: Text(modData(widget.data.spouseName), textAlign: TextAlign.start),
                   ),
                 ]),
                 TableRow(children: [
@@ -138,7 +162,7 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.spouseNid}', textAlign: TextAlign.start),
+                    child: Text(modData(widget.data.spouseNid), textAlign: TextAlign.start),
                   ),
                 ]),
                 TableRow(children: [
@@ -148,7 +172,7 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.spouseSmartCard}', textAlign: TextAlign.start),
+                    child: Text(modData(widget.data.spouseSmartCard), textAlign: TextAlign.start),
                   ),
                 ]),
                 TableRow(children: [
@@ -158,7 +182,7 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.spouseDob}', textAlign: TextAlign.start),
+                    child: Text(modData(widget.data.spouseDob), textAlign: TextAlign.start),
                   ),
                 ]),
                 TableRow(children: [
@@ -168,7 +192,7 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('${widget.data.fatherName}', textAlign: TextAlign.start),
+                    child: Text(modData(widget.data.fatherName), textAlign: TextAlign.start),
                   ),
                 ]),
                 TableRow(children: [
@@ -216,7 +240,24 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
           ),
           Center(),
           SizedBox(height: 8),
-          Center(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: isAccept, 
+                  onChanged: (value){
+                    setState(() {
+                      isAccept = value!;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: Text("আমি শপথ করে বলছি যে, এই ফরমে বর্ণিত তথ্যাদি আমার জ্ঞান ও বিশ্বাসমতে সম্পূর্ণ সত্য। এই পরিবারের অন্য কোনো সদস্য পূর্বে নিবন্ধিত হয়নি।"),
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -246,43 +287,41 @@ class _SubmitForRegistrationState extends State<SubmitForRegistration> {
                     firstChild: InkWell(
                       onTap: (){
 
-                        setState((){
-                          isWorking = true;
-                        });
+                        if(isAccept){
+                          setState(() {
+                            isWorking = true;
+                          });
+                          var body = {
+                            "mobile_number" : widget.data.phone.toString(),
+                          };
 
-                        Map<String, String> body = {
-                          "full_name" : widget.data.fulName,
-                          "smart_card_no" : widget.data.smartCardNid,
-                          "nid_number" : widget.data.oldNid,
-                          "date_of_birth" : widget.data.dateOfBirth,
-                          "full_data" : widget.data.fullData,
-                          "br_no" : '123456',
-                          "beneficiary_father_name": widget.data.fatherName,
-                          "beneficiary_mother_name" : widget.data.motherName,
-                          "beneficiary_gender" : widget.data.gender,
-                          "beneficiary_maritial_status" : widget.data.marrigialStatus,
-                          "beneficiary_spouse_name" : widget.data.spouseName,
-                          "beneficiary_occupation_name" : widget.data.ocupation,
-                          "beneficiary_mobile" : widget.data.phone,
-                          "permanent_address_village" : widget.data.currentAddress,
-                          "permanent_address_holding_no" : widget.data.houseHolding,
-                        };
+                          print(body);
+                          ApiController().postRequest(endPoint: "send_otp_for_reg",body: body).then((value){
+                            if(value.responseCode==200){
 
-                        ApiController().userRegistration(endPoint: ApiEndPoints().beneficiaryRegistration,body: body, dataModel: widget.data).then((value) {
+                              setState(() {
+                                isWorking = false;
+                              });
+                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>RegistrationOtp(data: widget.data,generateOtp: "",)));
+                            }else if(value.responseCode==404) {
+                              var response = json.decode(value.response);
+                              setState(() {
+                                isWorking = false;
+                              });
+                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>RegistrationOtp(data: widget.data,generateOtp: nullConverter(response['otp_code']),)));
+                            }
+                            else{
+                              setState(() {
+                                isWorking = false;
+                              });
 
-                          if(value.responseCode==200){
-                            setState((){
-                              isWorking = false;
-                            });
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          }else{
-                            setState((){
-                              isWorking = false;
-                            });
-                          }
-                        });
+                              ShowToast.myToast("Otp not send\nPlease try again", Colors.black, 2);
+                            }
+                          });
+                        }else{
+                          ShowToast.myToast("Please Accept this notice", Colors.black, 2);
 
+                        }
                       },
                       child: Container(
                         alignment: Alignment.center,

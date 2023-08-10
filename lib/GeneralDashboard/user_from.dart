@@ -42,6 +42,20 @@ class _UserFromState extends State<UserFrom> {
 
 
   String totalCurrentAddress = '';
+  final inputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+  final outputFormat = DateFormat('MM-dd-yy');
+
+
+  String formatDeliveryDateTime(String dateTimeString) {
+    try {
+      DateTime dateTime = inputFormat.parse(dateTimeString);
+      return outputFormat.format(dateTime);
+    } catch (e) {
+      print("Invalid date format: $dateTimeString");
+      return "Invalid date format";
+    }
+  }
+
 
   String sebarQuantity = '';
 
@@ -80,7 +94,7 @@ class _UserFromState extends State<UserFrom> {
     }
 
     print(body);
-    ApiController().postRequest(endPoint: ApiEndPoints().qrCodeSearch,body: body,token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: ApiEndPoints().qrCodeSearch,body: body).then((value){
       print(value.response);
       if(value.responseCode==200){
         setState(() {
@@ -307,7 +321,7 @@ class _UserFromState extends State<UserFrom> {
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('ডিলারের নাম',style: TextStyle(fontSize: 16),),
+                                          const Text('ডিলার',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForReceiver!.member!.assignInfo!.dealerName!,style: const TextStyle(fontSize: 16),),
                                         ]
@@ -354,15 +368,17 @@ class _UserFromState extends State<UserFrom> {
                                 alignment: Alignment.center,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: Colors.green.withOpacity(0.4),
+                                  color: Colors.blue,
                                 ),
-                                child: const Text('সেবা প্রদানের তথ্য',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                child: const Text('সেবা প্রাপ্যতার তথ্য',style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
                               ),
                               SizedBox(height: 10),
+
                               Align(
-                                child : Text(HelperClass.convertAsMonthDayYear(informationForChanceReceive!.member!.assignInfo!.assignDate.toString()),style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                child : Text(informationForChanceReceive!.member!.assignInfo!.deliveryStartDateTime.toString()+ ' - '+informationForChanceReceive!.member!.assignInfo!.deliveryEndDateTime.toString(),style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                               ),
                               SizedBox(height: 10),
+
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Table(
@@ -370,12 +386,13 @@ class _UserFromState extends State<UserFrom> {
                                   columnWidths: const {
                                     0: FractionColumnWidth(.40),
                                     1: FractionColumnWidth(.1),
-                                    2: FractionColumnWidth(.59)
+                                    2: FractionColumnWidth(.42)
                                   },
                                   children: [
                                     TableRow(
+
                                         children: [
-                                          const Text('সেবা প্রদানের ধাপ',style: TextStyle(fontSize: 16),),
+                                          const Text('সেবার ধাপ',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(informationForChanceReceive!.member!.assignInfo!.stepName.toString(),style: const TextStyle(fontSize: 16),),
                                         ]
@@ -389,7 +406,7 @@ class _UserFromState extends State<UserFrom> {
                                     ),
                                     TableRow(
                                         children: [
-                                          const Text('পণ্যের বিবরণ',style: TextStyle(fontSize: 16),),
+                                          const Text('সেবার বিবরণ',style: TextStyle(fontSize: 16),),
                                           const Text(':',style: TextStyle(fontSize: 16),),
                                           Text(sebarQuantity,style: const TextStyle(fontSize: 16),),
 
@@ -406,7 +423,7 @@ class _UserFromState extends State<UserFrom> {
                                   borderRadius: BorderRadius.circular(5),
                                   color: Colors.green,
                                 ),
-                                child: const Text('উল্লেখিত উপকারভোগীকে পণ্য প্রদান করা যাবে',style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.center,),
+                                child: const Text('এই উপকারভোগীকে সেবা/পণ্য প্রদান করা যাবে',style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.center,),
                                 padding: EdgeInsets.all(8),
                               ),
                             ],
@@ -563,7 +580,7 @@ class _UserFromState extends State<UserFrom> {
                                   };
 
                                   print(myBody);
-                                  ApiController().postRequest(endPoint: ApiEndPoints().getOTP,body: myBody,token: GetStorage().read('token')).then((value){
+                                  ApiController().postRequest(endPoint: ApiEndPoints().getOTP,body: myBody).then((value){
                                     print('${value.responseCode} ${value.errorMessage}');
                                     if(value.responseCode==200){
                                       setState(() {

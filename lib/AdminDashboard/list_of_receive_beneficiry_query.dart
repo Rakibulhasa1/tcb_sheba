@@ -62,7 +62,7 @@ class _ListOfReceiveBeneficiryQueryState extends State<ListOfReceiveBeneficiryQu
       if(widget.isCity)
         'union_id' : widget.wordId,
     };
-    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo',body: body,token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo',body: body).then((value){
 
       setState(() {
         print(value.responseCode);

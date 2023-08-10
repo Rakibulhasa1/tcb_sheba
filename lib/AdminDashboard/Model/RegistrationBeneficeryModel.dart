@@ -27,9 +27,12 @@ class RegistrationBeneficeryModel{
   final String spouseSmartCard;
 
   final int genderType;
+  final int familyNumber;
+  final String wardId;
 
   RegistrationBeneficeryModel(
       {
+        required this.familyNumber,
         required this.phone,
         required this.oldNid,
         required this.smartCardNid,
@@ -53,6 +56,7 @@ class RegistrationBeneficeryModel{
         required this.spouseDob,
         required this.spouseSmartCard,
         required this.genderType,
+        required this.wardId,
       }
     );
 }

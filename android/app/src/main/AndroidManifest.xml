@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.spectrum.upokari">
+    package="com.spectrum.tcbapp">
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -14,10 +14,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
    <application
-        android:label="Upokari"
+        android:label="TCB Registration"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.spectrum.upokari.MainActivity"
+            android:name="com.spectrum.tcbapp.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

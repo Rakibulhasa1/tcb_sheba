@@ -34,38 +34,39 @@ class _ChangePasswordState extends State<ChangePassword> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 32),
-              child: Text("Change Password",style: TextStyle(fontSize: 24,fontWeight: FontWeight.w500)),
+              padding: const EdgeInsets.only(left: 31),
+              child: Text("Change Password",style: TextStyle(fontSize: 23,fontWeight: FontWeight.w500)),
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 23),
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 31),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Material(
-                    borderRadius: BorderRadius.circular(5),
-                    elevation: 3.0,
+                    borderRadius: BorderRadius.circular(4),
+                    elevation: 2.0,
                     child: Container(
-                      padding: const EdgeInsets.only(bottom: 0),
-                      height: 43,
+                      // padding: const EdgeInsets.only(bottom: -1),
+                      height: 42,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(4),
                         color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.6),
-                            spreadRadius: 0,
-                            blurRadius: 7,
-                            offset: const Offset(2, 2), // changes position of shadow
-                          ),
-                        ],
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Colors.white.withOpacity(-1.6),
+                        //     spreadRadius: -1,
+                        //     blurRadius: 6,
+                        //     offset: const Offset(1, 2), // changes position of shadow
+                        //   ),
+                        // ],
                       ),
                       child: Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Icon(Icons.lock,size: 20,color: Colors.grey[600],),
+                            padding: const EdgeInsets.only(left: 19),
+                            child: Icon(Icons.lock,size: 19,color: Colors.grey[600],),
                           ),
                           Expanded(
                             child: TextField(
@@ -77,7 +78,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                               autocorrect: false,
                               textInputAction: TextInputAction.done,
                               style: const TextStyle(
-                                  height: 1.1, fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                  height: 0.1, fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                               decoration: InputDecoration(
                                   suffixIcon: (seePassword)?IconButton(
                                     onPressed: (){
@@ -94,15 +95,16 @@ class _ChangePasswordState extends State<ChangePassword> {
                                     },
                                     icon: const Icon(Icons.visibility_off_sharp),
                                   ),
-                                  hintStyle: const TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
+                                  hintStyle: const TextStyle(height: -1.8,fontSize: 16,fontWeight: FontWeight.w300),
                                   hintText: 'New Password',
                                   border: const OutlineInputBorder(
                                       borderSide: BorderSide.none
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12)
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 11)
                               ),
                               controller: passwordController,
                             ),
+
                           ),
                         ],
                       ),
@@ -111,35 +113,35 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 23),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 31),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Material(
-                    borderRadius: BorderRadius.circular(5),
-                    elevation: 3.0,
+                    borderRadius: BorderRadius.circular(4),
+                    elevation: 2.0,
                     child: Container(
-                      padding: const EdgeInsets.only(bottom: 0),
-                      height: 43,
+                      // padding: const EdgeInsets.only(bottom: -1),
+                      height: 42,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(4),
                         color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.6),
-                            spreadRadius: 0,
-                            blurRadius: 7,
-                            offset: const Offset(2, 2), // changes position of shadow
-                          ),
-                        ],
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Colors.white.withOpacity(-1.6),
+                        //     spreadRadius: -1,
+                        //     blurRadius: 6,
+                        //     offset: const Offset(1, 2), // changes position of shadow
+                        //   ),
+                        // ],
                       ),
                       child: Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Icon(Icons.lock,size: 20,color: Colors.grey[600],),
+                            padding: const EdgeInsets.only(left: 19),
+                            child: Icon(Icons.lock,size: 19,color: Colors.grey[600],),
                           ),
                           Expanded(
                             child: TextField(
@@ -151,7 +153,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                               autocorrect: false,
                               textInputAction: TextInputAction.done,
                               style: const TextStyle(
-                                  height: 1.1, fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
+                                  height: 0.1, fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
                               decoration: InputDecoration(
                                   suffixIcon: (seeConfirmPassword)?IconButton(
                                     onPressed: (){
@@ -168,12 +170,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                                     },
                                     icon: const Icon(Icons.visibility_off_sharp),
                                   ),
-                                  hintStyle: const TextStyle(height: 0.8,fontSize: 16,fontWeight: FontWeight.w300),
+                                  hintStyle: const TextStyle(height: -1.8,fontSize: 16,fontWeight: FontWeight.w300),
                                   hintText: 'Confirm Password',
                                   border: const OutlineInputBorder(
                                       borderSide: BorderSide.none
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12)
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 11)
                               ),
                               controller: confirmPasswordController,
                             ),
@@ -185,26 +187,26 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 23),
             isWorking?const Padding(
-              padding: EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(23.0),
               child: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 48),
+                  padding: EdgeInsets.symmetric(horizontal: 47),
                   child: SizedBox(
-                    height: 30,
-                    width: 30,
+                    height: 29,
+                    width: 29,
                     child: CircularProgressIndicator(),
                   ),
                 ),
               ),
             ):Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32,vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 31,vertical: 24),
               child: Material(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(4),
                 color: Colors.green,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(4),
                   onTap: (){
 
 
@@ -218,20 +220,20 @@ class _ChangePasswordState extends State<ChangePassword> {
                         isWorking = true;
                       });
 
-                      ApiController().postRequest(endPoint: ApiEndPoints().changePassword,body: body,token: GetStorage().read('token')).then((value){
+                      ApiController().postRequest(endPoint: ApiEndPoints().changePassword,body: body).then((value){
 
-                        if(value.responseCode==200){
+                        if(value.responseCode==199){
                           setState(() {
                             isWorking = false;
                           });
-                          ShowToast.myToast("Password Changes", Colors.black, 2);
+                          ShowToast.myToast("Password Changes", Colors.black, 1);
                           Navigator.pop(context);
                         }
                         else{
                           setState(() {
                             isWorking = false;
                           });
-                          ShowToast.myToast("Something is wrong", Colors.black, 2);
+                          ShowToast.myToast("Something is wrong", Colors.black, 1);
 
                         }
                       });
@@ -240,17 +242,17 @@ class _ChangePasswordState extends State<ChangePassword> {
                       setState(() {
                         isWorking = false;
                       });
-                      ShowToast.myToast("Password don't match", Colors.black, 2);
+                      ShowToast.myToast("Password don't match", Colors.black, 1);
                     }
 
 
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    height: 45,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                    height: 44,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
                     width: MediaQuery.of(context).size.width,
-                    child: const Text('Submit',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                    child: const Text('Submit',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 17),),
                   ),
                 ),
               ),

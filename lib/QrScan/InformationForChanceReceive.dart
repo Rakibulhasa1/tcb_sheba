@@ -48,6 +48,8 @@ class AssignInfo {
   AssignInfo({
     this.assignId,
     this.assignDate,
+    this.deliveryStartDateTime,
+    this.deliveryEndDateTime,
     this.distributionPlace,
     this.packageId,
     this.dealerId,
@@ -64,6 +66,8 @@ class AssignInfo {
 
   var assignId;
   var assignDate;
+  var deliveryStartDateTime;
+  var deliveryEndDateTime;
   var packageId;
   var distributionPlace;
   var dealerId;
@@ -80,6 +84,8 @@ class AssignInfo {
   factory AssignInfo.fromJson(Map<String, dynamic> json) => AssignInfo(
     assignId: nullConverter(json["assign_id"]),
     assignDate: nullConverter(json["assign_date"]),
+    deliveryStartDateTime: nullConverter(json["delivery_start_date_time"]),
+    deliveryEndDateTime: nullConverter(json["delivery_end_date_time"]),
     packageId: nullConverter(json["package_id"]),
     distributionPlace: nullConverter(json["distribution_place"]),
     dealerId: nullConverter(json["dealer_id"]),

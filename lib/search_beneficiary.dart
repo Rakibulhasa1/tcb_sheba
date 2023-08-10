@@ -29,7 +29,7 @@ class _SearchBeneficiaryState extends State<SearchBeneficiary> {
   @override
   void initState() {
     var body = {'nid_number' : widget.nid};
-    ApiController().postRequest(endPoint: ApiEndPoints().qrCodeSearch,body: body,token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: ApiEndPoints().qrCodeSearch,body: body).then((value){
       print(value.response);
       if(value.responseCode==200){
         setState(() {

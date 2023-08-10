@@ -45,7 +45,7 @@ class _BeneficerySideNavigationState extends State<BeneficerySideNavigation> {
   @override
   void initState() {
     Provider.of<BeneficiaryInfoController>(context,listen: false).getData("${GetStorage().read('beneficiaryId')}",GetStorage().read('b_token'),false);
-    HelperClass().checkVersion(context);
+    //HelperClass().checkVersion(context);
     super.initState();
   }
 

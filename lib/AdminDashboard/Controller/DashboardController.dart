@@ -49,7 +49,7 @@ class DashboardController extends ChangeNotifier{
   List<StepModel> stepModel = [];
 
   void getStepData(){
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().stepList).then((value) {
+    ApiController().postRequest(endPoint: ApiEndPoints().stepList).then((value) {
       if(value.responseCode==200){
         try{
           StepListModel stepListModel = stepListModelFromJson(value.response.toString());
@@ -77,7 +77,7 @@ class DashboardController extends ChangeNotifier{
   }
 
   void getDashboardData({String? prams}){
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: '${ApiEndPoints().dashboard}${prams}').then((value) {
+    ApiController().postRequest( endPoint: '${ApiEndPoints().dashboard}${prams}').then((value) {
       if(value.responseCode==200){
         try{
           DashboardModel dashboardModel = dashboardModelFromJson(value.response.toString());
@@ -116,7 +116,7 @@ class DashboardController extends ChangeNotifier{
         "division_id" : divisionId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest( endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -153,7 +153,7 @@ class DashboardController extends ChangeNotifier{
       "district_id" : districtId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest( endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -188,7 +188,7 @@ class DashboardController extends ChangeNotifier{
       "district_id" : districtId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest(endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -223,7 +223,7 @@ class DashboardController extends ChangeNotifier{
       "upazila_id" : upazilaId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest( endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 
@@ -258,7 +258,7 @@ class DashboardController extends ChangeNotifier{
       "upazila_id" : upazilaId,
     };
 
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest(endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       if(value.responseCode==200){
         try{
@@ -291,7 +291,7 @@ class DashboardController extends ChangeNotifier{
     var body = {
       "union_id" : unionId,
     };
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
+    ApiController().postRequest(endPoint: ApiEndPoints().getAreaData,body: body).then((value) {
 
       print(value.response);
 

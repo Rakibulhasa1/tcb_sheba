@@ -6,6 +6,7 @@ import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
 
 import 'AdminDashboard/admin_user_navigation.dart';
+import 'change_password2.dart';
 
 class OtpVerification extends StatefulWidget {
 
@@ -26,7 +27,7 @@ class _OtpVerificationState extends State<OtpVerification> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Verification'),
+        title: Text('OTP Verification'),
       ),
       body: Center(
         child: Column(
@@ -71,7 +72,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                         child: Container(
                           height: 40,
                           alignment: Alignment.center,
-                          child: Text('Cancel',style: const TextStyle(color: Colors.white),),
+                          child: Text('Cancel',style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
                         ),
                       ),
                     ),
@@ -87,40 +88,45 @@ class _OtpVerificationState extends State<OtpVerification> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),
                           onTap: (){
-                            setState(() {
-                              isWorking = true;
-                            });
-
-                            var body = {
-                              "application_id" : '1',
-                              "generated_code" : otp
-                            };
-
-                            print(body);
-                            if(widget.userAreaType=='DD'||widget.userAreaType=='DE'){
-                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
-                            }
-                            else{
-                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
-                            }
-
-                            Future.delayed(Duration(seconds: 2)).then((value){
-                              setState(() {
-                                isWorking = false;
-                              });
-                              ApiController().postRequest(endPoint: ApiEndPoints().otpVerification,body: body).then((value) {
-                                if(value.responseCode==200){
-
-                                }else{
-                                  ShowToast.myToast("Otp code doesn't match", Colors.black, 2);
-                                }
-                              });
-                            });
+                            // setState(() {
+                            //   isWorking = true;
+                            // });
+                            //
+                            // var body = {
+                            //   "application_id" : '1',
+                            //   "generated_code" : otp
+                            // };
+                            //
+                            // print(body);
+                            // if(widget.userAreaType=='DD'||widget.userAreaType=='DE'){
+                            //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
+                            // }
+                            // else{
+                            //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
+                            // }
+                            //
+                            // Future.delayed(Duration(seconds: 2)).then((value){
+                            //   setState(() {
+                            //     isWorking = false;
+                            //   });
+                            //   ApiController().postRequest(endPoint: ApiEndPoints().otpVerification,body: body).then((value) {
+                            //     if(value.responseCode==200){
+                            //
+                            //     }else{
+                            //       ShowToast.myToast("Otp code doesn't match", Colors.black, 2);
+                            //     }
+                            //   });
+                            // }
+                            // );
                           },
                           child: Container(
                             height: 40,
                             alignment: Alignment.center,
-                            child: Text('Submit',style: const TextStyle(color: Colors.white),),
+                            child: GestureDetector(
+                              onTap: (){
+                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePassword2()));
+                              },
+                                child: Text('Verify',style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600 ),)),
                           ),
                         ),
                       ),

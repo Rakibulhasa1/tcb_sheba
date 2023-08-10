@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Controller/PramsController.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
@@ -37,9 +39,10 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
 
   bool isSearchStart = false;
 
-
+  String? prams;
   @override
   void initState() {
+    prams = Provider.of<PramsController>(context,listen: false).globalPrams;
     scrollController.addListener(() {
       scrollListener();
     });
@@ -74,8 +77,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
   }
 
   void beneficieryReceiveList(){
-
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo').then((value){
+    ApiController().postRequest( endPoint: '${ApiEndPoints().beneficiaryReceiveList}$prams&page=$pageNo').then((value){
       print(value.responseCode);
       setState(() {
         if(value.responseCode==200){
@@ -114,7 +116,7 @@ class _BeneficaryListViewState extends State<BeneficaryListView> {
   }
 
   void beneficieryList(){
-    ApiController().postRequest(token: GetStorage().read('token'), endPoint: "${ApiEndPoints().beneficiaryList}?page=$pageNo").then((value){
+    ApiController().postRequest(endPoint: "${ApiEndPoints().beneficiaryList}$prams&page=$pageNo").then((value){
       setState(() {
         if(value.responseCode==200){
           try{

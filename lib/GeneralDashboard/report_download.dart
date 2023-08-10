@@ -52,7 +52,7 @@ class _ReportDownloadState extends State<ReportDownload> {
   }
 
   void getData(){
-    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo&step_id=${widget.stepId}',token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo&step_id=${widget.stepId}').then((value){
 
       setState(() {
         print(value.responseCode);

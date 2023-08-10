@@ -7,8 +7,12 @@ import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
 import 'package:tcb/BeneficeryDashboard/View/beneficery_side_navigation.dart';
+import 'package:tcb/Controller/UserInfoController.dart';
 import 'package:tcb/GeneralDashboard/general_user_navigation.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/MasterApiController.dart';
+import 'package:tcb/Model/UserInfo.dart';
+import 'package:tcb/QrScan/UserInformationModel.dart';
 import 'package:tcb/RegisteredUserDashboard/registration_user_navigation.dart';
 import 'package:tcb/WordCouncilorDashboard/word_cawnsilor_user_navigation.dart';
 import 'package:tcb/show_toast.dart';
@@ -27,47 +31,61 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Provider.of<MasterApiController>(context,listen: false).getMasterData();
-      if(GetStorage().read('token')==null||GetStorage().read('token')==''){
-        Future.delayed(const Duration(seconds: 2)).then((value){
-          if(GetStorage().read('b_token')!=null){
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BeneficerySideNavigation()), (Route<dynamic> route) => false);
-          }else{
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-          }
-        });
-      }else{
-        Future.delayed(const Duration(seconds: 2)).then((value){
-          ApiController().postRequest(token: GetStorage().read('token'), endPoint: ApiEndPoints().dashboard).then((value){
-            if(value.responseCode==200){
-              var myData = json.decode(value.response.toString());
-              if(myData['status']=='success'){
-                if(GetStorage().read('userType')!=null){
-                  if(GetStorage().read('userType')=='DD'||GetStorage().read('userType')=='DE'||GetStorage().read('userType')=='TR'){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => GeneralUserNavigation()), (Route<dynamic> route) => false);
-                  }else if(GetStorage().read('userType')=='R'){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => WardCounsilorUserNavigation()), (Route<dynamic> route) => false);
-                  }else if(GetStorage().read('userType')=='UI'){
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => RegistrationUserNavigation()), (Route<dynamic> route) => false);
-                  }else{
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => AdminUserNavigation()), (Route<dynamic> route) => false);
-                  }
-                }else{
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-                }
-              }else if(myData['status']=='Token is Expired'){
-                GetStorage().remove('token');
-                GetStorage().remove('userType');
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+      // if(GetStorage().read('token')==null||GetStorage().read('token')==''){
+      //   Future.delayed(const Duration(seconds: 2)).then((value){
+      //     if(GetStorage().read('b_token')!=null){
+      //       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BeneficerySideNavigation()), (Route<dynamic> route) => false);
+      //     }else{
+      //       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+      //     }
+      //   });
+      // }else{
+      //
+      // }
+
+    Future.delayed(const Duration(seconds: 2)).then((value){
+      ApiController().postRequest(endPoint: "user-info").then((value){
+        try{
+          UserInfoModel userInfoModel = userInfoModelFromJson(value.response.toString());
+          Provider.of<UserInfoController>(context,listen: false).getUserInfoData(userInfoModel);
+          if(userInfoModel.status=='success'){
+            if(userInfoModel.data!.userInfo!.userAreaType!=null){
+              GetStorage().write("user_type", userInfoModel.data!.userInfo!.userAreaType);
+              if(userInfoModel.data!.userInfo!.userAreaType=='DD'||userInfoModel.data!.userInfo!.userAreaType=='TR'){
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const GeneralUserNavigation()), (Route<dynamic> route) => false);
+
+              }else if(userInfoModel.data!.userInfo!.userAreaType=='R'){
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const RegistrationUserNavigation()), (Route<dynamic> route) => false);
+
+              }else if(userInfoModel.data!.userInfo!.userAreaType=='DI'||userInfoModel.data!.userInfo!.userAreaType=='D'||userInfoModel.data!.userInfo!.userAreaType=='U'||userInfoModel.data!.userInfo!.userAreaType=='UI'||userInfoModel.data!.userInfo!.userAreaType=='W'||userInfoModel.data!.userInfo!.userAreaType=='A'){
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const AdminUserNavigation()), (Route<dynamic> route) => false);
+
+              }else if(userInfoModel.data!.userInfo!.userAreaType=='B'){
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const BeneficerySideNavigation()), (Route<dynamic> route) => false);
+
+              }else{
+                ShowToast.myToast('দয়াকরে ওয়েবসাইট থেকে লগইন করুন', Colors.black, 2);
               }
             }else{
               GetStorage().remove('token');
-              GetStorage().remove('userType');
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
-              ShowToast.myToast('Something is wrong', Colors.black, 2);
             }
-          });
-        });
-      }
+          }
+          else if(userInfoModel.status=='Token is Expired'){
+            GetStorage().remove('token');
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+          }
+          else{
+            GetStorage().remove('token');
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+          }
+        }catch(e){
+          GetStorage().remove('token');
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
+
+        }
+      });
+    });
     super.initState();
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
+import 'package:tcb/AdminDashboard/Controller/PramsController.dart';
 import 'package:tcb/AdminDashboard/LocationView/city_corprotion_word.dart';
 import 'package:tcb/AdminDashboard/LocationView/union_filter.dart';
 import 'package:tcb/AdminDashboard/LocationView/upazila_filter.dart';
@@ -35,14 +36,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool isReceivePieChart = true;
 
   List<AreaWiseData> testDivisionData = [
-
     AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
     AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
     AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
   ];
 
 
-  List<TimerList> dropdownList = [
+  List<TimerList> dateTimeSetList = [
     TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now()),
     TimerList(title: 'Today', startData: DateTime.now(),endData: DateTime.now()),
     TimerList(title: 'Yesterday', startData: DateTime.now().subtract(const Duration(days: 1)),endData: DateTime.now()),
@@ -53,7 +53,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   ];
 
 
-  TimerList? dropSelectedText;
+  TimerList? dateTimeSatData;
 
   TimerList? defaultDate = TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now());
 
@@ -62,7 +62,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int status = 1;
 
 
-  StepModel? selectStep = StepModel(stepName: 'ধাপ-১',stepId: '6',createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
+  StepModel? selectStep = StepModel(stepName: 'ধাপ নির্বাচন করুন',stepId: null,createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
 
   @override
   void initState() {
@@ -82,90 +82,108 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       child: ListView(
         children: [
-          const SizedBox(height: 12,),
+          const SizedBox(height: 18,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 154,
-                  height: 38,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      hint: const Text('Till Today'),
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      isExpanded: true,
-                      value: dropSelectedText,
-                      items: dropdownList.map((TimerList items) {
-                        return DropdownMenuItem(
-                          value: items,
-                          child: Text(items.title),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        setState(() {
-                          dropSelectedText = newValue! as TimerList?;
-                          String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}&step_id=${selectStep!.stepId}';
-                          DataResponse().getAdminData(context: context,prams: prams);
-                        });
-                      },
+                Expanded(
+                  child: Container(
+                    height: 38,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        hint: const Text('Till Today'),
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        isExpanded: true,
+                        value: dateTimeSatData,
+                        items: dateTimeSetList.map((TimerList items) {
+                          return DropdownMenuItem(
+                            value: items,
+                            child: Text(items.title),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            dateTimeSatData = newValue! as TimerList?;
+                            if(selectStep!.stepId!=null){
+                              String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}';
+                              DataResponse().getAdminData(context: context,prams: prams);
+                              Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}');
+
+                            }else{
+                              String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}';
+                              DataResponse().getAdminData(context: context,prams: prams);
+                              Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}');
+
+                            }
+                          });
+
+                        },
+                      ),
                     ),
                   ),
                 ),
-                Consumer<DashboardController>(
-                  builder: (context,notifyData,child) {
-                    if(notifyData.notifyDropDown.isWorking!){
-                      notifyData.stepModel.clear();
-                      return Container();
-                    }
-                    if(notifyData.notifyDropDown.responseError!){
-                      return Container();
-                    }
-                    if(!notifyData.notifyDropDown.responseError!&&!notifyData.notifyDropDown.isWorking!){
-                      stepList = notifyData.stepModel;
-                      if(stepList.isNotEmpty&&status==1){
-                        DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}&step_id=${stepList.last.stepId}');
-                      }
-                      status=2;
-                    }
-                    return Container(
-                      height: 38,
-                      width: 154,
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: Text('${selectStep!.stepName}'),
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                          isExpanded: true,
-                          items: stepList.map((StepModel items) {
-                            return DropdownMenuItem(
-                              value: items,
-                              child: Text(items.stepName),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectStep = newValue! as StepModel?;
-                            });
+                SizedBox(width: 18),
+                Expanded(
+                  child: Consumer<DashboardController>(
+                      builder: (context,notifyData,child) {
+                        if(notifyData.notifyDropDown.isWorking!){
+                          notifyData.stepModel.clear();
+                          return Container();
+                        }
+                        if(notifyData.notifyDropDown.responseError!){
+                          return Container();
+                        }
+                        if(!notifyData.notifyDropDown.responseError!&&!notifyData.notifyDropDown.isWorking!){
+                          stepList = notifyData.stepModel;
+                          if(stepList.isNotEmpty&&status==1){
+                            DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+                            Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+                          }
+                          status=2;
+                        }
+                        return Container(
+                          height: 38,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              hint: Text('${selectStep!.stepName}'),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              isExpanded: true,
+                              items: stepList.map((StepModel items) {
+                                return DropdownMenuItem(
+                                  value: items,
+                                  child: Text(items.stepName),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectStep = newValue! as StepModel?;
+                                });
 
-                            setState(() {
-                              if(dropSelectedText!=null){
-                                String prams = '?start=${dropSelectedText!.startData}&end=${dropSelectedText!.endData}&step_id=${selectStep!.stepId}';
-                                DataResponse().getAdminData(context: context,prams: prams);
-                              }else{
-                                String prams = '?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}';
-                                DataResponse().getAdminData(context: context,prams: prams);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  }
+                                setState(() {
+                                  if(dateTimeSatData!=null){
+                                    String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}';
+                                    DataResponse().getAdminData(context: context,prams: prams);
+                                    Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}');
+
+                                  }else{
+                                    String prams = '?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}';
+                                    DataResponse().getAdminData(context: context,prams: prams);
+                                    Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}');
+
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                  ),
                 ),
               ],
             ),
@@ -173,66 +191,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
           Consumer<DashboardController>(
             builder: (context,notifyData,child) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                      onTap : (){
-                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'নিবন্ধিত উপকারভোগী',)));
-                      },
-                      child: Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: primaryPerpleColor.withOpacity(0.7),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const SizedBox(
-                                width: 130,
-                                child : Text('নিবন্ধিত\nউপকারভোগী',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                              ),
-                              Builder(
-                                builder: (context) {
-                                  if(notifyData.notifyDashboardData.isWorking!){
-                                    return const Text("-",style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
-                                  }
-                                  if(notifyData.notifyDashboardData.responseError!){
-                                    return const Text("Something is wrong\nTry Again",style: TextStyle(color: Colors.white,fontSize: 12,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
-                                  }
-                                  return Text(notifyData.data!.totalBeneficiary,style: const TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
-                                }
-                              ),
-                            ],
+                    Expanded(
+                      child: GestureDetector(
+                        onTap : (){
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>BeneficaryListView(isBeneficiaryList: true,title: 'নিবন্ধিত উপকারভোগী',)));
+                        },
+                        child: Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: primaryPerpleColor.withOpacity(0.7),
                           ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap : (){
-                        //Navigator.push(context, CupertinoPageRoute(builder: (context)=>DivisionGrid(receiverData: '1',)));
-                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী',)));
-                      },
-                      child: Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: primaryColorGreenLite.withOpacity(0.7),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const SizedBox(
-                                width: 130,
-                                child: Text('সুবিধাপ্রাপ্ত উপকারভোগী',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                              ),
-                              Builder(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(
+                                  child : Text('নিবন্ধিত\nউপকারভোগী',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                                ),
+                                Builder(
                                   builder: (context) {
                                     if(notifyData.notifyDashboardData.isWorking!){
                                       return const Text("-",style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
@@ -240,10 +222,48 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     if(notifyData.notifyDashboardData.responseError!){
                                       return const Text("Something is wrong\nTry Again",style: TextStyle(color: Colors.white,fontSize: 12,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
                                     }
-                                    return Text(notifyData.data!.totalReceiver,style: const TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+                                    return Text(notifyData.data!.totalBeneficiary,style: const TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
                                   }
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 18,),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap : (){
+                          Navigator.push(context, CupertinoPageRoute(builder: (context)=> BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী',)));
+                        },
+                        child: Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: primaryColorGreenLite.withOpacity(0.7),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(
+                                  child: Text('সুবিধাপ্রাপ্ত\nউপকারভোগী',style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                                ),
+                                Builder(
+                                    builder: (context) {
+                                      if(notifyData.notifyDashboardData.isWorking!){
+                                        return const Text("-",style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+                                      }
+                                      if(notifyData.notifyDashboardData.responseError!){
+                                        return const Text("Something is wrong\nTry Again",style: TextStyle(color: Colors.white,fontSize: 12,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+                                      }
+                                      return Text(notifyData.data!.totalReceiver,style: const TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+                                    }
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

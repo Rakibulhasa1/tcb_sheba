@@ -1,6 +1,6 @@
 
 // ignore_for_file: file_names
-
+const forgotPasswordUrl = 'http://www.tcbsheba.com/api/change-password-update';
 class ApiEndPoints{
   // final String baseUrl = 'https://tcb.spectrum.com.bd/api/';
   // final String imageBaseUrl = 'https://tcb.spectrum.com.bd/images/';
@@ -9,14 +9,15 @@ class ApiEndPoints{
   //final String baseUrl = 'http://185.209.228.191/api/';
   //final String imageBaseUrl = 'http://185.209.228.191/images/';
 
-  final String baseUrl = 'https://upokari.com/api/';
-  final String imageBaseUrl = 'https://upokari.com/images/';
+  final String baseUrl = 'http://www.tcbsheba.com/api/';
+  final String imageBaseUrl = 'http://www.tcbsheba.com/images/';
 
   // final String baseUrl = 'https://tcbone.spectrum.com.bd/api/';
   // final String imageBaseUrl = 'https://tcbone.spectrum.com.bd/images/';
 
   final String login = 'login';
   final String qrCodeSearch = 'qr-code-search';
+  final String resetUserValidation = 'reset-user-name-validation';
   final String getOTP = 'receive-info-save';
   final String otpVerification = 'otp-verification';
   final String dashboard = 'dashboard-info';
@@ -47,6 +48,9 @@ class ApiEndPoints{
   final String beneficiaryRegistration = 'beneficiary-registration-by-nid-v1';
   final String dealerReport = 'dealer-report';
   final String dealerData = 'dealer-user-info';
+  final String beneficeryUpdate = 'beneficiary-data-update';
+
+
 
 
 

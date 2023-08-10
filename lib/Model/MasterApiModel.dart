@@ -29,6 +29,8 @@ class MasterData {
     this.webSiteTitle,
     this.webSiteFooterTitle,
     this.webSiteLink,
+    this.otpStatus,
+    this.nidScanDelivery,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -42,6 +44,8 @@ class MasterData {
   var webSiteTitle;
   var webSiteFooterTitle;
   var webSiteLink;
+  var otpStatus;
+  var nidScanDelivery;
   var createdBy;
   var createdAt;
   var updatedBy;
@@ -55,6 +59,8 @@ class MasterData {
     webSiteTitle: nullConverter(json["web_site_title"]),
     webSiteFooterTitle: nullConverter(json["web_site_footer_title"]),
     webSiteLink: nullConverter(json["web_site_link"]),
+    nidScanDelivery: nullConverter(json['nid_scan_delivery']),
+    otpStatus: nullConverter(json["otp_status"]),
     createdBy: nullConverter(json["created_by"]),
     createdAt: nullConverter(json["created_at"]),
     updatedBy: nullConverter(json["updated_by"]),

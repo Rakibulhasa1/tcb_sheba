@@ -3,24 +3,25 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:tcb/AdminDashboard/Model/step_list_model.dart';
-import 'package:tcb/ApiConfig/ApiController.dart';
-import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/ApiConfig/data_response_rovider.dart';
 import 'package:tcb/AdminDashboard/Controller/DashboardController.dart';
-import 'package:tcb/Authrization/Controller/LoginDataController.dart';
+import 'package:tcb/Controller/UserInfoController.dart';
+import 'package:tcb/GeneralDashboard/bar_code_scan_user_update.dart';
 import 'package:tcb/GeneralDashboard/bar_code_scanner_widget.dart';
 import 'package:tcb/HelperClass.dart';
+import 'package:tcb/MasterApiController.dart';
 import 'package:tcb/Model/DashboardModel.dart';
 import 'package:tcb/AdminDashboard/beneficary_list_view.dart';
 import 'package:tcb/show_toast.dart';
 import 'package:tcb/GeneralDashboard/user_from.dart';
+
+import '../AdminDashboard/Controller/PramsController.dart';
+import '../AdminDashboard/admin_dashboard.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -71,6 +72,9 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+
+
+
   void getQrScanData(String qrCodeData,int isQR){
     Navigator.push(context, CupertinoPageRoute(builder: (context)=>UserFrom(qrCode: qrCodeData,isQR : isQR)));
   }
@@ -78,51 +82,45 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     Provider.of<DashboardController>(context,listen: false).getStepData();
-    DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+    DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2021,03,01)}&end=${DateTime.now()}');
     super.initState();
   }
 
+  List<AreaWiseData> testDivisionData = [
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+    AreaWiseData(areaName: '-', beneficiaryTotalQty: 0,receiverTotalQty: 0),
+  ];
 
 
-  void getDashboardValue(){
-    ApiController().getResponse(token: GetStorage().read('token'), endPoint: ApiEndPoints().dashboard).then((value) {
-      setState(() {
-        if(value.responseCode==200){
-          try{
-            dashboardModel = dashboardModelFromJson(value.response.toString());
-            data = dashboardModel!.data;
-            notifyData = ApiResponse(
-              isWorking: false,
-              responseError: false,
-            );
-          }
-          catch(e){
-            notifyData = ApiResponse(
-              isWorking: false,
-              responseError: true,
-            );
-          }
-        }else{
-          notifyData = ApiResponse(
-            isWorking: false,
-            responseError: true,
-          );
-        }
-      });
-    });
-  }
+  List<TimerList> dateTimeSetList = [
+    TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now()),
+    TimerList(title: 'Today', startData: DateTime.now(),endData: DateTime.now()),
+    TimerList(title: 'Yesterday', startData: DateTime.now().subtract(const Duration(days: 1)),endData: DateTime.now()),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month-1, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month-1, 1),endData: DateTime(DateTime.now().year, DateTime.now().month, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime.now().toString()), startData: DateTime(DateTime.now().year, DateTime.now().month, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+1, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month+1, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month+1, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+2, 0)),
+    TimerList(title: HelperClass.convertAsMonthYear(DateTime(DateTime.now().year, DateTime.now().month+2, 1).toString()), startData: DateTime(DateTime.now().year, DateTime.now().month+2, 1),endData: DateTime(DateTime.now().year, DateTime.now().month+3, 0)),
+  ];
 
 
-  StepModel? selectStep = StepModel(stepName: 'Select Step',stepId: '',createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
+  TimerList? dateTimeSatData;
+
+  TimerList? defaultDate = TimerList(title: 'Till Today', startData: DateTime(2022,03,01),endData: DateTime.now());
 
 
+  List<StepModel> stepList = [];
+  int status = 1;
+
+
+  StepModel? selectStep = StepModel(stepName: 'ধাপ নির্বাচন করুন',stepId: null,createdBy: '',deliveryEndDateTime: '',deliveryStartDateTime: '');
 
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: ()async{
-        DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+        DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2021,03,01)}&end=${DateTime.now()}');
         await Future.delayed(Duration(seconds: 2));
       },
       child: ListView(
@@ -139,73 +137,122 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('স্বাগতম!',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
-                  Consumer<LoginDataController>(
+                  Consumer<UserInfoController>(
                     builder: (context,data,child) {
-                      if(data.apiResponse.isWorking!){
-                        return Container();
-                      }
-                      if(data.apiResponse.responseError!){
-                        return Container();
-                      }
-                      return Text(data.userProfileModel!.data!.userFullName,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),);
+                      return Text(data.userInfoModel!.data!.userInfo!.userFullName,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),);
                     }
                   ),
                 ],
               ),
             ),
           ),
-          Consumer<DashboardController>(builder: (context,data,child){
-            if(data.notifyDropDown.isWorking!){
-              return Padding(
-                padding: const EdgeInsets.only(top: 12,left: 24,right: 24),
-                child: Container(
-                  height: 38,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
-                ),
-              );
-            }
-            if(data.notifyDropDown.responseError!){
-              return Padding(
-                padding: const EdgeInsets.only(top: 12,left: 24,right: 24),
-                child: Container(
-                  height: 38,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
-                ),
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.only(top: 12,left: 24,right: 24),
-              child: Container(
-                height: 38,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    hint: Text('${selectStep!.stepName}'),
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    isExpanded: true,
-                    items: data.stepModel.map((StepModel items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(items.stepName),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectStep = newValue! as StepModel?;
-                      });
 
-                      setState(() {
-                        DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}&step_id=${selectStep!.stepId}');
-                      });
-                    },
+          const SizedBox(height: 18,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 38,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        hint: const Text('Till Today',style: TextStyle(fontSize: 12)),
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        isExpanded: true,
+                        value: dateTimeSatData,
+                        items: dateTimeSetList.map((TimerList items) {
+                          return DropdownMenuItem(
+                            value: items,
+                            child: Text(items.title,style: TextStyle(fontSize: 12)),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            dateTimeSatData = newValue! as TimerList?;
+                            if(selectStep!.stepId!=null){
+                              String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}';
+                              DataResponse().getAdminData(context: context,prams: prams);
+                              Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}');
+
+                            }else{
+                              String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}';
+                              DataResponse().getAdminData(context: context,prams: prams);
+                              Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}');
+
+                            }
+                          });
+
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+                SizedBox(width: 18),
+                Expanded(
+                  child: Consumer<DashboardController>(
+                      builder: (context,notifyData,child) {
+                        if(notifyData.notifyDropDown.isWorking!){
+                          notifyData.stepModel.clear();
+                          return Container();
+                        }
+                        if(notifyData.notifyDropDown.responseError!){
+                          return Container();
+                        }
+                        if(!notifyData.notifyDropDown.responseError!&&!notifyData.notifyDropDown.isWorking!){
+                          stepList = notifyData.stepModel;
+                          if(stepList.isNotEmpty&&status==1){
+                            DataResponse().getAdminData(context: context,prams: '?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+                            Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${DateTime(2022,03,01)}&end=${DateTime.now()}');
+                          }
+                          status=2;
+                        }
+                        return Container(
+                          height: 38,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: Colors.grey[200]),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              hint: Text('${selectStep!.stepName}',style: TextStyle(fontSize: 12)),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              isExpanded: true,
+                              items: stepList.map((StepModel items) {
+                                return DropdownMenuItem(
+                                  value: items,
+                                  child: Text(items.stepName,style: TextStyle(fontSize: 12)),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectStep = newValue! as StepModel?;
+                                });
+
+                                setState(() {
+                                  if(dateTimeSatData!=null){
+                                    String prams = '?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}';
+                                    DataResponse().getAdminData(context: context,prams: prams);
+                                    Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${dateTimeSatData!.startData}&end=${dateTimeSatData!.endData}&step_id=${selectStep!.stepId}');
+
+                                  }else{
+                                    String prams = '?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}';
+                                    DataResponse().getAdminData(context: context,prams: prams);
+                                    Provider.of<PramsController>(context,listen: false).setGlobalPrams('?start=${defaultDate!.startData}&end=${defaultDate!.endData}&step_id=${selectStep!.stepId}');
+
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           Padding(
             padding: const EdgeInsets.all(24.0),
@@ -216,7 +263,7 @@ class _DashboardState extends State<Dashboard> {
                   flex: 5,
                   child: GestureDetector(
                     onTap : (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: true,title: 'উপকারভোগীর সংখ্যা',)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>BeneficaryListView(isBeneficiaryList: true,title: 'উপকারভোগীর সংখ্যা',)));
                     },
                     child: Container(
                       height: 110,
@@ -241,7 +288,7 @@ class _DashboardState extends State<Dashboard> {
                                   if(notifyData.notifyDashboardData.responseError!){
                                     return Text('-',style: TextStyle(color: Colors.grey[800],fontSize: 14,fontWeight: FontWeight.bold),textAlign: TextAlign.center,);
                                   }
-                                  return Text("-",style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
+                                  return Text("${notifyData.data!.totalBeneficiary}",style: TextStyle(color: Colors.grey[800],fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.center);
                                 }
                             ),
                           ],
@@ -255,7 +302,7 @@ class _DashboardState extends State<Dashboard> {
                   flex: 5,
                   child: GestureDetector(
                     onTap : (){
-                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>const BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী',)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=> BeneficaryListView(isBeneficiaryList: false,title: 'সুবিধাপ্রাপ্ত উপকারভোগী')));
                     },
                     child: Container(
                       height: 110,
@@ -316,17 +363,51 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           ),
+          // Consumer<MasterApiController>(
+          //   builder: (context,data,child) {
+          //     if(data.masterData!.nidScanDelivery=="1"){
+          //       return Padding(
+          //         padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 12),
+          //         child: InkWell(
+          //           onTap: (){
+          //             Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScannerWidget()));
+          //           },
+          //           child: Container(
+          //             alignment: Alignment.center,
+          //             height: 90,
+          //             decoration: BoxDecoration(
+          //               color: Colors.purple.withOpacity(0.6),
+          //               borderRadius: BorderRadius.circular(10),
+          //             ),
+          //             child: Row(
+          //               mainAxisAlignment: MainAxisAlignment.center,
+          //               children: const [
+          //                 Icon(FontAwesomeIcons.barcode,color: Colors.white,size: 38,),
+          //                 SizedBox(width: 24,),
+          //                 Text('NID Barcode স্ক্যান করুন',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     }else{
+          //       return Container();
+          //     }
+          //
+          //   }
+          // ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 12),
             child: InkWell(
               onTap: (){
-                Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScannerWidget()));
+                //Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScannerWidget()));
+                Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScanUserUpdate()));
               },
               child: Container(
                 alignment: Alignment.center,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: Colors.purple.withOpacity(0.6),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(

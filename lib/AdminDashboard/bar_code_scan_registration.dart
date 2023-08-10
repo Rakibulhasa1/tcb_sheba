@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
 import 'package:qr_mobile_vision/qr_mobile_vision.dart';
 import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/AdminDashboard/submit_for_registration.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/show_toast.dart';
 
 class BarCodeScanWithRegister extends StatefulWidget {
@@ -21,7 +23,9 @@ class BarCodeScanWithRegister extends StatefulWidget {
 
 class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   String? beneficeryValue;
-  String? beneficerySpouseValue;
+
+  String scanValue = "";
+
   var _formKey = GlobalKey<FormState>();
 
   List<String> designation = ['কর্মহীন',"দিনমজুর","রিকশাচালক","গৃহিনী","গার্মেন্টস শ্রমিক","অন্যান্য"];
@@ -47,6 +51,9 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   bool isCurrentPhone = false;
   int scanStatus = 0;
 
+  int mainNidStatus = 0;
+  int spouseNidStatus = 0;
+
   TextEditingController addressController =  TextEditingController(text: '');
   TextEditingController holdingController =  TextEditingController();
   TextEditingController mobileController =  TextEditingController();
@@ -54,6 +61,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   TextEditingController fatherNameController =  TextEditingController();
   TextEditingController motherNameController =  TextEditingController();
   TextEditingController spouseNameController =  TextEditingController();
+  TextEditingController familyMemberController =  TextEditingController();
 
   bool isWorking = false;
 
@@ -102,6 +110,213 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   String spouseNewNid = '';
 
 
+  void convertData()async{
+
+    if(scanStatus==0){
+      try{
+        if(beneficeryValue!.contains('<pin>')){
+
+          nid = beneficeryValue!.substring( beneficeryValue!.indexOf("<pin>")+5,beneficeryValue!.indexOf("</pin>"));
+          dateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("<DOB>")+5,beneficeryValue!.indexOf("</DOB>"));
+          fullName = beneficeryValue!.substring( beneficeryValue!.indexOf("<name>")+6,beneficeryValue!.indexOf("</name>"));
+          var body = {
+            "nid_number" : nid,
+          };
+
+          if(mainNidStatus==0){
+            Future.delayed(Duration.zero).then((value) {
+              ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body).then((responseValue){
+                if(responseValue.responseCode==200){
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context){
+                      return Dialog(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                              child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
+                            ),
+                            Row(
+                              children: [
+                                Spacer(),
+                                MaterialButton(
+                                  onPressed: (){
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("বাতিল করুন"),
+                                ),
+                                SizedBox(width: 8),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+              });
+            });
+            setState((){
+              mainNidStatus = 1;
+            });
+          }
+        }else{
+          newNid = beneficeryValue!.substring( beneficeryValue!.indexOf("NW")+2, beneficeryValue!.indexOf("OL")-1);
+          nid = beneficeryValue!.substring( beneficeryValue!.indexOf("OL")+2,beneficeryValue!.indexOf("BR")-1);
+          dateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("BR")+2,beneficeryValue!.indexOf("PE")-1);
+          fullName = beneficeryValue!.substring( beneficeryValue!.indexOf("NM")+2,beneficeryValue!.indexOf("NW")-1);
+
+          var body = {
+            "nid_number" : nid,
+          };
+
+
+          if(mainNidStatus==0){
+            ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body).then((responseValue){
+              if(responseValue.responseCode==200){
+                showDialog(barrierDismissible: false,context: context, builder: (context){
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                          child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
+                        ),
+                        Row(
+                          children: [
+                            Spacer(),
+                            MaterialButton(
+                              onPressed: (){
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: Text("বাতিল করুন"),
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                });
+
+              }
+            });
+            setState((){
+              mainNidStatus = 1;
+            });
+          }
+
+        }
+      }catch(e){
+        print(e);
+      }
+    }
+
+    if(scanStatus==1){
+      try{
+        if(beneficeryValue!.contains('<pin>')){
+          spouseNid = beneficeryValue!.substring( beneficeryValue!.indexOf("<pin>")+5,beneficeryValue!.indexOf("</pin>"));
+          spouseDateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("<DOB>")+5,beneficeryValue!.indexOf("</DOB>"));
+          spouseFullName = beneficeryValue!.substring( beneficeryValue!.indexOf("<name>")+6,beneficeryValue!.indexOf("</name>"));
+          scanStatus = 2;
+          var body = {
+            "nid_number" : spouseNid,
+          };
+
+          if(spouseNidStatus==0){
+            ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body).then((responseValue){
+              if(responseValue.responseCode==200){
+                showDialog(barrierDismissible: false,context: context, builder: (context){
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                          child: Text("এই আবেদনকারীর ${genderSelectedIndex==1?'স্ত্রীর':'স্বামীর'} তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। ধন্যবাদ।"),
+                        ),
+                        Row(
+                          children: [
+                            Spacer(),
+                            MaterialButton(
+                              onPressed: (){
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: Text("বাতিল করুন"),
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                });
+              }
+            });
+            setState((){
+              spouseNidStatus = 1;
+            });
+          }
+        }else{
+          spouseNewNid = beneficeryValue!.substring( beneficeryValue!.indexOf("NW")+2, beneficeryValue!.indexOf("OL")-1);
+          spouseNid = beneficeryValue!.substring( beneficeryValue!.indexOf("OL")+2,beneficeryValue!.indexOf("BR")-1);
+          spouseDateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("BR")+2,beneficeryValue!.indexOf("PE")-1);
+          spouseFullName = beneficeryValue!.substring( beneficeryValue!.indexOf("NM")+2,beneficeryValue!.indexOf("NW")-1);
+          scanStatus = 2;
+          var body = {
+            "nid_number" : spouseNid,
+          };
+
+          if(spouseNidStatus==0){
+            ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body).then((responseValue){
+              if(responseValue.responseCode==200){
+                showDialog(barrierDismissible: false,context: context, builder: (context){
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
+                          child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
+                        ),
+                        Row(
+                          children: [
+                            Spacer(),
+                            MaterialButton(
+                              onPressed: (){
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: Text("বাতিল করুন"),
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                });
+              }
+            });
+
+            setState((){
+              spouseNidStatus = 1;
+            });
+          }
+        }
+      }catch(e){
+        print(e);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -111,212 +326,12 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('NID Scan Result'),
+        title: Text('NID Barcode Scan'),
       ),
       body : Builder(
         builder: (context){
           if(beneficeryValue!=null){
-
-            if(scanStatus==0){
-              if(beneficeryValue!.contains('<pin>')){
-                try{
-                  setState((){
-
-                    nid = beneficeryValue!.substring( beneficeryValue!.indexOf("<pin>")+5,beneficeryValue!.indexOf("</pin>"));
-                    dateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("<DOB>")+5,beneficeryValue!.indexOf("</DOB>"));
-                    fullName = beneficeryValue!.substring( beneficeryValue!.indexOf("<name>")+6,beneficeryValue!.indexOf("</name>"));
-                    var body = {
-                      "nid_number" : nid,
-                    };
-
-                    ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
-                      if(responseValue.responseCode==200){
-                        showDialog(barrierDismissible: false,context: context, builder: (context){
-                          return Dialog(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
-                                  child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
-                                ),
-                                Row(
-                                  children: [
-                                    Spacer(),
-                                    MaterialButton(
-                                      onPressed: (){
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text("বাতিল করুন"),
-                                    ),
-                                    SizedBox(width: 8),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        });
-                      }
-                    });
-                  });
-                }catch(e){
-
-                }
-              }else{
-                try{
-                  setState((){
-                    newNid = beneficeryValue!.substring( beneficeryValue!.indexOf("NW")+2, beneficeryValue!.indexOf("OL")-1);
-                    nid = beneficeryValue!.substring( beneficeryValue!.indexOf("OL")+2,beneficeryValue!.indexOf("BR")-1);
-                    dateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("BR")+2,beneficeryValue!.indexOf("PE")-1);
-                    fullName = beneficeryValue!.substring( beneficeryValue!.indexOf("NM")+2,beneficeryValue!.indexOf("NW")-1);
-
-                  });
-
-                  var body = {
-                    "nid_number" : nid,
-                  };
-
-
-                  ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
-                    if(responseValue.responseCode==200){
-                      showDialog(barrierDismissible: false,context: context, builder: (context){
-                        return Dialog(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
-                                child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
-                              ),
-                              Row(
-                                children: [
-                                  Spacer(),
-                                  MaterialButton(
-                                    onPressed: (){
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("বাতিল করুন"),
-                                  ),
-                                  SizedBox(width: 8),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                    }
-                  });
-
-
-                }catch(e){
-
-                }
-              }
-            }
-            
-            if(scanStatus==1){
-              if(beneficeryValue!.contains('<pin>')){
-                try{
-                  setState((){
-
-                    spouseNid = beneficeryValue!.substring( beneficeryValue!.indexOf("<pin>")+5,beneficeryValue!.indexOf("</pin>"));
-                    spouseDateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("<DOB>")+5,beneficeryValue!.indexOf("</DOB>"));
-                    spouseFullName = beneficeryValue!.substring( beneficeryValue!.indexOf("<name>")+6,beneficeryValue!.indexOf("</name>"));
-                    scanStatus = 2;
-                    var body = {
-                      "nid_number" : spouseNid,
-                    };
-
-                    ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
-                      if(responseValue.responseCode==200){
-                        showDialog(barrierDismissible: false,context: context, builder: (context){
-                          return Dialog(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
-                                  child: Text("এই আবেদনকারীর ${genderSelectedIndex==1?'স্ত্রীর':'স্বামীর'} তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। ধন্যবাদ।"),
-                                ),
-                                Row(
-                                  children: [
-                                    Spacer(),
-                                    MaterialButton(
-                                      onPressed: (){
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text("বাতিল করুন"),
-                                    ),
-                                    SizedBox(width: 8),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        });
-                      }
-                    });
-                  });
-                }catch(e){
-
-                }
-              }else{
-                try{
-                  setState((){
-                    spouseNewNid = beneficeryValue!.substring( beneficeryValue!.indexOf("NW")+2, beneficeryValue!.indexOf("OL")-1);
-                    spouseNid = beneficeryValue!.substring( beneficeryValue!.indexOf("OL")+2,beneficeryValue!.indexOf("BR")-1);
-                    spouseDateOfBirth = beneficeryValue!.substring( beneficeryValue!.indexOf("BR")+2,beneficeryValue!.indexOf("PE")-1);
-                    spouseFullName = beneficeryValue!.substring( beneficeryValue!.indexOf("NM")+2,beneficeryValue!.indexOf("NW")-1);
-                    scanStatus = 2;
-                  });
-
-                  var body = {
-                    "nid_number" : spouseNid,
-                  };
-
-
-                  ApiController().postRequest(endPoint: 'qr-code-search_v2',body: body,token: GetStorage().read('token')).then((responseValue){
-                    if(responseValue.responseCode==200){
-                      showDialog(barrierDismissible: false,context: context, builder: (context){
-                        return Dialog(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(top: 24,left: 24,right: 24),
-                                child: Text("এই আবেদনকারীর তথ্য আমাদের ডাটাবেইজ নিবন্ধিত আছে। অনুগ্রহ করে অন্য এনআইডি দিয়ে চেষ্টা করুন। ধন্যবাদ।"),
-                              ),
-                              Row(
-                                children: [
-                                  Spacer(),
-                                  MaterialButton(
-                                    onPressed: (){
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("বাতিল করুন"),
-                                  ),
-                                  SizedBox(width: 8),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                    }
-                  });
-
-
-                }catch(e){
-
-                }
-              }
-            }
-
-
+            convertData();
             return Container(
               alignment: Alignment.center,
               height: MediaQuery.of(context).size.height,
@@ -326,12 +341,20 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                 child: ListView(
                   children: [
                     SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Text("আবেদনকারীর তথ্য",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16)),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  স্মার্ট কার্ড নম্বর *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  স্মার্ট কার্ড নম্বর ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -340,7 +363,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             ),
                             child: TextFormField(
                               enabled: false,
-                              initialValue: newNid,
+                              initialValue: newNid!=''?newNid:"স্মার্ট কার্ড নম্বর খুঁজে পাওয়া যায়নি (চালিয়ে যান)",
                               decoration: const InputDecoration(
                                   border: OutlineInputBorder(
                                       borderSide: BorderSide.none
@@ -666,6 +689,35 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       duration: Duration(milliseconds: 500),
                     ),
 
+                    if(marriageStatusSelectedIndex==1)
+                      Column(
+                        children: [
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: Divider()),
+                              Text("স্বামী/স্ত্রীর তথ্য",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16)),
+                              Expanded(child: Divider()),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                        ],
+                      ),
+                    if(marriageStatusSelectedIndex!=1)
+                      Column(
+                        children: [
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: Divider()),
+                              Text("মাতা/পিতার তথ্য",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16)),
+                              Expanded(child: Divider()),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                        ],
+                      ),
+
                     AnimatedCrossFade(
                       firstChild: Container(),
                       secondChild: Padding(
@@ -689,17 +741,17 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.green,
                                 ),
-                                child: Text("স্ক্যান NID",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.white)),
+                                child: Text(genderSelectedIndex==1?'স্ত্রীর NID স্ক্যান করুন':'স্বামীর NID স্ক্যান করুন',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.white)),
                               ),
                             ),
                             SizedBox(height: 24),
                           ],
                         ),
                       ),
-                      crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex==5?CrossFadeState.showFirst:CrossFadeState.showSecond,
+                      crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex!=1?CrossFadeState.showFirst:CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 500),
                     ),
-                    
+
                     AnimatedCrossFade(
                       firstChild: Column(
                         children: [
@@ -708,7 +760,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('পিতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                Text('  আবেদনকারীর পিতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12),
                                   decoration: BoxDecoration(
@@ -741,7 +793,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                                Text('  আবেদনকারীর মাতা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: 12),
                                   decoration: BoxDecoration(
@@ -776,7 +828,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(genderSelectedIndex==1?'স্ত্রী':'স্বামী',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                            Text(genderSelectedIndex==1?'স্ত্রীর পুরো নাম':'স্বামীর পুরো নাম',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -798,16 +850,65 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           ],
                         ),
                       ),
-                      crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex==5?CrossFadeState.showFirst:CrossFadeState.showSecond,
+                      crossFadeState: genderSelectedIndex==3||marriageStatusSelectedIndex!=1?CrossFadeState.showFirst:CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 500),
                     ),
-
+                    Column(
+                      children: [
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(child: Divider()),
+                            Text("অন্যান্য তথ্য",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16)),
+                            Expanded(child: Divider()),
+                          ],
+                        ),
+                        SizedBox(height: 24),
+                      ],
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  পেশা *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  আবেদনকারীর পরিবারের সদস্য সংখ্যা *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.grey.withOpacity(0.3),
+                            ),
+                            child: TextFormField(
+                              enabled: true,
+                              keyboardType: TextInputType.phone,
+                              decoration: const InputDecoration(
+                                  hintText: '',
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 4)
+                              ),
+                              controller: familyMemberController,
+                              onChanged: (value){
+
+                              },
+                              validator: (value){
+                                if(value!.isEmpty){
+                                  return 'পরিবারের সদস্য সংখ্যা লিখুন';
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('  আবেদনকারীর পেশা *',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             width: MediaQuery.of(context).size.width,
                             height: 38,
@@ -842,38 +943,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  বর্তমান ঠিকানা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Colors.grey[200]
-                            ),
-                            child: TextFormField(
-                              maxLines : 3,
-                              enabled: true,
-                              onChanged: (value){
-
-                              },
-                              decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 4)
-                              ),
-                              controller: addressController,
-                            ),
-                          ),
-                          SizedBox(height: 24),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('  গ্রাম/রাস্তা/পাড়া/মহল্লা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  আবেদনকারীর গ্রাম/রাস্তা/পাড়া/মহল্লা',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             width: MediaQuery.of(context).size.width,
                             height: 38,
@@ -908,7 +978,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('  বাড়ি/হোল্ডিং/ফ্লাট/অন্যান্য',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
+                          Text('  আবেদনকারীর বাড়ি/হোল্ডিং, ফ্লাট',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -946,9 +1016,13 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                           child: InkWell(
                             onTap: (){
                               getImage(ImageSource.camera).then((value){
-                                cropImage(value).then((value){
-                                  setState(() {
-                                    profileImage = value;
+                                cropImage(value).then((value)async{
+                                  final tempDir = await getTemporaryDirectory();
+                                  String changeValue = DateTime.now().microsecondsSinceEpoch.toString();
+                                  HelperClass().compressImage(value, "${tempDir.path}/$changeValue.jpg").then((value){
+                                    setState(() {
+                                      profileImage = value;
+                                    });
                                   });
                                 });
                               });
@@ -960,7 +1034,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                   width: 100,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: profileImage!=null?Image.file(profileImage!):Image.asset('asstes/emptyProfile.jpg'),
+                                    child: profileImage!=null?Image.file(profileImage!,fit: BoxFit.cover,):Image.asset('asstes/emptyProfile.jpg'),
                                   ),
                                 ),
                                 SizedBox(width: 24,),
@@ -992,9 +1066,14 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: InkWell(
                         onTap: (){
                           getImage(ImageSource.camera).then((value){
-                            cropImage(value).then((value){
-                              setState(() {
-                                nidImage = value;
+                            cropImage(value).then((value)async{
+
+                              final tempDir = await getTemporaryDirectory();
+                              String changeValue = DateTime.now().microsecondsSinceEpoch.toString();
+                              HelperClass().compressImage(value, "${tempDir.path}/$changeValue.jpg").then((value){
+                                setState(() {
+                                  nidImage = value;
+                                });
                               });
                             });
                           });
@@ -1006,7 +1085,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             border: Border.all(color: Colors.grey),
                             color: Colors.green.withOpacity(0.3),
                           ),
-                          child: nidImage!=null?Image.file(nidImage!):Column(
+                          child: nidImage!=null?Image.file(nidImage!,fit: BoxFit.cover,):Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add,size: 32),
@@ -1022,9 +1101,13 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                       child: InkWell(
                         onTap: (){
                           getImage(ImageSource.camera).then((value){
-                            cropImage(value).then((value){
-                              setState(() {
-                                nid2Image = value;
+                            cropImage(value).then((value)async{
+                              final tempDir = await getTemporaryDirectory();
+                              String changeValue = DateTime.now().microsecondsSinceEpoch.toString();
+                              HelperClass().compressImage(value, "${tempDir.path}/$changeValue.jpg").then((value){
+                                setState(() {
+                                  nid2Image = value;
+                                });
                               });
                             });
                           });
@@ -1036,7 +1119,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                             border: Border.all(color: Colors.grey),
                             color: Colors.green.withOpacity(0.3),
                           ),
-                          child: nid2Image!=null?Image.file(nid2Image!):Column(
+                          child: nid2Image!=null?Image.file(nid2Image!,fit: BoxFit.cover,):Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add,size: 32),
@@ -1053,7 +1136,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                         onTap: () {
                           if(_submit()){
 
-                            if(mobileController.text.isNotEmpty&&nidImage!=null&&nidImage!=null&&isCurrentPhone){
+                            if(mobileController.text.isNotEmpty&&nidImage!=null&&nid2Image!=null&&isCurrentPhone){
                               RegistrationBeneficeryModel data = RegistrationBeneficeryModel(
 
                                 genderType: genderSelectedIndex,
@@ -1081,6 +1164,9 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                                 fulName: fullName,
                                 motherName: motherNameController.text??'',
                                 spouseName: spouseFullName,
+
+                                familyNumber: int.parse(familyMemberController.text),
+                                wardId: '',
                               );
                               Navigator.push(context, CupertinoPageRoute(builder: (context)=>SubmitForRegistration(data: data,)));
                             }else{
@@ -1093,7 +1179,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                               if(mobileController.text.length<11){
                                 ShowToast.myToast("Please input phone number", Colors.black, 2);
                               }
-                              if(isCurrentPhone){
+                              if(!isCurrentPhone){
                                 ShowToast.myToast("Please input your valid phone number", Colors.black, 2);
                               }
                             }
@@ -1116,24 +1202,47 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                 ),
               ),
             );
-
-          }else{
+            //return Container();
+          }
+          else{
             return QrCamera(
-              child: Padding(
-                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/2,top: MediaQuery.of(context).size.height/8),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.height/1.5,
-                  width: 1,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      color: Colors.yellow.withOpacity(0.5),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
+                        child: Text("জাতীয় পরিচয়পত্রের পিছনের পৃষ্ঠার বারকোড স্ক্যান করুন",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),textAlign: TextAlign.center),
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height/8),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height/2,
+                      width: 1,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               qrCodeCallback: (value){
-                setState(() {
-                  this.beneficeryValue = value;
-                });
+                try{
+                  setState(() {
+                    beneficeryValue = value;
+                  });
+                  print("Call back try");
+                } catch(e){
+                  print("Call back catch");
+                }
+
               },
               onError: (context, error){
                 return Center(
@@ -1146,7 +1255,7 @@ class _BarCodeScanWithRegisterState extends State<BarCodeScanWithRegister> {
                   ),
                 );
               },
-              formats: const [BarcodeFormats.ALL_FORMATS],
+              formats: const [BarcodeFormats.PDF417],
               fit: BoxFit.cover,
             );
           }

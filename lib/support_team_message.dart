@@ -83,7 +83,7 @@ class _SupportTeamMessageState extends State<SupportTeamMessage> {
             "title" : titleController.text,
             "details" : detailsController.text,
           };
-          ApiController().postRequest(endPoint: "send_feedback",token: GetStorage().read("token"),body: body).then((value){
+          ApiController().postRequest(endPoint: "send_feedback",body: body).then((value){
             if(value.responseCode==200){
               ShowToast.myToast("Send Successful", Colors.black, 2);
               titleController.clear();

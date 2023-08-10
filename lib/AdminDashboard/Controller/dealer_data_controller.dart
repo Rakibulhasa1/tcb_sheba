@@ -12,11 +12,12 @@ class DealerInfoController extends ChangeNotifier{
 
 
   void getDealerData(){
-    ApiController().postRequest(endPoint: ApiEndPoints().dealerData,token: GetStorage().read('token')).then((value) {
+    ApiController().postRequest(endPoint: ApiEndPoints().dealerData).then((value) {
       if(value.responseCode==200){
         try{
           DealerDetailsModel dealerDetailsModel = dealerDetailsModelFromJson(value.response.toString());
           dealerInfoModels = dealerDetailsModel.data;
+          GetStorage().write('regF', dealerInfoModels?.unionId);
           apiResponse = ApiResponse(
             isWorking: false,
             responseError: false,

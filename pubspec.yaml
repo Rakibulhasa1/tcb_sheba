@@ -44,6 +44,11 @@ dependencies:
   get: ^4.6.5
   flutter_otp_text_field: ^1.1.0
   share_plus: ^4.0.10
+  flutter_image_compress: ^1.1.2
+  connectivity: any
+  email_auth: ^1.0.0
+  flutter_secure_storage: ^8.0.0
+
 
 
 dev_dependencies:

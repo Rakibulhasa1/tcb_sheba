@@ -26,7 +26,7 @@ class _CardDeliveryDetailsState extends State<CardDeliveryDetails> {
   @override
   void initState() {
     var body = {"nid_number":"${widget.userId}"};
-    ApiController().postRequest(endPoint: "card-delivery-status",body: body,token: GetStorage().read("token")).then((value) {
+    ApiController().postRequest(endPoint: "card-delivery-status",body: body).then((value) {
 
       if(value.responseCode==200){
         setState((){

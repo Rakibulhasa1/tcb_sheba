@@ -51,37 +51,55 @@ class _BarCodeScanWithBeneficeryDetailsState extends State<BarCodeScanWithBenefi
               return UserDetailsViewByAdmin(userId: newNid, isScan: true);
             }
           }else{
-            return QrCamera(
-              child: Padding(
-                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/2,top: MediaQuery.of(context).size.height/8),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.height/1.5,
-                  width: 1,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              qrCodeCallback: (value){
-                print(value);
-                setState(() {
-                  this.value = value;
-                });
-              },
-              onError: (context, error){
-                return Center(
-                  child: Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+            return SafeArea(
+              child: QrCamera(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        color: Colors.yellow.withOpacity(0.5),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
+                          child: Text("জাতীয় পরিচয়পত্রের পিছনের পৃষ্ঠার বারকোড স্ক্যান করুন",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),textAlign: TextAlign.center),
+                        ),
+                      ),
                     ),
-                    child: Text("Something is wrong\nTry Again",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),textAlign: TextAlign.center),
-                  ),
-                );
-              },
-              formats: const [BarcodeFormats.ALL_FORMATS],
-              fit: BoxFit.cover,
+                    Padding(
+                      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height/8),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: MediaQuery.of(context).size.height/2,
+                        width: 1,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                qrCodeCallback: (value){
+                  print(value);
+                  setState(() {
+                    this.value = value;
+                  });
+                },
+                onError: (context, error){
+                  return Center(
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text("Something is wrong\nTry Again",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),textAlign: TextAlign.center),
+                    ),
+                  );
+                },
+                formats: const [BarcodeFormats.ALL_FORMATS],
+                fit: BoxFit.cover,
+              ),
             );
           }
         },

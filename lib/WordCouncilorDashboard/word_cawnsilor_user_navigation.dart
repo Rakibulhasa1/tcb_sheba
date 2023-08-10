@@ -7,8 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:tcb/AdminDashboard/Controller/DialogDataController.dart';
 import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
+import 'package:tcb/AdminDashboard/Model/union_list_model.dart';
+import 'package:tcb/AdminDashboard/Model/word_list_model.dart';
 import 'package:tcb/AdminDashboard/admin_dashboard.dart';
 import 'package:tcb/AdminDashboard/bar_code_scan_for_beneficery_details.dart';
 import 'package:tcb/AdminDashboard/bar_code_scan_registration.dart';
@@ -16,10 +20,14 @@ import 'package:tcb/AdminDashboard/card_delivery_details.dart';
 import 'package:tcb/AdminDashboard/side_navigation_bar.dart';
 import 'package:tcb/AdminDashboard/submit_for_registration.dart';
 import 'package:tcb/AdminDashboard/user_details_view_by_admin.dart';
+import 'package:tcb/AdminDashboard/ward_list_widget.dart';
+import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/Authrization/View/login_page.dart';
+import 'package:tcb/CustomDialogs.dart';
 import 'package:tcb/HelperClass.dart';
 import 'package:tcb/app_theme.dart';
 import 'package:tcb/change_password.dart';
+import 'package:tcb/show_toast.dart';
 import 'package:tcb/support_team_message.dart';
 import 'package:tcb/terms_and_condition.dart';
 
@@ -99,7 +107,7 @@ class _WardCounsilorUserNavigationState extends State<WardCounsilorUserNavigatio
 
   @override
   void initState() {
-    HelperClass().checkVersion(context);
+    //HelperClass().checkVersion(context);
 
     super.initState();
   }
@@ -228,23 +236,20 @@ class _WardCounsilorUserNavigationState extends State<WardCounsilorUserNavigatio
               MaterialButton(
                 minWidth: 40,
                 onPressed: () {
-                  scaffolKey.currentState!.openDrawer();
-                  setState(() {
-                    //currentTab = 1;
-                  });
+                  CustomDialogs().showRegDialog(context);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(
-                      Icons.menu,
+                      Icons.person_add,
                       color: currentTab == 1 ? Colors.white : Colors.black,
                     ),
                     Text(
-                      'Menu',
+                      'Registration',
                       style: TextStyle(
-                        color: currentTab == 1 ? Colors.white : Colors.black,
-                        fontSize: 12
+                          color: currentTab == 1 ? Colors.white : Colors.black,
+                          fontSize: 12
                       ),
                     ),
                   ],
@@ -260,10 +265,17 @@ class _WardCounsilorUserNavigationState extends State<WardCounsilorUserNavigatio
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.only(top: 28),
+                padding: EdgeInsets.only(top: 28,left: 24),
                 alignment: Alignment.center,
                 color: primaryPerpleColor,
-                child: const Text('Upokari Menu',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Ward Counselor',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+                    const Text('Upokari Menu',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -283,27 +295,23 @@ class _WardCounsilorUserNavigationState extends State<WardCounsilorUserNavigatio
                           Navigator.pop(context);
                           break;
 
-                        case 2 :
-                          Navigator.pop(context);
-                          Navigator.push(context, CupertinoPageRoute(builder: (context)=>BarCodeScanWithRegister()));
-                          break;
 
-                        case 5 :
+                        case 4 :
                           Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>TermsAndCondition()));
                           break;
 
-                        case 7 :
+                        case 5 :
                           Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>SupportTeamMessage()));
                           break;
 
-                        case 8 :
+                        case 6 :
                           Navigator.pop(context);
                           Navigator.push(context, CupertinoPageRoute(builder: (context)=>ChangePassword()));
                           break;
 
-                        case 9 :
+                        case 7 :
                           AwesomeDialog(
                               context: context,
                               animType: AnimType.SCALE,
@@ -313,11 +321,12 @@ class _WardCounsilorUserNavigationState extends State<WardCounsilorUserNavigatio
                                 style: TextStyle(fontSize: 12),
                               ),),
                               title: 'Logout',
+                              btnOkText: "Yes",
+                              btnCancelText: "No",
+                              btnOkColor: Colors.green,
+                              btnCancelColor: Colors.red,
                               btnOkOnPress: () {
-                                GetStorage().remove('token');
-                                GetStorage().remove('email');
-                                GetStorage().remove('password');
-                                GetStorage().remove('userType');
+                                GetStorage().erase();
                                 Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
                               },
                               btnCancelOnPress: (){
@@ -366,13 +375,11 @@ List<CustomNaviBarMenu> naviBarList = [
 
   CustomNaviBarMenu(title: 'হোম', id: 0, icon: Icons.home),
   CustomNaviBarMenu(title: 'কার্ড বিতরণী ব্যবস্থাপনা', id: 1, icon: Icons.credit_card),
-  CustomNaviBarMenu(title: 'উপকারভোগী রেজিস্ট্রশন', id: 2, icon: Icons.person),
-  CustomNaviBarMenu(title: 'মনিটরিং', id: 3, icon: Icons.legend_toggle),
-  CustomNaviBarMenu(title: 'ডিলার রিপোর্ট', id: 4, icon: Icons.manage_accounts),
-  CustomNaviBarMenu(title: 'Terms And Condition', id: 5, icon: Icons.verified_user),
-  CustomNaviBarMenu(title: 'সাপোর্ট', id: 6, icon: Icons.contact_support),
-  CustomNaviBarMenu(title: 'আমাকে বলুন', id: 7, icon: Icons.announcement),
-  CustomNaviBarMenu(title: 'চেঞ্জ পাসওয়ার্ড', id: 8, icon: Icons.key),
-  CustomNaviBarMenu(title: 'লগআউট', id: 9, icon: Icons.power_settings_new),
+  CustomNaviBarMenu(title: 'মনিটরিং', id: 2, icon: Icons.legend_toggle),
+  CustomNaviBarMenu(title: 'ডিলার রিপোর্ট', id: 3, icon: Icons.manage_accounts),
+  CustomNaviBarMenu(title: 'Terms And Condition', id: 4, icon: Icons.verified_user),
+  CustomNaviBarMenu(title: 'আমাকে বলুন', id: 5, icon: Icons.announcement),
+  CustomNaviBarMenu(title: 'চেঞ্জ পাসওয়ার্ড', id: 6, icon: Icons.key),
+  CustomNaviBarMenu(title: 'লগআউট', id: 7, icon: Icons.power_settings_new),
 
 ];

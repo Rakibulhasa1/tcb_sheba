@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';
@@ -13,6 +14,7 @@ import 'package:tcb/AdminDashboard/Model/RegistrationBeneficeryModel.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
 import 'package:tcb/ApiConfig/api_response.dart';
 import 'package:tcb/BeneficeryDashboard/Model/user_update_data_model.dart';
+import 'package:tcb/HelperClass.dart';
 import 'package:tcb/show_toast.dart';
 
 
@@ -26,42 +28,41 @@ class ApiController{
 
     try{
       return await http.post(Uri.parse(url),body: body).then((value){
-        log("${url} ${value.statusCode}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
   }
 
-
-  Future<ApiResponse<dynamic>> getResponse({required String token,required String endPoint})async{
+  Future<ApiResponse<dynamic>> getResponse({required String endPoint})async{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
-    final header ={
+    String token = GetStorage().read('token')??"";
+    var header ={
       'Accept': 'application/json',
-      'Authorization': '$token'
+      'Authorization': token,
     };
 
     try{
       return await http.get(Uri.parse(url),headers: header).then((value){
-        log("${url} ${value.statusCode}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          printf(e);
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
   }
-
 
   Future<ApiResponse<dynamic>> getMasterResponse({required String endPoint})async{
 
@@ -72,83 +73,85 @@ class ApiController{
 
     try{
       return await http.get(Uri.parse(url),headers: header).then((value){
-        log("${url} ${value.statusCode}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          print(e);
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          printf(e);
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
   }
 
-  Future<ApiResponse<dynamic>> postRequest({String? token,required String endPoint,body})async{
+  Future<ApiResponse<dynamic>> postRequest({required String endPoint,body})async{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
+    String token = GetStorage().read('token')??"";
     final header ={
-
-      'Authorization': '$token'
+      'Authorization': token,
     };
-    print(body);
     try{
       return await http.post(Uri.parse(url),headers: header,body: body).then((value){
-        log("${url} ${value.statusCode}");
-        print("This is Body ${value.body}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }
     catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
   }
 
-  Future<ApiResponse<dynamic>> deleteRequest({required String token,required String endPoint,Map<String, dynamic>? body})async{
+  Future<ApiResponse<dynamic>> deleteRequest({required String endPoint,Map<String, dynamic>? body})async{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
+
+    String token = GetStorage().read('token')??"";
+
     final header ={
       'Accept': 'application/json',
-      'Authorization': '$token'
+      'Authorization': token
     };
     try{
       return await http.delete(Uri.parse(url),headers: header,body: body).then((value){
-        log("${url} ${value.statusCode}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
   }
 
-  Future<ApiResponse<dynamic>> editRequest({required String token,required String endPoint,Map<String, dynamic>? body})async{
+  Future<ApiResponse<dynamic>> editRequest({required String endPoint,Map<String, dynamic>? body})async{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
+    String token = GetStorage().read('token')??"";
     final header ={
       'Accept': 'application/json',
-      'Authorization': '$token'
+      'Authorization': token
     };
     try{
       return await http.put(Uri.parse(url),headers: header,body: body).then((value){
-        log("${url} ${value.statusCode}");
+        log("$url ${value.statusCode}");
         try{
           return responseDataPrepare(value: value);
         }catch(e){
-          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+          return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
         }
       });
     }
     catch(e){
-      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection');
+      return ApiResponse(responseError: true,errorMessage: 'Something is wrong, Check internet connection',responseCode: 500);
     }
 
   }
@@ -189,9 +192,9 @@ class ApiController{
     });
 
     if(response.statusCode==200){
-      return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true,);
     }else{
-      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true,responseCode: 500);
     }
   }
 
@@ -202,7 +205,6 @@ class ApiController{
     var uri = Uri.parse(url);
     var request = http.MultipartRequest("POST", uri);
 
-    print(body);
 
     var userImage = http.ByteStream(DelegatingStream.typed(dataModel.profileImage.openRead()));
     var userImageLength = await dataModel.profileImage.length();
@@ -234,7 +236,7 @@ class ApiController{
 
     request.headers.addAll({
       'Accept': 'application/json',
-      'Authorization': GetStorage().read('token'),
+      'Authorization': GetStorage().read('token')??"",
     });
 
     request.fields.addAll(body);
@@ -249,7 +251,7 @@ class ApiController{
     if(response.statusCode==200){
       return ApiResponse<String>(response: responseData.toString(),responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: false);
     }else{
-      return ApiResponse<String>(response: responseData.toString(),responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(response: responseData.toString(),responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true,);
     }
   }
 
@@ -259,7 +261,7 @@ class ApiController{
 
     final String url = ApiEndPoints().baseUrl+endPoint;
     var uri = Uri.parse(url);
-    print("$uri");
+    printf("$uri");
     var request = http.MultipartRequest("POST", uri);
 
     var streamBackImage = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
@@ -274,7 +276,7 @@ class ApiController{
 
     request.headers.addAll({
       'Accept': 'application/json',
-      'Authorization': GetStorage().read('token'),
+      'Authorization': GetStorage().read('token')??"",
     });
 
     request.fields.addAll({
@@ -282,16 +284,16 @@ class ApiController{
     });
 
     var response = await request.send();
-    print(response.statusCode);
+    printf(response.statusCode);
 
     response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
+      printf(value);
     });
 
     if(response.statusCode==200){
       return ApiResponse<String>(response: "success",responseCode: response.statusCode,errorMessage: "Something wrong\nPlease try again", responseError: true);
     }else{
-      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true);
+      return ApiResponse<String>(errorMessage: "Something wrong\nPlease try again", responseError: true,responseCode: 500);
     }
   }
 
@@ -305,7 +307,7 @@ class ApiController{
         return ApiResponse(response: value.body,responseError: false, responseCode: value.statusCode);
 
       case 404 :
-        return ApiResponse(responseError: true,errorMessage: 'Data Not Found', responseCode: value.statusCode);
+        return ApiResponse(response: value.body,responseError: true,errorMessage: 'Data Not Found', responseCode: value.statusCode);
 
       case 500 :
         return ApiResponse(responseError: true,errorMessage: 'Server Error', responseCode: value.statusCode);
@@ -323,7 +325,7 @@ class ApiController{
         return ApiResponse(responseError: true,errorMessage: 'Unauthorized', responseCode: value.statusCode);
 
       default:
-        return ApiResponse(responseError: true,errorMessage: 'Unknown Error');
+        return ApiResponse(responseError: true,errorMessage: 'Unknown Error',responseCode: value.statusCode);
     }
   }
 

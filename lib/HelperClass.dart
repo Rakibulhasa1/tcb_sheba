@@ -1,12 +1,14 @@
 // ignore_for_file: file_names
 
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:new_version/new_version.dart';
 
 
 class HelperClass{
@@ -26,8 +28,6 @@ class HelperClass{
     return myDateTime;
   }
 
-
-
   static String convertAsMonthDayYear(String dateTime){
 
     String myDateTime;
@@ -40,7 +40,6 @@ class HelperClass{
     }
     return myDateTime;
   }
-
 
   static String convertAsMonthYear(String dateTime){
 
@@ -55,6 +54,10 @@ class HelperClass{
     return myDateTime;
   }
 
+  static String nidEnc(String nid){
+    return nid.replaceRange(nid.length-5,nid.length-1,"****");
+  }
+
 
   List<Color> randomColor = [
     Colors.blueAccent,
@@ -66,28 +69,28 @@ class HelperClass{
     Colors.deepPurpleAccent,
   ];
 
-  void checkVersion(BuildContext context)async{
-    final newVersion = NewVersion(
-      androidId: "com.spectrum.tcbapp",
-      iOSId: "",
-    );
-
-    final status = await newVersion.getVersionStatus();
-
-    if(status!.localVersion!=status.storeVersion){
-      newVersion.showUpdateDialog(
-        context: context,
-        versionStatus: status,
-        allowDismissal: true,
-        dialogText: "Please update the app from ${status.storeVersion} to ${status.localVersion}",
-        dialogTitle: "Update!",
-        updateButtonText: "Let's Update",
-      );
-    }
-
-    print(status.localVersion);
-    print(status.storeVersion);
-  }
+  // void checkVersion(BuildContext context)async{
+  //   final newVersion = NewVersion(
+  //     androidId: "com.spectrum.tcbapp",
+  //     iOSId: "",
+  //   );
+  //
+  //   final status = await newVersion.getVersionStatus();
+  //
+  //   if(status!.localVersion!=status.storeVersion){
+  //     newVersion.showUpdateDialog(
+  //       context: context,
+  //       versionStatus: status,
+  //       allowDismissal: true,
+  //       dialogText: "Please update the app from ${status.storeVersion} to ${status.localVersion}",
+  //       dialogTitle: "Update!",
+  //       updateButtonText: "Let's Update",
+  //     );
+  //   }
+  //
+  //   print(status.localVersion);
+  //   print(status.storeVersion);
+  // }
 
   Future<File> getImage(ImageSource source)async{
     XFile? imageFile;
@@ -127,6 +130,19 @@ class HelperClass{
       cropImage = value!;
     });
     return cropImage!;
+  }
+
+  Future<File> compressImage(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path, targetPath,
+      quality: 50,
+      rotate: 0,
+    );
+
+    print(file.lengthSync());
+    print(result!.lengthSync());
+
+    return result;
   }
 
   String terms = """Privacy Policy
@@ -181,4 +197,16 @@ We may update our Terms and Conditions from time to time. Thus, you are advised 
 These terms and conditions are effective as of 2022-04-14
 Contact Us
 If you have any questions or suggestions about our Terms and Conditions, do not hesitate to contact us at spectrumitsolutionsltd@gmail.com.""";
+}
+
+
+
+printf(dynamic e){
+  if (kDebugMode) {
+    print(e);
+  }
+}
+
+String getUnknownError(int errorCode){
+  return "Something went wrong\nError Code : $errorCode";
 }

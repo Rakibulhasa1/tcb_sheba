@@ -69,7 +69,7 @@ class _ListOfBeneficiryQueryState extends State<ListOfBeneficiryQuery> {
     };
 
     log("${body}");
-    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryList}?page=$pageNo',body: body,token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryList}?page=$pageNo',body: body).then((value){
 
       setState(() {
         print(value.responseCode);

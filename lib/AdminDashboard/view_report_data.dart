@@ -44,7 +44,7 @@ class _ViewReportDataState extends State<ViewReportData> {
   }
 
   void getData(){
-    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo',token: GetStorage().read('token')).then((value){
+    ApiController().postRequest(endPoint: '${ApiEndPoints().beneficiaryReceiveList}?page=$pageNo').then((value){
 
       setState(() {
         print(value.responseCode);
