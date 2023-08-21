@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/ApiConfig/ApiController.dart';
 import 'package:tcb/ApiConfig/ApiEndPoints.dart';
@@ -26,10 +30,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late StreamSubscription subscription;
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
 
+
+
+  getConnectivity() =>
+      subscription = Connectivity().onConnectivityChanged.listen(
+            (ConnectivityResult result) async {
+          isDeviceConnected = await InternetConnectionChecker().hasConnection;
+          if (!isDeviceConnected && isAlertSet == false) {
+            showDialogBox();
+            setState(() => isAlertSet = true);
+          }
+        },
+      );
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
+    getConnectivity();
     Provider.of<MasterApiController>(context,listen: false).getMasterData();
       // if(GetStorage().read('token')==null||GetStorage().read('token')==''){
       //   Future.delayed(const Duration(seconds: 2)).then((value){
@@ -107,4 +133,26 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+  showDialogBox() => showCupertinoDialog<String>(
+    context: context,
+    builder: (BuildContext context) => CupertinoAlertDialog(
+      title: const Text('No Connection'),
+      content: const Text('Please check your internet connectivity'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context, 'Cancel');
+            setState(() => isAlertSet = false);
+            isDeviceConnected =
+            await InternetConnectionChecker().hasConnection;
+            if (!isDeviceConnected && isAlertSet == false) {
+              showDialogBox();
+              setState(() => isAlertSet = true);
+            }
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
 }

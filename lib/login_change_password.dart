@@ -7,8 +7,11 @@ import 'package:tcb/show_toast.dart';
 import 'ApiConfig/ApiController.dart';
 import 'ApiConfig/ApiEndPoints.dart';
 import 'HelperClass.dart';
+import 'mobile_verify_screen.dart';
 import 'otp_verification.dart';
 import 'package:http/http.dart' as http;
+
+import 'otp_verification_screen.dart';
 class LoginChangePassword extends StatefulWidget {
   const LoginChangePassword({Key? key}) : super(key: key);
 
@@ -35,24 +38,7 @@ class _LoginChangePasswordState extends State<LoginChangePassword> {
   }
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  Future<void> _checkUsername() async {
-    final response = await http.post(
-      Uri.parse('http://www.tcbsheba.com/api/change-password-update'),
-      body: {
-        'Email': userNameController.text,
-      },
-    );
 
-    final data = response.body; // You may need to parse the response JSON
-
-    if (data == 'exists') {
-      // Username exists in the database
-      // You can enable the "Send OTP" button or show a message to the user
-    } else {
-      // Username does not exist in the database
-      // Display an error message or take appropriate action
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,31 +136,19 @@ class _LoginChangePasswordState extends State<LoginChangePassword> {
 
                         var body = {
                           'email' : userNameController.text,
-                          // 'password' : passwordController.text,
+
                         };
 
-                        ApiController().loginResponse(endPoint: ApiEndPoints().resetUserValidation,body: body).then((value){
+                        ApiController().loginResponse(endPoint: ApiEndPoints().passwordReset,body: body).then((value){
                           if(value.responseCode==200){
-                            ShowToast.myToast('সঠিক ইউজার আইডি পাওয়া গিয়েছে', Colors.black, 2);
-                            try{
-                              var response = json.decode(value.response.toString());
-                              GetStorage().write("token","Bearer ${response['token']}").then((value){
-                                // getUserInfo();
-                              });
 
-                              setState(() {
-                                isWorking = false;
-                              });
-                            }
-                            catch(e){
-                              ShowToast.myToast(getUnknownError(value.responseCode!), Colors.black, 2);
-                              setState(() {
-                                isWorking = false;
-                              });
-                            }
+                            ShowToast.myToast('সঠিক ইউজার।', Colors.black, 2);
+                            setState(() {
+                              isWorking = false;
+                            });
 
                           }
-                          else if(value.responseCode==401){
+                          else if(value.responseCode==404){
                             ShowToast.myToast('দয়াকরে সঠিক ইউজার আইডি দিন।', Colors.black, 2);
                             setState(() {
                               isWorking = false;
@@ -187,6 +161,50 @@ class _LoginChangePasswordState extends State<LoginChangePassword> {
                             });
                           }
                         });
+
+                        // setState(() {
+                        //   isWorking = true;
+                        // });
+                        //
+                        // var body = {
+                        //   'email' : userNameController.text,
+                        //   // 'password' : passwordController.text,
+                        // };
+                        //
+                        // ApiController().loginResponse(endPoint: ApiEndPoints().resetUserValidation,body: body).then((value){
+                        //   if(value.responseCode==200){
+                        //     ShowToast.myToast('সঠিক ইউজার আইডি পাওয়া গিয়েছে', Colors.black, 2);
+                        //     try{
+                        //       var response = json.decode(value.response.toString());
+                        //       GetStorage().write("token","Bearer ${response['token']}").then((value){
+                        //         // getUserInfo();
+                        //       });
+                        //
+                        //       setState(() {
+                        //         isWorking = false;
+                        //       });
+                        //     }
+                        //     catch(e){
+                        //       ShowToast.myToast(getUnknownError(value.responseCode!), Colors.black, 2);
+                        //       setState(() {
+                        //         isWorking = false;
+                        //       });
+                        //     }
+                        //
+                        //   }
+                        //   else if(value.responseCode==401){
+                        //     ShowToast.myToast('দয়াকরে সঠিক ইউজার আইডি দিন।', Colors.black, 2);
+                        //     setState(() {
+                        //       isWorking = false;
+                        //     });
+                        //   }
+                        //   else{
+                        //     ShowToast.myToast(getUnknownError(value.responseCode!), Colors.black, 2);
+                        //     setState(() {
+                        //       isWorking = false;
+                        //     });
+                        //   }
+                        // });
 
 
 

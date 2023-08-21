@@ -19,7 +19,9 @@ class ApiEndPoints{
   final String qrCodeSearch = 'qr-code-search';
   final String resetUserValidation = 'reset-user-name-validation';
   final String getOTP = 'receive-info-save';
+  final String passwordReset = 'password-reset-info';
   final String otpVerification = 'otp-verification';
+  final String forgotPassword = 'change-password-update';
   final String dashboard = 'dashboard-info';
   final String beneficiaryList = 'beneficiary-list';
   final String beneficiaryReceiveList = 'beneficiary-receiver-list';

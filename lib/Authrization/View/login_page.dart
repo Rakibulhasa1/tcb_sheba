@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:tcb/AdminDashboard/Controller/DialogDataController.dart';
 import 'package:tcb/AdminDashboard/admin_scan_result_for_registration.dart';
@@ -30,6 +34,7 @@ import '../../forget_password.dart';
 import '../../login_change_password.dart';
 import '../../otp_verification.dart';
 import '../../select_profile_image.dart';
+import '../../url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -45,9 +50,37 @@ class _LoginPageState extends State<LoginPage> {
   bool seePassword = false;
   bool isWorking = false;
   int selectableUser = 0;
-
+  late StreamSubscription subscription;
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
   bool isAccept = false;
   bool isBilling = false;
+  @override
+  void initState() {
+    InternetConnectionChecker().onStatusChange.listen((status) {
+      final connected = status == InternetConnectionStatus.connected;
+      showSimpleNotification(Text(connected ? "CONNECTED TO INTERNET" : "NO INTERNET") ,background: Colors.green);
+    });
+    getConnectivity();
+    super.initState();
+  }
+
+  getConnectivity() =>
+      subscription = Connectivity().onConnectivityChanged.listen(
+            (ConnectivityResult result) async {
+          isDeviceConnected = await InternetConnectionChecker().hasConnection;
+          if (!isDeviceConnected && isAlertSet == false) {
+            showDialogBox();
+            setState(() => isAlertSet = true);
+          }
+        },
+      );
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
 
   void billingButton(){
     setState(() {
@@ -248,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.only(right:32.0),
                         child: GestureDetector(
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginChangePassword()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>const ForgetUrl()));
 
                             },
                             child: Text('পাসওয়ার্ড পরিবর্তন',style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,decoration: TextDecoration.underline))),
@@ -726,4 +759,28 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
   }
+
+
+  showDialogBox() => showCupertinoDialog<String>(
+    context: context,
+    builder: (BuildContext context) => CupertinoAlertDialog(
+      title: const Text('No Connection'),
+      content: const Text('Please check your internet connectivity'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context, 'Cancel');
+            setState(() => isAlertSet = false);
+            isDeviceConnected =
+            await InternetConnectionChecker().hasConnection;
+            if (!isDeviceConnected && isAlertSet == false) {
+              showDialogBox();
+              setState(() => isAlertSet = true);
+            }
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
 }
