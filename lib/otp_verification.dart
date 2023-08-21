@@ -23,6 +23,9 @@ class _OtpVerificationState extends State<OtpVerification> {
   bool isWorking = false;
   String otp = '';
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +55,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                 });
               }, // end onSubmit
             ),
+
             SizedBox(height: 32),
             const Text("Didn't receive code?",style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
             const Text('Resend',style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold)),
